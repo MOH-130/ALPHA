@@ -1,0 +1,61 @@
+/* ==========================================================
+   NOVASTORE - ARABIC RTL SYSTEM STYLES
+   ========================================================== */
+
+[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+    font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+}
+
+[dir="rtl"] .search-input {
+    padding: 0.75rem 1.25rem 0.75rem 3rem;
+}
+
+[dir="rtl"] .search-btn {
+    right: auto;
+    left: 0.5rem;
+}
+
+[dir="rtl"] .badge-count {
+    right: auto;
+    left: -6px;
+}
+
+[dir="rtl"] .product-badge-wrap {
+    left: auto;
+    right: 12px;
+}
+
+[dir="rtl"] .product-card-actions {
+    right: auto;
+    left: 12px;
+    transform: translateX(-10px);
+}
+
+[dir="rtl"] .product-card:hover .product-card-actions {
+    transform: translateX(0);
+}
+
+[dir="rtl"] .toast-container {
+    left: auto;
+    right: 24px;
+}
+
+[dir="rtl"] .admin-sidebar {
+    left: auto;
+    right: 0;
+    border-right: none;
+    border-left: 1px solid #e2e8f0;
+}
+
+[dir="rtl"] .admin-main {
+    margin-left: 0;
+    margin-right: 260px;
+}
+
+@media (max-width: 991px) {
+    [dir="rtl"] .admin-main {
+        margin-right: 0;
+    }
+}

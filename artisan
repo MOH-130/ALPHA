@@ -1,0 +1,55 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/bootstrap/app.php';
+require_once __DIR__ . '/database/migrations/create_all_tables.php';
+require_once __DIR__ . '/database/seeders/DatabaseSeeder.php';
+
+$argv = $_SERVER['argv'];
+$command = $argv[1] ?? 'help';
+
+switch ($command) {
+    case 'serve':
+        $host = '127.0.0.1';
+        $port = '8000';
+        echo "\033[32mNovaStore development server running at: http://{$host}:{$port}\033[0m\n";
+        passthru("php -S {$host}:{$port} -t public public/index.php");
+        break;
+
+    case 'migrate':
+        echo "Running database migrations...\n";
+        \Database\Migrations\CreateAllTables::up();
+        echo "\033[32mMigrations completed successfully.\033[0m\n";
+        if (isset($argv[2]) && $argv[2] === '--seed') {
+            echo "Seeding database with demo data...\n";
+            \Database\Seeders\DatabaseSeeder::run();
+            echo "\033[32mDatabase seeded successfully!\033[0m\n";
+        }
+        break;
+
+    case 'migrate:fresh':
+        echo "Resetting and re-running all database migrations...\n";
+        \Database\Migrations\CreateAllTables::fresh();
+        echo "\033[32mMigrations reset and completed successfully.\033[0m\n";
+        if (isset($argv[2]) && $argv[2] === '--seed') {
+            echo "Seeding database with demo data...\n";
+            \Database\Seeders\DatabaseSeeder::run();
+            echo "\033[32mDatabase seeded successfully!\033[0m\n";
+        }
+        break;
+
+    case 'db:seed':
+        echo "Seeding database with demo data...\n";
+        \Database\Seeders\DatabaseSeeder::run();
+        echo "\033[32mDatabase seeded successfully!\033[0m\n";
+        break;
+
+    default:
+        echo "NovaStore CLI Manager\n";
+        echo "Usage:\n";
+        echo "  php artisan serve            Start the local HTTP web server\n";
+        echo "  php artisan migrate          Run database schema migrations\n";
+        echo "  php artisan migrate --seed   Run migrations and seed demo data\n";
+        echo "  php artisan db:seed          Seed realistic demo products and settings\n";
+        break;
+}

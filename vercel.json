@@ -1,0 +1,10 @@
+{
+  "framework": "laravel",
+  "buildCommand": "composer install --no-interaction --optimize-autoloader --working-dir=. && php artisan config:cache && php artisan route:cache",
+  "outputDirectory": "public",
+  "publicDirectory": "public",
+  "routes": {
+    "src": "*",
+    "dest": "/index.php"
+  }
+}
