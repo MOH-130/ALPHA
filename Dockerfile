@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN chmod -R 775 storage bootstrap/cache 2>$null
+RUN mkdir -p storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
 
