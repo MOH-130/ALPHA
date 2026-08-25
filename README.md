@@ -1,4 +1,4 @@
-# 🚀 متجر نوفا ستور الإلكتروني المتكامل (NovaStore Pro eCommerce)
+# 🚀 متجر Alpha ستور الإلكتروني المتكامل BY AMINE (ALPHA GAMING SHOP)
 
 منصة تجارة إلكترونية متكاملة واحترافية قابلة للتشغيل والإنتاج والتطوير المباشر، مبنية بأحدث معايير هندسة البرمجيات باستخدام **Laravel + MySQL / SQLite**، مع واجهة متجر فائقة السرعة تدعم الوضعين العربي (RTL) والإنجليزي (LTR)، وتعدد العملات، وبوابات الدفع والشحن، ونظام التسويق بالعمولة (Affiliate)، ولوحة تحكم إدارية (Admin Dashboard) متقدمة مع مخصص مظهر حي (Live Theme Customizer).
 
@@ -51,7 +51,7 @@
 ### الطريقة 1: التشغيل بنقرة واحدة عبر السيرفر الداخلي (موصى بها)
 1. افتح موجه الأوامر (PowerShell أو CMD) في مسار المشروع:
    ```bash
-   cd C:\Users\elnou\.gemini\antigravity\scratch\ecommerce-store
+   cd C:\Users\Cyber\.me\anrty\sch\ALPHA
    ```
 2. قم بتشغيل خادم التطوير:
    ```bash
