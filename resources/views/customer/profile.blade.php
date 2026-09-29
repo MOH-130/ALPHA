@@ -75,7 +75,7 @@
                         </div>
                     </label>
 
-                    <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.85rem 1rem;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.85rem 1rem;">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="font-size:1.4rem;">🌐</span>
                             <div>

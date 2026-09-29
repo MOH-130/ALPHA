@@ -14,8 +14,8 @@
             <a href="<?= url('shop') ?>" class="btn btn-primary btn-lg"><?= __('messages.continue_shopping') ?> 🎮</a>
         </div>
     <?php else: ?>
-        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.5rem; overflow-x:auto; box-shadow: var(--shadow-md);">
-            <table style="width:100%; border-collapse:collapse; text-align:center; font-size:0.95rem; color:#cbd5e1;">
+        <div class="table-responsive" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.5rem; box-shadow: var(--shadow-md);">
+            <table style="width:100%; min-width:650px; border-collapse:collapse; text-align:center; font-size:0.95rem; color:#cbd5e1;">
                 <tr>
                     <td style="padding:1rem; font-weight:800; text-align:right; width:180px; background:var(--bg-input); color:#fff;">المنتج</td>
                     <?php foreach ($compareItems as $c): ?>

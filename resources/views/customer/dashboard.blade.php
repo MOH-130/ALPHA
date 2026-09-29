@@ -57,7 +57,7 @@
                 <?php if (empty($recentOrders)): ?>
                     <p style="color:var(--text-muted); padding:2rem 0; text-align:center;">لم تقم بإنشاء أي طلبات حتى الآن.</p>
                 <?php else: ?>
-                    <div style="overflow-x:auto;">
+                    <div class="table-responsive">
                         <table style="width:100%; border-collapse:collapse; text-align:inherit; font-size:0.9rem;">
                             <thead>
                                 <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted); font-size:0.8rem;">

@@ -27,8 +27,8 @@
             <!-- Referral Link Card -->
             <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.75rem; margin-bottom:2rem;">
                 <label style="display:block; font-weight:700; font-size:0.95rem; margin-bottom:0.75rem; color:#fff;"><?= __('messages.affiliate_link') ?>:</label>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" id="affiliate-url-input" class="form-control" value="<?= htmlspecialchars($referralUrl) ?>" style="font-weight:700; font-size:1rem; color:var(--color-primary); background:var(--bg-input);" readonly>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <input type="text" id="affiliate-url-input" class="form-control" value="<?= htmlspecialchars($referralUrl) ?>" style="flex:1; min-width:200px; font-weight:700; font-size:1rem; color:var(--color-primary); background:var(--bg-input);" readonly>
                     <button type="button" class="btn btn-primary btn-copy" data-target="#affiliate-url-input" style="font-weight:800; white-space:nowrap;">
                         📋 <?= __('messages.copy_link') ?>
                     </button>
@@ -57,7 +57,7 @@
                 <?php if (empty($commissions)): ?>
                     <p style="color:var(--text-muted); text-align:center; padding:2rem 0;">لم يتم تسجيل أي مبيعات عبر رابط الإحالة الخاص بك حتى الآن. ابدأ بالمشاركة واكسب أرباحاً فورية!</p>
                 <?php else: ?>
-                    <div style="overflow-x:auto;">
+                    <div class="table-responsive">
                         <table style="width:100%; border-collapse:collapse; text-align:inherit; font-size:0.9rem;">
                             <thead>
                                 <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted);">

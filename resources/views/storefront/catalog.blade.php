@@ -80,16 +80,16 @@
         <!-- Products List & Sorting Header -->
         <section>
             <!-- Top Controls Bar -->
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; box-shadow: var(--shadow-sm);">
-                <div style="font-size:0.9rem; color:var(--text-muted);">
+            <div class="catalog-toolbar" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:0.85rem 1rem; display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.75rem; box-shadow: var(--shadow-sm);">
+                <div style="font-size:0.85rem; color:var(--text-muted);">
                     عرض <strong style="color:#ffffff;"><?= $products['total'] ?></strong> منتج وبكج ألعاب
                 </div>
 
-                <div style="display:flex; align-items:center; gap:1.25rem;">
+                <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
                     <!-- Sort Dropdown -->
-                    <div style="display:flex; align-items:center; gap:6px; font-size:0.9rem;">
+                    <div style="display:flex; align-items:center; gap:6px; font-size:0.85rem;">
                         <span style="color:var(--text-muted);"><?= __('messages.sort_by') ?>:</span>
-                        <select onchange="const u = new URL(window.location); u.searchParams.set('sort', this.value); window.location = u.href;" style="padding:0.4rem 0.75rem; border-radius:6px; background:var(--bg-input); color:#fff; border:1px solid rgba(255,255,255,0.1); font-family:inherit; font-size:0.875rem; cursor:pointer;">
+                        <select onchange="const u = new URL(window.location); u.searchParams.set('sort', this.value); window.location = u.href;" style="padding:0.4rem 0.6rem; border-radius:6px; background:var(--bg-input); color:#fff; border:1px solid rgba(255,255,255,0.1); font-family:inherit; font-size:0.825rem; cursor:pointer;">
                             <option value="newest" <?= ($sort ?? '') === 'newest' ? 'selected' : '' ?> style="background:#0f1626; color:#fff;"><?= __('messages.sort_newest') ?></option>
                             <option value="price_low" <?= ($sort ?? '') === 'price_low' ? 'selected' : '' ?> style="background:#0f1626; color:#fff;"><?= __('messages.sort_price_low') ?></option>
                             <option value="price_high" <?= ($sort ?? '') === 'price_high' ? 'selected' : '' ?> style="background:#0f1626; color:#fff;"><?= __('messages.sort_price_high') ?></option>

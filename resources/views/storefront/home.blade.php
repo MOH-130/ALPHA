@@ -15,8 +15,8 @@
                 </p>
 
                 <!-- Live Trust Metrics Strip -->
-                <div style="display:flex; gap:1.25rem; flex-wrap:wrap; margin-bottom:1.75rem; font-size:0.85rem; font-weight:700;">
-                    <div style="display:inline-flex; align-items:center; gap:6px; color:#00ff88; background:rgba(0, 255, 136, 0.08); border:1px solid rgba(0, 255, 136, 0.25); border-radius:999px; padding:4px 12px;">
+                <div class="hero-trust-strip" style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:1.75rem; font-size:0.825rem; font-weight:700;">
+                    <div style="display:inline-flex; align-items:center; gap:6px; color:#00ff88; background:rgba(0, 255, 136, 0.08); border:1px solid rgba(0, 255, 136, 0.25); border-radius:999px; padding:4px 10px; font-size:0.78rem;">
                         <span class="live-pulse-dot" style="width:8px; height:8px;"></span>
                         <span>+15,400 لاعب مفعل 🇩🇿</span>
                     </div>
@@ -113,17 +113,17 @@
             
             <!-- Countdown Timer -->
             <div class="deal-timer-wrap">
-                <div style="background:#172238; border:1px solid rgba(255,255,255,0.1); color:var(--color-accent); padding:8px 14px; border-radius:10px; font-weight:800; font-size:1.1rem; text-align:center;">
-                    <span id="deal-days">14</span><div style="font-size:0.65rem; color:var(--text-muted);">يوم</div>
+                <div class="timer-block">
+                    <span id="deal-days">14</span><div class="timer-label">يوم</div>
                 </div>
-                <div style="background:#172238; border:1px solid rgba(255,255,255,0.1); color:var(--color-accent); padding:8px 14px; border-radius:10px; font-weight:800; font-size:1.1rem; text-align:center;">
-                    <span id="deal-hours">08</span><div style="font-size:0.65rem; color:var(--text-muted);">ساعة</div>
+                <div class="timer-block">
+                    <span id="deal-hours">08</span><div class="timer-label">ساعة</div>
                 </div>
-                <div style="background:#172238; border:1px solid rgba(255,255,255,0.1); color:var(--color-accent); padding:8px 14px; border-radius:10px; font-weight:800; font-size:1.1rem; text-align:center;">
-                    <span id="deal-mins">32</span><div style="font-size:0.65rem; color:var(--text-muted);">دقيقة</div>
+                <div class="timer-block">
+                    <span id="deal-mins">32</span><div class="timer-label">دقيقة</div>
                 </div>
-                <div style="background:#172238; border:1px solid rgba(255,255,255,0.1); color:var(--color-accent); padding:8px 14px; border-radius:10px; font-weight:800; font-size:1.1rem; text-align:center;">
-                    <span id="deal-secs">45</span><div style="font-size:0.65rem; color:var(--text-muted);">ثانية</div>
+                <div class="timer-block">
+                    <span id="deal-secs">45</span><div class="timer-label">ثانية</div>
                 </div>
             </div>
         </div>
@@ -231,7 +231,7 @@
     </section>
 
     <!-- Verified Customer Reviews Showcase (From INSTA Poster) -->
-    <section style="margin: 4.5rem 0; background: #0c1322; border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: 3rem 2rem;">
+    <section class="customer-reviews-section" style="margin: 4.5rem 0; background: #0c1322; border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: 3rem 2rem;">
         <div style="text-align: center; max-width: 600px; margin: 0 auto 2.5rem;">
             <span style="background: rgba(0, 255, 136, 0.15); color: var(--color-secondary); border: 1px solid rgba(0, 255, 136, 0.3); padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 800;">
                 ⭐ آراء وتقييمات زبائننا المعتمدين
@@ -244,7 +244,7 @@
             </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div class="reviews-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
             <div style="background: var(--bg-input); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.5rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
                     <strong style="color:#ffffff; font-size: 1rem;">يوسف س. (الجزائر العاصمة)</strong>

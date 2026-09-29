@@ -131,7 +131,7 @@
             </div>
 
             <!-- Social Share -->
-            <div style="border-top:1px solid var(--border-color); padding-top:1.25rem; display:flex; align-items:center; gap:12px;">
+            <div style="border-top:1px solid var(--border-color); padding-top:1.25rem; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                 <span style="font-size:0.875rem; font-weight:700; color:var(--text-muted);"><?= __('messages.share_product') ?>:</span>
                 <a href="https://api.whatsapp.com/send?text=<?= urlencode($product->getNameAttribute() . ' - ' . url('product/' . $product->slug)) ?>" target="_blank" class="btn btn-outline btn-sm">💬 واتساب</a>
                 <a href="https://twitter.com/intent/tweet?text=<?= urlencode($product->getNameAttribute()) ?>&url=<?= urlencode(url('product/' . $product->slug)) ?>" target="_blank" class="btn btn-outline btn-sm">✖️ X</a>
@@ -162,29 +162,31 @@
 
         <!-- Tab 2: Specifications -->
         <div id="tab-specs" class="tab-content" style="display:none;">
-            <table style="width:100%; border-collapse:collapse; font-size:0.95rem; color:#cbd5e1;">
-                <tr style="border-bottom:1px solid var(--border-color);">
-                    <td style="padding:0.75rem; font-weight:700; width:220px; background:var(--bg-input); color:#fff;">المنصة / الشركة</td>
-                    <td style="padding:0.75rem;"><?= $product->brand() ? $product->brand()->getNameAttribute() : 'Steam' ?></td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border-color);">
-                    <td style="padding:0.75rem; font-weight:700; background:var(--bg-input); color:#fff;">القسم والتصنيف</td>
-                    <td style="padding:0.75rem;"><?= $product->category() ? $product->category()->getNameAttribute() : 'ألعاب الكمبيوتر PC' ?></td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border-color);">
-                    <td style="padding:0.75rem; font-weight:700; background:var(--bg-input); color:#fff;">رمز المنتج (SKU)</td>
-                    <td style="padding:0.75rem;"><?= $product->sku ?></td>
-                </tr>
-                <tr style="border-bottom:1px solid var(--border-color);">
-                    <td style="padding:0.75rem; font-weight:700; background:var(--bg-input); color:#fff;">طريقة التسليم</td>
-                    <td style="padding:0.75rem; color:var(--color-secondary); font-weight:700;">تسليم فوري (كود تفعيل / بيانات حساب)</td>
-                </tr>
-            </table>
+            <div class="table-responsive">
+                <table style="width:100%; border-collapse:collapse; font-size:0.95rem; color:#cbd5e1;">
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                        <td style="padding:0.75rem; font-weight:700; width:220px; background:var(--bg-input); color:#fff;">المنصة / الشركة</td>
+                        <td style="padding:0.75rem;"><?= $product->brand() ? $product->brand()->getNameAttribute() : 'Steam' ?></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                        <td style="padding:0.75rem; font-weight:700; background:var(--bg-input); color:#fff;">القسم والتصنيف</td>
+                        <td style="padding:0.75rem;"><?= $product->category() ? $product->category()->getNameAttribute() : 'ألعاب الكمبيوتر PC' ?></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                        <td style="padding:0.75rem; font-weight:700; background:var(--bg-input); color:#fff;">رمز المنتج (SKU)</td>
+                        <td style="padding:0.75rem;"><?= $product->sku ?></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border-color);">
+                        <td style="padding:0.75rem; font-weight:700; background:var(--bg-input); color:#fff;">طريقة التسليم</td>
+                        <td style="padding:0.75rem; color:var(--color-secondary); font-weight:700;">تسليم فوري (كود تفعيل / بيانات حساب)</td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <!-- Tab 3: Reviews -->
         <div id="tab-reviews" class="tab-content" style="display:none;">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:2.5rem;">
+            <div class="reviews-split-grid">
                 <!-- Existing Reviews List -->
                 <div>
                     <h3 style="font-size:1.2rem; font-weight:800; margin-bottom:1.25rem; color:#fff;">تقييمات المشترين (<?= count($reviews) ?>)</h3>

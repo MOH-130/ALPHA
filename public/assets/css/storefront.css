@@ -47,6 +47,11 @@
     padding: 0;
 }
 
+html {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
 body {
     font-family: var(--font-family);
     background-color: var(--bg-main);
@@ -58,6 +63,8 @@ body {
     color: var(--text-main);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    max-width: 100%;
     min-height: 100vh;
 }
 
@@ -395,6 +402,8 @@ html[dir="rtl"] .search-input {
     padding: 3.5rem 3rem;
     position: relative;
     overflow: hidden;
+    overflow: clip;
+    contain: paint;
     box-shadow: var(--shadow-lg);
 }
 .hero-banner::before {
@@ -436,6 +445,9 @@ html[dir="rtl"] .search-input {
     font-weight: 800;
     margin-bottom: 1.25rem;
     letter-spacing: 0.5px;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
 }
 .hero-title {
     font-size: 2.75rem;
@@ -1034,11 +1046,16 @@ html[dir="rtl"] .toast-container {
     background: linear-gradient(90deg, #050811, #0c182b, #050811);
     border-bottom: 1px solid rgba(0, 210, 255, 0.2);
     overflow: hidden;
+    overflow-x: clip;
     position: relative;
     padding: 6px 0;
     font-size: 0.8rem;
     font-weight: 700;
     color: #e2e8f0;
+    width: 100%;
+    max-width: 100%;
+    contain: paint layout;
+    clip-path: inset(0 0 0 0);
 }
 .vip-ticker-bar::before,
 .vip-ticker-bar::after {
@@ -1623,6 +1640,35 @@ html[dir="rtl"] .vip-float-support {
     border-collapse: collapse;
 }
 
+.timer-block {
+    background: #172238;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-accent);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-align: center;
+    min-width: 58px;
+}
+
+.timer-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.reviews-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+}
+
+.order-details-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
 /* Mobile Filter Accordion Toggle */
 .mobile-filter-toggle {
     display: none;
@@ -1707,11 +1753,13 @@ html[dir="rtl"] .vip-float-support {
     border-inline-end: 1px solid var(--border-highlight);
     z-index: 9999;
     transform: translateX(105%);
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.85);
+    visibility: hidden;
+    pointer-events: none;
 }
 html[dir="rtl"] .mobile-nav-drawer {
     right: 0;
@@ -1725,6 +1773,8 @@ html[dir="ltr"] .mobile-nav-drawer {
 }
 .mobile-nav-drawer.active {
     transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
 }
 
 .mobile-drawer-header {
@@ -1949,6 +1999,13 @@ body.mobile-nav-open {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
+    .checkout-layout > div:last-child {
+        position: static !important;
+    }
+    .reviews-split-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
     .account-layout {
         grid-template-columns: 1fr;
         gap: 1.5rem;
@@ -1978,6 +2035,10 @@ body.mobile-nav-open {
     .hero-banner {
         padding: 2.25rem 1.25rem;
         border-radius: 1rem;
+    }
+    .hero-banner::before,
+    .hero-banner::after {
+        display: none !important;
     }
     .hero-title {
         font-size: 1.65rem;
@@ -2066,6 +2127,30 @@ body.mobile-nav-open {
         grid-template-columns: 1fr;
         gap: 1.75rem;
     }
+    .categories-featured-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.85rem !important;
+    }
+    .flash-deals-banner {
+        padding: 1.5rem 1rem !important;
+        margin: 2rem 0 !important;
+    }
+    .deal-timer-wrap {
+        justify-content: center !important;
+        width: 100% !important;
+        margin-top: 1rem !important;
+    }
+    .order-details-meta-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    .timer-block {
+        padding: 6px 10px;
+        font-size: 0.95rem;
+    }
+    .customer-reviews-section {
+        padding: 2.5rem 1.25rem !important;
+    }
 }
 
 /* STANDARD SMARTPHONE (<= 576px) */
@@ -2114,12 +2199,44 @@ body.mobile-nav-open {
     .vip-ticker-item {
         font-size: 0.75rem;
     }
+    .btn-google-login {
+        font-size: 0.85rem !important;
+        padding: 0.75rem 0.5rem !important;
+        gap: 8px !important;
+    }
+    .vip-holo-card {
+        padding: 1.25rem 1rem !important;
+    }
+    .timer-block {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+        min-width: 48px;
+    }
+    .product-price-box {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .hero-badge {
+        font-size: 0.75rem !important;
+        padding: 4px 10px !important;
+    }
+    .customer-reviews-section {
+        padding: 2rem 1rem !important;
+        margin: 2.5rem 0 !important;
+    }
+    .reviews-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
 }
 
 /* NARROW PHONES (<= 380px) */
 @media (max-width: 380px) {
     .products-grid {
         grid-template-columns: 1fr;
+    }
+    .categories-featured-grid {
+        grid-template-columns: 1fr !important;
     }
     .product-image-box {
         height: 190px;
@@ -2129,6 +2246,24 @@ body.mobile-nav-open {
     }
     .store-logo .logo-title {
         font-size: 1rem;
+    }
+    .deal-timer-wrap {
+        gap: 4px !important;
+    }
+    .timer-block {
+        padding: 4px 6px;
+        font-size: 0.78rem;
+        min-width: 42px;
+    }
+    .btn-google-login {
+        font-size: 0.78rem !important;
+    }
+    .hero-badge {
+        font-size: 0.7rem !important;
+        padding: 3px 8px !important;
+    }
+    .customer-reviews-section {
+        padding: 1.5rem 0.75rem !important;
     }
 }
 

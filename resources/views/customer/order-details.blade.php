@@ -9,7 +9,7 @@
 
     <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:2.5rem; box-shadow:var(--shadow-lg);">
         <!-- Invoice Header -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--border-subtle); padding-bottom:1.5rem; margin-bottom:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; border-bottom:2px solid var(--border-subtle); padding-bottom:1.5rem; margin-bottom:2rem;">
             <div>
                 <h1 style="font-size:1.6rem; font-weight:900; color:var(--color-primary); margin-bottom:0.25rem;">
                     فاتورة طلب رقم: <?= $order->order_number ?>
@@ -18,14 +18,14 @@
                     تاريخ الإنشاء: <?= date('Y-m-d H:i', strtotime($order->created_at)) ?>
                 </div>
             </div>
-            <div style="text-align:left;">
+            <div style="text-align:inherit;">
                 <span class="status-pill <?= $order->getStatusBadgeClass() ?>"><?= strtoupper($order->status) ?></span>
                 <div style="margin-top:4px; font-size:0.85rem; color:var(--text-muted);">الدفع: <?= strtoupper($order->payment_status) ?></div>
             </div>
         </div>
 
         <!-- Customer & Delivery Details -->
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem; margin-bottom:2rem; background:var(--bg-input); padding:1.25rem; border-radius:var(--btn-radius); border:1px solid var(--border-color);">
+        <div class="order-details-meta-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem; margin-bottom:2rem; background:var(--bg-input); padding:1.25rem; border-radius:var(--btn-radius); border:1px solid var(--border-color);">
             <div>
                 <strong style="display:block; font-size:0.95rem; margin-bottom:6px; color:#fff;">بيانات العميل:</strong>
                 <div style="font-size:0.875rem; color:#cbd5e1; line-height:1.6;">

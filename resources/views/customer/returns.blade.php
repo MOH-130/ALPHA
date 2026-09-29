@@ -70,7 +70,7 @@
                 <?php if (empty($returns)): ?>
                     <p style="color:var(--text-muted); text-align:center; padding:1.5rem 0;">لا توجد أي طلبات إرجاع سابقة.</p>
                 <?php else: ?>
-                    <div style="overflow-x:auto;">
+                    <div class="table-responsive">
                         <table style="width:100%; border-collapse:collapse; text-align:inherit; font-size:0.9rem;">
                             <thead>
                                 <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted);">
