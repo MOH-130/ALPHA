@@ -83,23 +83,29 @@
                     </p>
                 </div>
 
-                <!-- Google OAuth 2.0 Fast Sign-Up Button -->
+                <!-- 1. Google OAuth 2.0 Fast Sign-Up Button (Instant & Verified) -->
                 <div style="margin-bottom: 1.5rem;">
-                    <a href="<?= url('auth/google') ?>" class="btn-google-login" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:0.85rem 1.25rem; background:#ffffff; color:#1f2937; border-radius:12px; font-weight:800; font-size:1rem; text-decoration:none; box-shadow:0 4px 15px rgba(0,0,0,0.3); transition:all 0.25s ease; border:1px solid #e5e7eb;">
+                    <a href="<?= url('auth/google') ?>" class="btn-google-login" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:0.9rem 1.25rem; background:#ffffff; color:#1f2937; border-radius:12px; font-weight:800; font-size:1rem; text-decoration:none; box-shadow:0 4px 15px rgba(0,0,0,0.3); transition:all 0.25s ease; border:1px solid #e5e7eb;">
                         <svg width="22" height="22" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z"/>
                             <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.13C3.26 21.36 7.36 24 12 24z"/>
                             <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.57H1.24C.45 8.14 0 9.99 0 12s.45 3.86 1.24 5.43l4.04-3.14z"/>
                             <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.24 6.57l4.04 3.14c.95-2.83 3.6-4.96 6.72-4.96z"/>
                         </svg>
-                        <span>التسجيل الفوري بنقرة واحدة عبر Google</span>
+                        <span>إنشاء الحساب والربط الفوري بحساب Google</span>
                     </a>
                     
                     <div style="display:flex; align-items:center; gap:12px; margin: 1.25rem 0 0.75rem;">
                         <div style="flex:1; height:1px; background:rgba(255,255,255,0.12);"></div>
-                        <span style="color:#94a3b8; font-size:0.8rem; font-weight:700;">أو إنشاء الحساب بالبيانات الشخصية</span>
+                        <span style="color:#94a3b8; font-size:0.8rem; font-weight:700;">أو إنشاء الحساب بالبريد (مع تفعيل Gmail OTP)</span>
                         <div style="flex:1; height:1px; background:rgba(255,255,255,0.12);"></div>
                     </div>
+                </div>
+
+                <!-- Security Protocol Notice -->
+                <div style="display:flex; align-items:center; gap:8px; background:rgba(0, 210, 255, 0.08); border:1px solid rgba(0, 210, 255, 0.25); border-radius:10px; padding:10px 14px; margin-bottom:1.25rem; font-size:0.825rem; color:#cbd5e1;">
+                    <span style="font-size:1.1rem;">🔒</span>
+                    <span><strong>حماية أمنية مشددة:</strong> سيتم إرسال كود تحقق أمني فوري (OTP) إلى بريدك على Gmail لتأكيد ملكيتك وتفعيل حسابك ومنع أي اختراق أو تسجيل وهمي.</span>
                 </div>
 
                 <!-- Registration Form -->
@@ -153,7 +159,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit" class="btn btn-luxury-shimmer btn-block btn-lg" style="width:100%; margin-top:1.5rem;">
-                        إنشاء الحساب وبدء التسوق 🚀
+                        إنشاء الحساب وتأكيد كود الأمان (OTP) 🚀
                     </button>
                 </form>
 

@@ -62,6 +62,7 @@ Router::group(['middleware' => ['locale', 'visitor']], function() {
     Router::get('/auth/verify-otp', [AuthController::class, 'showVerifyOtp'])->name('auth.otp.show');
     Router::post('/auth/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.otp.verify');
     Router::post('/auth/resend-otp', [AuthController::class, 'resendOtp'])->name('auth.otp.resend');
+    Router::post('/auth/request-otp-login', [AuthController::class, 'requestOtpLogin'])->name('auth.otp.request_login');
 
     // Anti-Bot Dynamic CAPTCHA Refresh
     Router::get('/captcha/refresh', [AuthController::class, 'refreshCaptcha'])->name('captcha.refresh');

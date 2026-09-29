@@ -5,13 +5,17 @@ namespace App\Services;
 use App\Models\User;
 use App\Core\Session;
 use App\Services\ActivityLogger;
+use App\Services\MailService;
 
 class OtpService {
-    private const EXPIRY_SECONDS = 300; // 5 minutes
-    private const RESEND_COOLDOWN = 60; // 60 seconds
+    public const EXPIRY_SECONDS = 300; // 5 minutes
+    public const RESEND_COOLDOWN = 60; // 60 seconds
     private const LOG_FILE = __DIR__ . '/../../storage/logs/otp.log';
 
-    public static function generate(User $user): string {
+    /**
+     * Generate a cryptographic 6-digit OTP code, save hashed version, and send email
+     */
+    public static function generate(User $user, array $context = []): string {
         Session::getInstance();
 
         $code = (string)random_int(100000, 999999);
@@ -26,11 +30,14 @@ class OtpService {
         $_SESSION['_otp_last_sent_' . $user->id] = time();
         $_SESSION['_otp_attempts_' . $user->id] = 0;
 
-        self::send($user, $code);
+        self::send($user, $code, $context);
 
         return $code;
     }
 
+    /**
+     * Verify the entered OTP code with rate-limiting and replay protection
+     */
     public static function verify(User $user, ?string $inputCode): bool {
         Session::getInstance();
 
@@ -60,6 +67,13 @@ class OtpService {
         if (password_verify(trim($inputCode), $user->otp_code)) {
             self::clear($user);
             unset($_SESSION[$attemptsKey]);
+
+            // Mark email as verified and account active
+            $user->update([
+                'email_verified_at' => $user->email_verified_at ?: date('Y-m-d H:i:s'),
+                'status' => ($user->status === 'pending_verification') ? 'active' : $user->status
+            ]);
+
             return true;
         }
 
@@ -93,7 +107,10 @@ class OtpService {
         unset($_SESSION['_otp_attempts_' . $user->id]);
     }
 
-    public static function send(User $user, string $code): void {
+    /**
+     * Dispatch OTP to user's email via MailService and write activity logs
+     */
+    public static function send(User $user, string $code, array $context = []): void {
         $logDir = dirname(self::LOG_FILE);
         if (!is_dir($logDir)) {
             @mkdir($logDir, 0777, true);
@@ -105,15 +122,12 @@ class OtpService {
 
         ActivityLogger::log('OTP Security Code', 'Auth', "OTP generated for {$user->email}");
 
-        // Store OTP in flash for dev/demo display helper so user is never locked out
+        // Store OTP in flash for dev/demo display helper so user is never locked out during development
         Session::flash('_latest_otp_hint', $code);
         Session::flash('_latest_otp_email', self::maskEmail($user->email));
 
-        // Optional standard PHP mail if host has mail server
-        $subject = "رمز التحقق الأمني الخاص بك - " . config('app.name', 'Alpha Gaming');
-        $body = "مرحباً {$user->name}،\r\n\r\nرمز التحقق الأمني الخاص بك لتسجيل الدخول هو:\r\n{$code}\r\n\r\nصلاحية الرمز 5 دقائق فقط. لا تشارك هذا الرمز مع أي شخص.\r\n\r\nAlpha Gaming Security Team";
-        $headers = "From: noreply@" . ($_SERVER['HTTP_HOST'] ?? 'alphagaming.store') . "\r\nContent-Type: text/plain; charset=UTF-8";
-        @mail($user->email, $subject, $body, $headers);
+        // Dispatch VIP Authored HTML Email via MailService
+        MailService::sendOtpEmail($user, $code, $context);
     }
 
     public static function maskEmail(string $email): string {

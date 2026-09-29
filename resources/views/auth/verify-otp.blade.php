@@ -18,13 +18,24 @@
                 <h1 style="font-size: 1.85rem; font-weight: 900; color: #ffffff; margin: 0 0 0.5rem;">
                     التحقق الأمني المزدوج (OTP)
                 </h1>
-                <p style="color: #94a3b8; font-size: 0.92rem; line-height: 1.6; margin: 0;">
+                <p style="color: #94a3b8; font-size: 0.92rem; line-height: 1.6; margin: 0 0 10px;">
                     أدخل رمز الأمان المكون من <strong style="color: #00ff88;">6 أرقام</strong> المرسل إلى:
                     <br>
                     <span style="font-family: monospace; font-size: 1.05rem; font-weight: 700; color: #00d2ff; background: rgba(0, 210, 255, 0.1); padding: 2px 10px; border-radius: 6px; display: inline-block; margin-top: 4px;">
                         <?= htmlspecialchars($maskedEmail) ?>
                     </span>
                 </p>
+
+                <div style="margin-top: 8px;">
+                    <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; border-radius: 8px; padding: 5px 12px; font-size: 0.8rem; text-decoration: none; transition: all 0.2s ease;">
+                        <span>📬</span>
+                        <span>فتح بريد Gmail للتحقق من الكود</span>
+                    </a>
+                </div>
+
+                <div style="font-size: 0.775rem; color: #64748b; margin-top: 8px;">
+                    💡 تلميح: تفقد صندوق الوارد أو مجلد الرسائل غير المرغوب فيها (Spam / Junk).
+                </div>
             </div>
 
             <!-- Debug / Demo Helper Notice (for smooth local testing) -->

@@ -115,27 +115,33 @@
                 </div>
                 <?php endif; ?>
 
-                <!-- Google OAuth 2.0 Sign-In Button -->
+                <!-- 1. Google OAuth 2.0 Sign-In Button (Official & Instant) -->
                 <div style="margin-bottom: 1.5rem;">
-                    <a href="<?= url('auth/google') ?>" class="btn-google-login" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:0.85rem 1.25rem; background:#ffffff; color:#1f2937; border-radius:12px; font-weight:800; font-size:1rem; text-decoration:none; box-shadow:0 4px 15px rgba(0,0,0,0.3); transition:all 0.25s ease; border:1px solid #e5e7eb;">
+                    <a href="<?= url('auth/google') ?>" class="btn-google-login" style="display:flex; align-items:center; justify-content:center; gap:12px; width:100%; padding:0.9rem 1.25rem; background:#ffffff; color:#1f2937; border-radius:12px; font-weight:800; font-size:1rem; text-decoration:none; box-shadow:0 4px 15px rgba(0,0,0,0.3); transition:all 0.25s ease; border:1px solid #e5e7eb;">
                         <svg width="22" height="22" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3.03h3.88c2.27-2.09 3.66-5.17 3.66-9.12z"/>
                             <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.03c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.13C3.26 21.36 7.36 24 12 24z"/>
                             <path fill="#FBBC05" d="M5.28 14.29c-.25-.72-.38-1.49-.38-2.29s.13-1.57.38-2.29V6.57H1.24C.45 8.14 0 9.99 0 12s.45 3.86 1.24 5.43l4.04-3.14z"/>
                             <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.24 6.57l4.04 3.14c.95-2.83 3.6-4.96 6.72-4.96z"/>
                         </svg>
-                        <span>تسجيل الدخول الفوري بحساب Google</span>
+                        <span>الدخول الفوري المباشر بحساب Google</span>
                     </a>
                     
                     <div style="display:flex; align-items:center; gap:12px; margin: 1.25rem 0 0.75rem;">
                         <div style="flex:1; height:1px; background:rgba(255,255,255,0.12);"></div>
-                        <span style="color:#94a3b8; font-size:0.8rem; font-weight:700;">أو تسجيل الدخول بالإيميل وكلمة السر</span>
+                        <span style="color:#94a3b8; font-size:0.8rem; font-weight:700;">أو تسجيل الدخول بالإيميل (مؤمن بكود Gmail OTP)</span>
                         <div style="flex:1; height:1px; background:rgba(255,255,255,0.12);"></div>
                     </div>
                 </div>
 
+                <!-- Security Protocol Notice -->
+                <div style="display:flex; align-items:center; gap:8px; background:rgba(0, 255, 136, 0.08); border:1px solid rgba(0, 255, 136, 0.25); border-radius:10px; padding:8px 12px; margin-bottom:1.25rem; font-size:0.8rem; color:#cbd5e1;">
+                    <span style="font-size:1.1rem;">🛡️</span>
+                    <span><strong>حماية أمنية مشددة:</strong> سيتم تأكيد الدخول عبر كود أمان سري (OTP) يُرسل مباشرة إلى بريدك الإلكتروني.</span>
+                </div>
+
                 <!-- Login Form -->
-                <form action="<?= url('login') ?>" method="POST" onsubmit="playCyberSound('access')">
+                <form id="main-login-form" action="<?= url('login') ?>" method="POST" onsubmit="playCyberSound('access')">
                     <?= csrf_field() ?>
 
                     <!-- Email Field -->
@@ -182,7 +188,43 @@
                     <button type="submit" class="btn btn-luxury-shimmer btn-block btn-lg" style="width:100%;">
                         <?= __('auth.login') ?> 🚀
                     </button>
+
+                    <!-- Quick OTP Direct Code Option -->
+                    <div style="margin-top: 0.85rem; text-align: center;">
+                        <button type="button" onclick="submitQuickOtpLogin()" style="background: rgba(0, 210, 255, 0.06); border: 1px solid rgba(0, 210, 255, 0.25); color: #00d2ff; width: 100%; padding: 0.65rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(0, 210, 255, 0.15)'" onmouseout="this.style.background='rgba(0, 210, 255, 0.06)'">
+                            🔑 تسجيل الدخول السريع بكود OTP إلى بريدك (دون كلمة سر)
+                        </button>
+                    </div>
                 </form>
+
+                <script>
+                function submitQuickOtpLogin() {
+                    const email = document.getElementById('login-email').value.trim();
+                    if (!email) {
+                        alert('يرجى كتابة بريدك الإلكتروني في خانة الإيميل أولاً لإرسال كود OTP.');
+                        document.getElementById('login-email').focus();
+                        return;
+                    }
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '<?= url('auth/request-otp-login') ?>';
+                    
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '<?= csrf_token() ?>';
+                    form.appendChild(csrf);
+
+                    const emailInput = document.createElement('input');
+                    emailInput.type = 'hidden';
+                    emailInput.name = 'email';
+                    emailInput.value = email;
+                    form.appendChild(emailInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+                </script>
 
                 <!-- Security Guarantee Pill -->
                 <div style="text-align:center;">

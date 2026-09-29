@@ -74,12 +74,18 @@ class AuthController {
         RateLimiter::clear($rateKey);
 
         // 4. Two-Factor Authentication (OTP) Check
-        // If 2FA is enabled on user or if OTP is required for security
-        $requireOtp = ($user->two_factor_enabled == 1) || (Setting::get('auth_require_otp_all', '0') === '1');
+        // High security: require OTP verification if unverified, 2FA enabled, or system security active
+        $requireOtp = ($user->two_factor_enabled == 1)
+            || empty($user->email_verified_at)
+            || (Setting::get('auth_require_otp_all', '1') === '1');
+
         if ($requireOtp) {
             Session::set('auth_pending_user_id', $user->id);
-            OtpService::generate($user);
-            Session::flash('info', 'تم التحقق من بياناتك. يرجى إدخال رمز الأمان (OTP) المرسل إلى بريدك الإلكتروني لإتمام الدخول.');
+            OtpService::generate($user, [
+                'ip' => $request->ip(),
+                'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
+            ]);
+            Session::flash('info', 'تم التحقق من صحة بياناتك. 🔒 تم إرسال كود الأمان (OTP) إلى بريدك على Gmail لإتمام الدخول.');
             return redirect(url('auth/verify-otp'));
         }
 
@@ -214,8 +220,9 @@ class AuthController {
             'phone' => htmlspecialchars($data['phone']),
             'password' => password_hash($data['password'], PASSWORD_DEFAULT),
             'role' => 'customer',
-            'status' => 'active',
+            'status' => 'pending_verification',
             'is_approved' => $requiresApproval ? 0 : 1,
+            'email_verified_at' => null,
             'affiliate_code' => $affiliateCode
         ]);
 
@@ -226,9 +233,15 @@ class AuthController {
             return redirect(url('login'));
         }
 
-        Auth::getInstance()->login($user);
-        Session::flash('success', __('messages.account_created_success'));
-        return redirect(url('account/dashboard'));
+        // High Security Protocol: Verify Email Ownership with OTP
+        Session::set('auth_pending_user_id', $user->id);
+        OtpService::generate($user, [
+            'ip' => $request->ip(),
+            'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
+        ]);
+
+        Session::flash('success', 'تم إنشاء حسابك بنجاح! 🔒 أرسلنا كود التحقق الأمني المكون من 6 أرقام إلى بريدك الإلكتروني (' . OtpService::maskEmail($user->email) . '). يرجى إدخال الكود لتأكيد ملكية البريد وإتمام الدخول.');
+        return redirect(url('auth/verify-otp'));
     }
 
     public function logout() {
@@ -476,8 +489,51 @@ class AuthController {
             return redirect(url('auth/verify-otp'));
         }
 
-        OtpService::generate($user);
+        OtpService::generate($user, [
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
+        ]);
         Session::flash('success', 'تم إرسال رمز تحقق أمني جديد إلى بريدك الإلكتروني بنجاح.');
+        return redirect(url('auth/verify-otp'));
+    }
+
+    public function requestOtpLogin(Request $request) {
+        $ip = $request->ip();
+        $rateKey = "otp_request:ip:{$ip}";
+
+        if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+            $seconds = RateLimiter::availableIn($rateKey);
+            Session::flash('error', "تم تجاوز الحد المسموح به لطلبات الأمان. يرجى الانتظار {$seconds} ثانية.");
+            return redirect(url('login'));
+        }
+
+        $email = strtolower(trim((string)$request->input('email')));
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Session::flash('error', 'يرجى إدخال بريد إلكتروني صحيح.');
+            return redirect(url('login'));
+        }
+
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            RateLimiter::hit($rateKey, 600);
+            Session::flash('error', 'هذا البريد الإلكتروني غير مسجل لدينا. يمكنك إنشاء حساب جديد خلال 30 ثانية.');
+            return redirect(url('register'));
+        }
+
+        if ($user->status === 'inactive' || $user->status === 'banned') {
+            Session::flash('error', 'هذا الحساب مجمد من قبل الإدارة. يرجى التواصل مع الدعم الفني.');
+            return redirect(url('login'));
+        }
+
+        RateLimiter::hit($rateKey, 60);
+
+        Session::set('auth_pending_user_id', $user->id);
+        OtpService::generate($user, [
+            'ip' => $request->ip(),
+            'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
+        ]);
+
+        Session::flash('info', 'تم إرسال كود التحقق الأمني (OTP) إلى بريدك الإلكتروني (' . OtpService::maskEmail($user->email) . '). يرجى إدخال الرمز لتسجيل الدخول.');
         return redirect(url('auth/verify-otp'));
     }
 
