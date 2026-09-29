@@ -45,34 +45,36 @@
         </div>
 
         <!-- Items Table -->
-        <table style="width:100%; border-collapse:collapse; text-align:inherit; font-size:0.925rem; margin-bottom:2rem;">
-            <thead>
-                <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted); font-size:0.85rem;">
-                    <th style="padding:0.75rem 0.5rem;"><?= __('messages.product') ?></th>
-                    <th style="padding:0.75rem 0.5rem; text-align:center;"><?= __('messages.price') ?></th>
-                    <th style="padding:0.75rem 0.5rem; text-align:center;"><?= __('messages.quantity') ?></th>
-                    <th style="padding:0.75rem 0.5rem; text-align:center;"><?= __('messages.subtotal') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($items as $item): ?>
-                    <tr style="border-bottom:1px solid var(--border-subtle);">
-                        <td style="padding:1rem 0.5rem;">
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <img src="<?= asset('uploads/products/' . ($item->product_image ?: 'default-product.png')) ?>" style="width:44px; height:44px; object-fit:cover; border-radius:6px; background:#070a12;">
-                                <div>
-                                    <strong style="display:block; color:#fff;"><?= htmlspecialchars($item->product_name) ?></strong>
-                                    <span style="font-size:0.75rem; color:var(--text-muted);">SKU: <?= $item->sku ?></span>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="padding:1rem 0.5rem; text-align:center; color:#fff;"><?= format_price($item->unit_price, $order->currency_code) ?></td>
-                        <td style="padding:1rem 0.5rem; text-align:center; font-weight:700; color:#fff;"><?= $item->quantity ?></td>
-                        <td style="padding:1rem 0.5rem; text-align:center; font-weight:800; color:var(--color-primary);"><?= format_price($item->subtotal, $order->currency_code) ?></td>
+        <div class="table-responsive">
+            <table style="width:100%; border-collapse:collapse; text-align:inherit; font-size:0.925rem; margin-bottom:1rem;">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted); font-size:0.85rem;">
+                        <th style="padding:0.75rem 0.5rem;"><?= __('messages.product') ?></th>
+                        <th style="padding:0.75rem 0.5rem; text-align:center;"><?= __('messages.price') ?></th>
+                        <th style="padding:0.75rem 0.5rem; text-align:center;"><?= __('messages.quantity') ?></th>
+                        <th style="padding:0.75rem 0.5rem; text-align:center;"><?= __('messages.subtotal') ?></th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($items as $item): ?>
+                        <tr style="border-bottom:1px solid var(--border-subtle);">
+                            <td style="padding:1rem 0.5rem;">
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <img src="<?= asset('uploads/products/' . ($item->product_image ?: 'default-product.png')) ?>" style="width:44px; height:44px; object-fit:cover; border-radius:6px; background:#070a12;">
+                                    <div>
+                                        <strong style="display:block; color:#fff;"><?= htmlspecialchars($item->product_name) ?></strong>
+                                        <span style="font-size:0.75rem; color:var(--text-muted);">SKU: <?= $item->sku ?></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding:1rem 0.5rem; text-align:center; color:#fff;"><?= format_price($item->unit_price, $order->currency_code) ?></td>
+                            <td style="padding:1rem 0.5rem; text-align:center; font-weight:700; color:#fff;"><?= $item->quantity ?></td>
+                            <td style="padding:1rem 0.5rem; text-align:center; font-weight:800; color:var(--color-primary);"><?= format_price($item->subtotal, $order->currency_code) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Totals Summary -->
         <div style="max-width:320px; margin-right:auto; display:flex; flex-direction:column; gap:8px; font-size:0.95rem; border-top:1px solid var(--border-color); padding-top:1rem;">

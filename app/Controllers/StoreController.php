@@ -270,7 +270,7 @@ class StoreController {
 
         $data['shipping_cost'] = $shippingCost;
         $data['shipping_method_name'] = $shippingName;
-        $data['country'] = $request->input('country', 'Saudi Arabia');
+        $data['country'] = $request->input('country', 'Algeria');
         $data['postal_code'] = $request->input('postal_code', '');
         $data['notes'] = $request->input('notes', '');
 

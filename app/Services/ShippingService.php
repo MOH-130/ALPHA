@@ -6,7 +6,7 @@ use App\Models\ShippingMethod;
 use App\Models\Setting;
 
 class ShippingService {
-    public static function getAvailableMethods(float $cartSubtotal = 0.0, string $country = 'Saudi Arabia'): array {
+    public static function getAvailableMethods(float $cartSubtotal = 0.0, string $country = 'Algeria'): array {
         $methods = ShippingMethod::where('status', 'active')->orderBy('sort_order', 'ASC')->get();
         if (empty($methods)) {
             // Fallback default shipping

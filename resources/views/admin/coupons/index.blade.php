@@ -67,8 +67,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">الحد الأدنى لقيمة الطلب (SAR)</label>
-                    <input type="number" step="0.01" name="min_order_amount" class="form-control" placeholder="100">
+                    <label class="form-label">الحد الأدنى لقيمة الطلب (د.ج - DZD)</label>
+                    <input type="number" step="0.01" name="min_order_amount" class="form-control" placeholder="1000">
                 </div>
 
                 <div class="form-group">

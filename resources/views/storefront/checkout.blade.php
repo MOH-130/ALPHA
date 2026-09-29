@@ -8,7 +8,7 @@
 
     <form action="<?= url('checkout/place-order') ?>" method="POST">
         <?= csrf_field() ?>
-        <div style="display:grid; grid-template-columns: 1fr 420px; gap:2.5rem; align-items:start;">
+        <div class="checkout-layout">
             
             <!-- Left: Checkout Details (Customer, Address, Shipping, Payment) -->
             <div style="display:flex; flex-direction:column; gap:2rem;">
@@ -108,6 +108,21 @@
                                 <div style="background:rgba(0,0,0,0.3); border:1px dashed var(--border-color); border-radius:8px; padding:0.85rem; margin-top:0.75rem; font-size:0.85rem; line-height:1.7; color:#fff;">
                                     <strong>رقم الحساب CCP:</strong> <code style="color:var(--color-primary); font-size:0.95rem; font-weight:800;">12345678 المفتاح 90</code><br>
                                     <strong>الاسم:</strong> Alpha Gaming Shop Algérie
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- Binance Pay / USDT P2P Option -->
+                        <label style="display:flex; align-items:flex-start; gap:12px; padding:1.25rem; border:1px solid rgba(245, 158, 11, 0.4); border-radius:var(--btn-radius); cursor:pointer; background:rgba(245, 158, 11, 0.06);">
+                            <input type="radio" name="payment_method" value="binance_pay" style="margin-top:4px; accent-color:#f59e0b;">
+                            <div style="flex:1;">
+                                <div style="font-weight:800; font-size:1.05rem; margin-bottom:4px; color:#fff;">🪙 الدفع بالعملات الرقمية (Binance Pay / USDT P2P)</div>
+                                <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.6;">
+                                    تحويل فوري بدون عمولة عبر حساب Binance Pay (USDT) بسعر الصرف الموازي المعتمد.
+                                </div>
+                                <div style="background:rgba(0,0,0,0.3); border:1px dashed rgba(245, 158, 11, 0.4); border-radius:8px; padding:0.85rem; margin-top:0.75rem; font-size:0.85rem; line-height:1.7; color:#fff;">
+                                    <strong>Binance Pay ID:</strong> <code style="color:#f59e0b; font-size:0.95rem; font-weight:800;">987654321</code><br>
+                                    <strong>الشبكة المدعومة:</strong> USDT (TRC20 / BEP20)
                                 </div>
                             </div>
                         </label>

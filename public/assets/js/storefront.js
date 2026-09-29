@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     initInteractiveCursor();
+    initMobileNavigation();
     initLiveSearch();
     initCartHandlers();
     initWishlistAndCompare();
@@ -11,6 +12,75 @@ document.addEventListener('DOMContentLoaded', function() {
     initCopyButtons();
     initWelcomeModal();
 });
+
+// ================= MOBILE NAVIGATION DRAWER =================
+function toggleMobileNav() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const toggleBtn = document.getElementById('mobileMenuToggle');
+    if (!drawer || !overlay) return;
+
+    if (drawer.classList.contains('active')) {
+        closeMobileNav();
+    } else {
+        openMobileNav();
+    }
+}
+
+function openMobileNav() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const toggleBtn = document.getElementById('mobileMenuToggle');
+    if (!drawer || !overlay) return;
+
+    drawer.classList.add('active');
+    overlay.classList.add('active');
+    if (toggleBtn) toggleBtn.classList.add('active');
+    document.body.classList.add('mobile-nav-open');
+}
+
+function closeMobileNav() {
+    const drawer = document.getElementById('mobileNavDrawer');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const toggleBtn = document.getElementById('mobileMenuToggle');
+    if (!drawer || !overlay) return;
+
+    drawer.classList.remove('active');
+    overlay.classList.remove('active');
+    if (toggleBtn) toggleBtn.classList.remove('active');
+    document.body.classList.remove('mobile-nav-open');
+}
+
+function initMobileNavigation() {
+    // Close on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMobileNav();
+        }
+    });
+
+    // Close on window resize if scaled up to desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 992) {
+            closeMobileNav();
+        }
+    });
+}
+
+function toggleCatalogFilters() {
+    const sidebar = document.getElementById('catalogFiltersSidebar');
+    const icon = document.getElementById('filterToggleIcon');
+    if (!sidebar) return;
+
+    const isShown = sidebar.classList.contains('active');
+    if (isShown) {
+        sidebar.classList.remove('active');
+        if (icon) icon.textContent = '▼';
+    } else {
+        sidebar.classList.add('active');
+        if (icon) icon.textContent = '▲';
+    }
+}
 
 // ================= 1. INTERACTIVE GAMER MOUSE CURSOR =================
 function initInteractiveCursor() {

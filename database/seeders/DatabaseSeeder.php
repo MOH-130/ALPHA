@@ -67,32 +67,32 @@ class DatabaseSeeder {
             'status' => 'active'
         ]);
         Currency::create([
+            'code' => 'USDT',
+            'name_ar' => 'تيذر رقمي (Binance P2P)',
+            'name_en' => 'Tether USDT (P2P)',
+            'symbol_ar' => 'USDT',
+            'symbol_en' => 'USDT',
+            'exchange_rate' => 0.0040, // 1 USDT = 250.00 DZD (Binance & Bybit P2P parallel market)
+            'is_default' => 0,
+            'status' => 'active'
+        ]);
+        Currency::create([
             'code' => 'USD',
-            'name_ar' => 'دولار أمريكي',
+            'name_ar' => 'دولار أمريكي (سوق موازي)',
             'name_en' => 'US Dollar',
             'symbol_ar' => '$',
             'symbol_en' => '$',
-            'exchange_rate' => 0.0074,
+            'exchange_rate' => 0.0040, // 1 USD = 250.00 DZD (Parallel Black Market)
             'is_default' => 0,
             'status' => 'active'
         ]);
         Currency::create([
             'code' => 'EUR',
-            'name_ar' => 'يورو أوروبي',
-            'name_en' => 'Euro',
+            'name_ar' => 'يورو أوروبي (السكوار)',
+            'name_en' => 'Euro (Square Port-Saïd)',
             'symbol_ar' => '€',
             'symbol_en' => '€',
-            'exchange_rate' => 0.0068,
-            'is_default' => 0,
-            'status' => 'active'
-        ]);
-        Currency::create([
-            'code' => 'SAR',
-            'name_ar' => 'ريال سعودي',
-            'name_en' => 'Saudi Riyal',
-            'symbol_ar' => 'ر.س',
-            'symbol_en' => 'SAR',
-            'exchange_rate' => 0.0278,
+            'exchange_rate' => 0.0037, // 1 EUR = 270.00 DZD (Square Port-Saïd Market)
             'is_default' => 0,
             'status' => 'active'
         ]);

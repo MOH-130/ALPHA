@@ -13,6 +13,6 @@ return [
     ],
     'tax_default_percentage' => 0.0,
     'free_shipping_threshold' => 0.0,
-    'supported_currencies' => ['DZD', 'USD', 'EUR', 'SAR'],
+    'supported_currencies' => ['DZD', 'USDT', 'USD', 'EUR'],
     'supported_languages' => ['ar', 'en'],
 ];

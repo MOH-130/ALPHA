@@ -199,10 +199,25 @@
                     </div>
                 </div>
 
-                <div style="background:rgba(0, 0, 0, 0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.75rem 1rem; margin-top:1rem; font-size:0.8rem; color:#94a3b8;">
-                    <strong>Authorized Redirect URI الواجب إدخالها في Google Console:</strong>
-                    <br>
-                    <code style="color:#00ff88; font-size:0.85rem; word-break:break-all;"><?= htmlspecialchars($googleRedirectUri) ?></code>
+                <div style="background:rgba(0, 0, 0, 0.4); border:1px solid rgba(0, 210, 255, 0.2); border-radius:10px; padding:1.1rem; margin-top:1.25rem; font-size:0.825rem; color:#94a3b8;">
+                    <div style="margin-bottom:0.75rem;">
+                        <strong style="color:#e2e8f0; font-size:0.875rem;">الرابط المحسوب للبيئة الحالية (Active Redirect URI):</strong>
+                        <div style="margin-top:4px;">
+                            <code style="color:#00ff88; font-size:0.85rem; word-break:break-all; background:rgba(0,0,0,0.5); padding:3px 8px; border-radius:4px; font-weight:700;"><?= htmlspecialchars($googleRedirectUri) ?></code>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:0.75rem;">
+                        <div style="color:#60a5fa; font-weight:800; margin-bottom:6px;">📋 الروابط الواجب إدخالها في Google Cloud Console لتعمل البيئتان معاً:</div>
+                        <div style="font-family:monospace; font-size:0.8rem; direction:ltr; text-align:left; background:rgba(10,15,26,0.8); padding:8px 12px; border-radius:6px; line-height:1.7;">
+                            <div style="color:#94a3b8; font-size:0.75rem; font-weight:bold;"># Authorized redirect URIs:</div>
+                            <div><span style="color:#00ff88;">https://alpha-efxl.onrender.com/auth/google/callback</span> <span style="color:#64748b;">(Production Render)</span></div>
+                            <div><span style="color:#facc15;">http://localhost:8000/auth/google/callback</span> <span style="color:#64748b;">(Local Dev)</span></div>
+                            <div style="color:#94a3b8; font-size:0.75rem; font-weight:bold; margin-top:6px;"># Authorized JavaScript origins:</div>
+                            <div><span style="color:#00d2ff;">https://alpha-efxl.onrender.com</span></div>
+                            <div><span style="color:#38bdf8;">http://localhost:8000</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

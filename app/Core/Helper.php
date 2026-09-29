@@ -140,9 +140,39 @@ if (!function_exists('old')) {
     }
 }
 
+if (!function_exists('base_url')) {
+    function base_url(): string {
+        $appUrl = env('APP_URL');
+        if (empty($appUrl) && isset($_ENV['APP_URL'])) {
+            $appUrl = $_ENV['APP_URL'];
+        }
+        if (empty($appUrl)) {
+            $appUrl = config('app.url');
+        }
+        if (!empty($appUrl) && $appUrl !== 'http://localhost:8000') {
+            return rtrim($appUrl, '/');
+        }
+
+        // Check if incoming request is from a public host or behind proxy (e.g. Render)
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+        $isLocalHost = empty($host) || str_contains($host, 'localhost') || str_contains($host, '127.0.0.1');
+
+        if (!empty($host) && !$isLocalHost) {
+            $isHttps = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+                || (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on')
+                || (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+            $scheme = $isHttps ? 'https' : 'http';
+            return "{$scheme}://{$host}";
+        }
+
+        return rtrim($appUrl ?: 'http://localhost:8000', '/');
+    }
+}
+
 if (!function_exists('asset')) {
     function asset($path) {
-        $baseUrl = rtrim(config('app.url', ''), '/');
+        $baseUrl = base_url();
         $path = ltrim($path, '/');
         return $baseUrl . '/' . $path;
     }
@@ -150,7 +180,7 @@ if (!function_exists('asset')) {
 
 if (!function_exists('url')) {
     function url($path = '', $params = []) {
-        $baseUrl = rtrim(config('app.url', ''), '/');
+        $baseUrl = base_url();
         $path = ltrim($path, '/');
         $url = $baseUrl . '/' . $path;
         if (!empty($params)) {

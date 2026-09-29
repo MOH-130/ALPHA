@@ -54,9 +54,29 @@ class Request {
         return $path === '' ? '/' : $path;
     }
 
+    public function isHttps(): bool {
+        if (!empty($this->server['HTTPS']) && strtolower($this->server['HTTPS']) !== 'off') {
+            return true;
+        }
+        if (!empty($this->server['HTTP_X_FORWARDED_PROTO']) && strtolower($this->server['HTTP_X_FORWARDED_PROTO']) === 'https') {
+            return true;
+        }
+        if (!empty($this->server['HTTP_X_FORWARDED_SSL']) && strtolower($this->server['HTTP_X_FORWARDED_SSL']) === 'on') {
+            return true;
+        }
+        if (!empty($this->server['SERVER_PORT']) && (int)$this->server['SERVER_PORT'] === 443) {
+            return true;
+        }
+        $appUrl = env('APP_URL') ?? ($_ENV['APP_URL'] ?? '');
+        if (is_string($appUrl) && str_starts_with($appUrl, 'https://')) {
+            return true;
+        }
+        return false;
+    }
+
     public function url(): string {
-        $scheme = (isset($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $this->server['HTTP_HOST'] ?? 'localhost';
+        $scheme = $this->isHttps() ? 'https' : 'http';
+        $host = $this->server['HTTP_X_FORWARDED_HOST'] ?? ($this->server['HTTP_HOST'] ?? 'localhost');
         return $scheme . '://' . $host . ($this->server['REQUEST_URI'] ?? '/');
     }
 

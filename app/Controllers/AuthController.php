@@ -286,35 +286,50 @@ class AuthController {
     }
 
     public function googleCallback(Request $request) {
+        $oauthError = $request->getQuery('error');
+        if (!empty($oauthError)) {
+            // Clean up pending state from session
+            GoogleAuthService::verifyState($request->getQuery('state'));
+            $msg = ($oauthError === 'access_denied')
+                ? 'تم إلغاء عملية تسجيل الدخول بحساب Google من قبلك.'
+                : 'حدث خطأ أثناء المصادقة مع Google: ' . htmlspecialchars($oauthError);
+            Session::flash('error', $msg);
+            return redirect(url('login'));
+        }
+
         $state = $request->getQuery('state');
         if (!GoogleAuthService::verifyState($state)) {
-            Session::flash('error', 'فشلت عملية التحقق الأمني لمصادقة Google (CSRF State Mismatch). يرجى إعادة المحاولة.');
+            Session::flash('error', 'فشلت عملية التحقق الأمني لمصادقة Google (CSRF State Mismatch). يرجى إعادة المحاولة من جديد.');
             return redirect(url('login'));
         }
 
         $code = $request->getQuery('code');
         if (empty($code)) {
-            $err = $request->getQuery('error', 'access_denied');
-            Session::flash('error', "تم إلغاء تسجيل الدخول عبر Google: {$err}");
+            Session::flash('error', 'لم يتم استلام رمز التفويض (Authorization Code) من خادم Google.');
             return redirect(url('login'));
         }
 
         $tokens = GoogleAuthService::exchangeCodeForTokens($code);
         if (!$tokens || empty($tokens['access_token'])) {
-            Session::flash('error', 'تعذر استبدال رمز التفويض مع خوادم Google. تحقق من صحة إعدادات Client Secret.');
+            Session::flash('error', 'تعذر استبدال رمز التفويض مع خوادم Google. يرجى التحقق من إعدادات الربط أو المحاولة لاحقاً.');
             return redirect(url('login'));
         }
 
         $userInfo = GoogleAuthService::fetchUserInfo($tokens['access_token']);
-        if (!$userInfo) {
-            Session::flash('error', 'تعذر استرجاع بيانات الحساب من Google. يرجى المحاولة لاحقاً.');
+        if (!$userInfo || empty($userInfo['id'])) {
+            Session::flash('error', 'تعذر استرجاع بيانات الحساب من Google.');
+            return redirect(url('login'));
+        }
+
+        if (isset($userInfo['verified']) && $userInfo['verified'] === false) {
+            Session::flash('error', 'بريد Google الخاص بك غير مؤكد من قبل شركة Google. يرجى تأكيد بريدك أولاً.');
             return redirect(url('login'));
         }
 
         $user = GoogleAuthService::findOrCreateUser($userInfo);
 
         if ($user->status === 'inactive' || $user->status === 'banned') {
-            Session::flash('error', 'هذا الحساب محظور من الاستخدام.');
+            Session::flash('error', 'هذا الحساب معطل أو محظور من الاستخدام.');
             return redirect(url('login'));
         }
 

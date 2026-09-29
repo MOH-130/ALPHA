@@ -25,8 +25,47 @@ class GoogleAuthService {
     }
 
     public static function getRedirectUri(): string {
-        $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? '127.0.0.1:8000';
+        // 1. Check incoming request headers for HTTPS (supports Render reverse proxy & SSL termination)
+        $isHttps = false;
+        if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+            $isHttps = true;
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+            $isHttps = true;
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') {
+            $isHttps = true;
+        } elseif (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443) {
+            $isHttps = true;
+        }
+
+        // 2. Check if request host is live public host (e.g. alpha-efxl.onrender.com)
+        $hostHeader = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+        $isLocalHostHeader = empty($hostHeader) || str_contains($hostHeader, 'localhost') || str_contains($hostHeader, '127.0.0.1');
+
+        if (!empty($hostHeader) && !$isLocalHostHeader) {
+            $scheme = $isHttps ? 'https' : 'http';
+            return "{$scheme}://{$hostHeader}/auth/google/callback";
+        }
+
+        // 3. Fall back to APP_URL from .env or config
+        $appUrl = env('APP_URL');
+        if (empty($appUrl) && isset($_ENV['APP_URL'])) {
+            $appUrl = $_ENV['APP_URL'];
+        }
+        if (empty($appUrl) && function_exists('config')) {
+            $appUrl = config('app.url');
+        }
+
+        if (!empty($appUrl) && is_string($appUrl)) {
+            $cleanUrl = rtrim(trim($appUrl), '/');
+            if ($isHttps && str_starts_with($cleanUrl, 'http://')) {
+                $cleanUrl = 'https://' . substr($cleanUrl, 7);
+            }
+            return "{$cleanUrl}/auth/google/callback";
+        }
+
+        // 4. Default fallback for local environment
+        $scheme = $isHttps ? 'https' : 'http';
+        $host = !empty($hostHeader) ? $hostHeader : 'localhost:8000';
         return "{$scheme}://{$host}/auth/google/callback";
     }
 
@@ -38,7 +77,7 @@ class GoogleAuthService {
 
     public static function getAuthUrl(): string {
         Session::getInstance();
-        $state = bin2hex(random_bytes(16));
+        $state = bin2hex(random_bytes(32));
         $_SESSION['_google_oauth_state'] = $state;
 
         $params = [
@@ -159,7 +198,7 @@ class GoogleAuthService {
             'name' => $name,
             'email' => $email,
             'phone' => '',
-            'password' => password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT),
+            'password' => password_hash(bin2hex(random_bytes(32)), PASSWORD_DEFAULT),
             'role' => 'customer',
             'status' => 'active',
             'is_approved' => 1,

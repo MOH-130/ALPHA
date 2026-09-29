@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
-    <div style="display:grid; grid-template-columns: 260px 1fr; gap:2.5rem; align-items:start;">
+    <div class="account-layout">
         
         <!-- Sidebar -->
         <aside style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.5rem;">
@@ -25,7 +25,7 @@
             <?php if (empty($orders['data'])): ?>
                 <p style="color:var(--text-muted); text-align:center; padding:3rem 0;">لا توجد أي طلبات سابقة مسجلة في حسابك.</p>
             <?php else: ?>
-                <div style="overflow-x:auto;">
+                <div class="table-responsive">
                     <table style="width:100%; border-collapse:collapse; text-align:inherit; font-size:0.925rem;">
                         <thead>
                             <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted); font-size:0.825rem;">

@@ -628,24 +628,106 @@ class AdminController {
     // ================= CURRENCIES & LANGUAGES =================
     public function currencies(Request $request) {
         $currencies = Currency::all();
-        return view('admin.currencies.index', compact('currencies'));
+        $p2pRates = [
+            'binance_usdt' => Setting::get('p2p_binance_rate', '254.00'),
+            'bybit_usdt' => Setting::get('p2p_bybit_rate', '255.90'),
+            'average_usdt' => Setting::get('p2p_usdt_rate', '254.95'),
+            'eur_dzd' => Setting::get('p2p_eur_rate', '275.00'),
+            'last_synced' => Setting::get('p2p_last_synced_at', 'الآن'),
+            'source' => Setting::get('p2p_market_source', 'Binance P2P + Bybit P2P (Live Average)')
+        ];
+
+        return view('admin.currencies.index', compact('currencies', 'p2pRates'));
+    }
+
+    public function syncP2PRates(Request $request) {
+        try {
+            $rates = \App\Services\P2PExchangeRateService::syncCurrencies();
+            Session::flash('success', "تم بنجاح تحديث أسعار الصرف الحية من Binance P2P و Bybit! (1 USDT = {$rates['average_usdt']} د.ج | 1 EUR = {$rates['eur_dzd']} د.ج) 💱🇩🇿");
+        } catch (\Exception $e) {
+            Session::flash('error', 'حدث خطأ أثناء الاتصال بمزودي أسعار الصرف: ' . $e->getMessage());
+        }
+        return redirect(url('admin/currencies'));
+    }
+
+    public function updateCurrency(Request $request, int $id) {
+        $currency = Currency::find($id);
+        if (!$currency) {
+            Session::flash('error', 'العملة غير موجودة.');
+            return redirect(url('admin/currencies'));
+        }
+
+        $rateInDzd = (float)$request->input('rate_in_dzd');
+        if ($rateInDzd > 0 && $currency->code !== 'DZD') {
+            $exchangeRate = round(1.0 / $rateInDzd, 6);
+        } else {
+            $exchangeRate = (float)$request->input('exchange_rate', $currency->exchange_rate);
+        }
+
+        if ($currency->code === 'DZD') {
+            $exchangeRate = 1.0;
+        }
+
+        $currency->update([
+            'name_ar' => $request->input('name_ar', $currency->name_ar),
+            'name_en' => $request->input('name_en', $currency->name_en),
+            'symbol_ar' => $request->input('symbol_ar', $currency->symbol_ar),
+            'symbol_en' => $request->input('symbol_en', $currency->symbol_en),
+            'exchange_rate' => $exchangeRate,
+            'status' => $request->input('status', 'active')
+        ]);
+
+        ActivityLogger::log('Update Currency', 'Currencies', "Updated currency {$currency->code}: rate {$exchangeRate}");
+        Session::flash('success', "تم تحديث سعر صرف عملة {$currency->code} بنجاح!");
+        return redirect(url('admin/currencies'));
+    }
+
+    public function deleteCurrency(Request $request, int $id) {
+        $currency = Currency::find($id);
+        if (!$currency) {
+            return redirect(url('admin/currencies'));
+        }
+
+        if ($currency->is_default == 1 || $currency->code === 'DZD') {
+            Session::flash('error', 'لا يمكن حذف العملة الافتراضية والأساسية للمتجر (الدينار الجزائري).');
+            return redirect(url('admin/currencies'));
+        }
+
+        $currency->delete();
+        ActivityLogger::log('Delete Currency', 'Currencies', "Deleted currency {$currency->code}");
+        Session::flash('success', "تم حذف العملة {$currency->code} بنجاح.");
+        return redirect(url('admin/currencies'));
     }
 
     public function storeCurrency(Request $request) {
         $data = $request->validate([
             'code' => 'required',
             'name_ar' => 'required',
-            'name_en' => 'required',
-            'exchange_rate' => 'required|numeric'
+            'name_en' => 'required'
         ]);
 
+        $code = strtoupper(trim($data['code']));
+        $existing = Currency::where('code', $code)->first();
+        if ($existing) {
+            Session::flash('error', "العملة {$code} مضافة مسبقاً بالفعل.");
+            return redirect(url('admin/currencies'));
+        }
+
+        $rateInDzd = (float)$request->input('rate_in_dzd');
+        if ($rateInDzd > 0) {
+            $exchangeRate = round(1.0 / $rateInDzd, 6);
+        } else {
+            $exchangeRate = (float)$request->input('exchange_rate', 1.0);
+        }
+
         Currency::create([
-            'code' => strtoupper($data['code']),
+            'code' => $code,
             'name_ar' => $data['name_ar'],
             'name_en' => $data['name_en'],
-            'symbol_ar' => $request->input('symbol_ar', $data['code']),
-            'symbol_en' => $request->input('symbol_en', $data['code']),
-            'exchange_rate' => (float)$data['exchange_rate'],
+            'symbol_ar' => $request->input('symbol_ar', $code),
+            'symbol_en' => $request->input('symbol_en', $code),
+            'exchange_rate' => $exchangeRate,
+            'is_default' => 0,
             'status' => 'active'
         ]);
 
@@ -777,8 +859,9 @@ class AdminController {
         if ($request->input('google_client_id') !== null) {
             Setting::set('google_client_id', trim((string)$request->input('google_client_id')), 'oauth');
         }
-        if ($request->input('google_client_secret') !== null) {
-            Setting::set('google_client_secret', trim((string)$request->input('google_client_secret')), 'oauth');
+        $newSecret = trim((string)$request->input('google_client_secret', ''));
+        if (!empty($newSecret)) {
+            Setting::set('google_client_secret', $newSecret, 'oauth');
         }
 
         ActivityLogger::log('Update Admin Profile', 'Admin', "Admin updated profile credentials & security: {$admin->email}");

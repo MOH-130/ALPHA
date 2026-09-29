@@ -36,10 +36,20 @@
                     GOOGLE_CLIENT_ID="your_google_client_id"<br>
                     GOOGLE_CLIENT_SECRET="your_google_client_secret"
                 </div>
-                <div style="font-size: 0.8rem; color: #94a3b8;">
-                    <strong>Authorized Redirect URI:</strong>
-                    <br>
-                    <code style="color: #00ff88; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; word-break: break-all;"><?= htmlspecialchars($redirectUri) ?></code>
+                <div style="font-size: 0.825rem; color: #94a3b8; display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <strong style="color: #cbd5e1;">الرابط المحسوب للبيئة الحالية (Active Redirect URI):</strong>
+                        <div style="margin-top: 4px;">
+                            <code style="color: #00ff88; background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 4px; word-break: break-all; font-weight: 700;"><?= htmlspecialchars($redirectUri) ?></code>
+                        </div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px; font-size: 0.78rem; line-height: 1.5;">
+                        <span style="color: #60a5fa; font-weight: 700;">💡 أضف كلا الرابطين في Google Cloud Console ليعمل التطبيق محلياً وعلى Render معاً:</span>
+                        <div style="margin-top: 4px; direction: ltr; text-align: left; font-family: monospace;">
+                            <div style="color: #a5f3fc;">• Production: <span style="color:#00ff88;">https://alpha-efxl.onrender.com/auth/google/callback</span></div>
+                            <div style="color: #a5f3fc;">• Local: <span style="color:#facc15;">http://localhost:8000/auth/google/callback</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

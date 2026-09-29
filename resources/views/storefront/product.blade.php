@@ -12,7 +12,7 @@
     </div>
 
     <!-- Main Product Details Grid -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--card-radius); padding: 2.5rem; margin-bottom: 3rem; box-shadow: var(--shadow-lg);">
+    <div class="product-details-grid">
         
         <!-- Left: Image Gallery -->
         <div>

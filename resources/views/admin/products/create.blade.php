@@ -26,7 +26,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">السعر الأساسي (SAR) *</label>
+                        <label class="form-label">السعر الأساسي (د.ج - DZD) *</label>
                         <input type="number" step="0.01" name="price" class="form-control" required>
                     </div>
                     <div class="form-group">

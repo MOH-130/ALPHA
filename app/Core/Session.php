@@ -7,9 +7,28 @@ class Session {
 
     public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
+            $isHttps = false;
+            if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+                $isHttps = true;
+            } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+                $isHttps = true;
+            } elseif (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') {
+                $isHttps = true;
+            } elseif (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443) {
+                $isHttps = true;
+            } else {
+                $appUrl = env('APP_URL') ?? ($_ENV['APP_URL'] ?? '');
+                if (is_string($appUrl) && str_starts_with($appUrl, 'https://')) {
+                    $isHttps = true;
+                }
+            }
+
             @ini_set('session.cookie_httponly', '1');
             @ini_set('session.use_only_cookies', '1');
             @ini_set('session.cookie_samesite', 'Lax');
+            if ($isHttps) {
+                @ini_set('session.cookie_secure', '1');
+            }
             session_start();
         }
     }

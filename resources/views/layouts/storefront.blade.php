@@ -93,7 +93,7 @@
                     <select onchange="location.href='<?= url('currency') ?>/' + this.value" style="background:#131c2e; color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:4px; padding:2px 6px; font-size:0.825rem; cursor:pointer;">
                         <?php foreach (\App\Services\CurrencyService::getAllActive() as $curr): ?>
                             <option value="<?= $curr->code ?>" <?= current_currency()->code === $curr->code ? 'selected' : '' ?> style="background:#0f1626; color:#fff;">
-                                <?= $curr->code ?> (<?= is_rtl() ? $curr->symbol_ar : $curr->symbol_en ?>)
+                                <?= $curr->code ?> (<?= is_rtl() ? $curr->name_ar : $curr->name_en ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -152,12 +152,19 @@
     <!-- Main Header -->
     <header class="main-header">
         <div class="container header-inner">
+            <!-- Mobile Menu Toggle Button (Visible only on mobile/tablet) -->
+            <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileNav()" aria-label="Toggle Navigation Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+
             <!-- Brand Logo -->
             <a href="<?= url('/') ?>" class="store-logo">
                 <div class="logo-badge">🎮</div>
-                <div style="display:flex; flex-direction:column;">
-                    <span style="font-weight:900; font-size:1.35rem; line-height:1.1; letter-spacing:-0.5px; background: linear-gradient(135deg, #ffffff, #00d2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><?= app_setting('site_name', 'Alpha Gaming Shop') ?></span>
-                    <span style="font-size:0.7rem; font-weight:700; color:var(--color-secondary); letter-spacing:0.5px; text-transform:uppercase;">Official Gaming Store 🇩🇿</span>
+                <div class="logo-text-wrap">
+                    <span class="logo-title"><?= app_setting('site_name', 'Alpha Gaming Shop') ?></span>
+                    <span class="logo-subtitle">Official Gaming Store 🇩🇿</span>
                 </div>
             </a>
 
@@ -172,51 +179,143 @@
 
             <!-- Header Actions -->
             <div class="header-actions">
-                <a href="<?= url('wishlist') ?>" class="header-action-btn" title="<?= __('messages.my_wishlist') ?>">
+                <a href="<?= url('wishlist') ?>" class="header-action-btn header-wishlist-btn" title="<?= __('messages.my_wishlist') ?>">
                     <span>❤️</span>
                     <span class="action-label" style="display:none;"><?= __('messages.my_wishlist') ?></span>
                 </a>
 
-                <a href="<?= url('compare') ?>" class="header-action-btn" title="<?= __('messages.compare_products') ?>">
+                <a href="<?= url('compare') ?>" class="header-action-btn header-compare-btn" title="<?= __('messages.compare_products') ?>">
                     <span>⚖️</span>
                 </a>
 
-                <a href="<?= url('cart') ?>" class="header-action-btn" style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(0, 119, 255, 0.2)); border-color: rgba(0, 210, 255, 0.4); color:#ffffff;">
+                <a href="<?= url('cart') ?>" class="header-action-btn header-cart-btn" style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(0, 119, 255, 0.2)); border-color: rgba(0, 210, 255, 0.4); color:#ffffff;">
                     <span>🛒</span>
-                    <span style="font-weight:700;"><?= __('messages.cart') ?></span>
+                    <span class="cart-label" style="font-weight:700;"><?= __('messages.cart') ?></span>
                     <span class="badge-count header-cart-badge" style="<?= \App\Services\CartService::count() > 0 ? '' : 'display:none;' ?>"><?= \App\Services\CartService::count() ?></span>
                 </a>
 
-                <?php if (auth()->check()): ?>
-                    <a href="<?= auth()->isAdmin() ? url('admin/dashboard') : url('account/dashboard') ?>" class="btn btn-outline btn-sm">
-                        <span>👤 <?= auth()->user()->name ?></span>
-                    </a>
-                    <a href="<?= url('logout') ?>" class="btn btn-outline btn-sm" style="color:var(--color-danger); border-color:rgba(239,68,68,0.3);">
-                        🚪
-                    </a>
-                <?php else: ?>
-                    <a href="<?= url('login') ?>" class="btn btn-outline btn-sm">
-                        <?= __('messages.login') ?>
-                    </a>
-                    <a href="<?= url('register') ?>" class="btn btn-primary btn-sm">
-                        <?= __('messages.register') ?>
-                    </a>
-                <?php endif; ?>
+                <div class="header-auth-buttons">
+                    <?php if (auth()->check()): ?>
+                        <a href="<?= auth()->isAdmin() ? url('admin/dashboard') : url('account/dashboard') ?>" class="btn btn-outline btn-sm user-btn">
+                            <span>👤 <?= auth()->user()->name ?></span>
+                        </a>
+                        <a href="<?= url('logout') ?>" class="btn btn-outline btn-sm logout-btn" style="color:var(--color-danger); border-color:rgba(239,68,68,0.3);" title="<?= __('auth.logout') ?>">
+                            🚪
+                        </a>
+                    <?php else: ?>
+                        <a href="<?= url('login') ?>" class="btn btn-outline btn-sm login-btn">
+                            <?= __('messages.login') ?>
+                        </a>
+                        <a href="<?= url('register') ?>" class="btn btn-primary btn-sm register-btn">
+                            <?= __('messages.register') ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Navigation Menu Bar -->
-    <nav class="main-nav">
+    <!-- Mobile Navigation Drawer Overlay & Sidebar -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav()"></div>
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <div class="mobile-drawer-header">
+            <div class="store-logo">
+                <div class="logo-badge" style="width:34px; height:34px; font-size:1rem;">🎮</div>
+                <span style="font-weight:900; font-size:1.15rem; color:#fff;"><?= app_setting('site_name', 'Alpha Gaming Shop') ?></span>
+            </div>
+            <button type="button" class="mobile-drawer-close" onclick="closeMobileNav()" aria-label="Close Navigation">&times;</button>
+        </div>
+
+        <div class="mobile-drawer-body">
+            <!-- Mobile User Quick Card -->
+            <div class="mobile-user-card">
+                <?php if (auth()->check()): ?>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="mobile-user-avatar">👤</div>
+                        <div style="overflow:hidden;">
+                            <div style="font-weight:800; color:#fff; font-size:0.95rem; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;"><?= htmlspecialchars(auth()->user()->name) ?></div>
+                            <div style="font-size:0.75rem; color:#00ff88; font-weight:700;">عضو VIP نشط 🎮</div>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
+                        <a href="<?= auth()->isAdmin() ? url('admin/dashboard') : url('account/dashboard') ?>" class="btn btn-outline btn-sm" style="font-size:0.8rem;">
+                            <span>📊 لوحتي</span>
+                        </a>
+                        <a href="<?= url('logout') ?>" class="btn btn-outline btn-sm" style="font-size:0.8rem; color:#ef4444; border-color:rgba(239,68,68,0.3);">
+                            <span>🚪 خروج</span>
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <p style="font-size:0.825rem; color:#94a3b8; margin-bottom:10px;">سجل دخولك لتسليم الألعاب الفوري والعروض الحصرية</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <a href="<?= url('login') ?>" class="btn btn-outline btn-sm" style="font-size:0.85rem; font-weight:800;">
+                            <span>👤 <?= __('messages.login') ?></span>
+                        </a>
+                        <a href="<?= url('register') ?>" class="btn btn-primary btn-sm" style="font-size:0.85rem; font-weight:800;">
+                            <span>💎 <?= __('messages.register') ?></span>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="mobile-nav-group-title">🧭 تصفح المتجر</div>
+            <ul class="mobile-nav-links">
+                <li><a href="<?= url('/') ?>" class="mobile-nav-item <?= ($_SERVER['REQUEST_URI'] == '/' || $_SERVER['REQUEST_URI'] == '') ? 'active' : '' ?>"><span>🏠</span> <span><?= __('messages.home') ?></span></a></li>
+                <li><a href="<?= url('shop') ?>" class="mobile-nav-item <?= strpos($_SERVER['REQUEST_URI'] ?? '', 'shop') !== false ? 'active' : '' ?>"><span>🛍️</span> <span><?= __('messages.shop') ?></span></a></li>
+                <li><a href="<?= url('shop?deals_only=1') ?>" class="mobile-nav-item" style="color:var(--color-accent); font-weight:800;"><span>🔥</span> <span><?= __('messages.deals') ?> (تخفيضات اليوم)</span></a></li>
+                
+                <div class="mobile-nav-group-title" style="margin-top:16px;">📁 تصنيفات الألعاب</div>
+                <?php 
+                $navCategories = \App\Models\Category::where('status', 'active')->where('parent_id', null)->orderBy('sort_order', 'ASC')->limit(6)->get();
+                foreach ($navCategories as $navCat): 
+                ?>
+                    <li><a href="<?= url('category/' . $navCat->slug) ?>" class="mobile-nav-item"><span>🎮</span> <span><?= $navCat->getNameAttribute() ?></span></a></li>
+                <?php endforeach; ?>
+
+                <div class="mobile-nav-group-title" style="margin-top:16px;">⚙️ خدمات وتتبع</div>
+                <li><a href="<?= url('cart') ?>" class="mobile-nav-item"><span>🛒</span> <span><?= __('messages.cart') ?> (<?= \App\Services\CartService::count() ?>)</span></a></li>
+                <li><a href="<?= url('wishlist') ?>" class="mobile-nav-item"><span>❤️</span> <span><?= __('messages.my_wishlist') ?></span></a></li>
+                <li><a href="<?= url('compare') ?>" class="mobile-nav-item"><span>⚖️</span> <span><?= __('messages.compare_products') ?></span></a></li>
+                <li><a href="<?= url('track-order') ?>" class="mobile-nav-item"><span>📍</span> <span><?= __('messages.track_order') ?></span></a></li>
+                <li><a href="<?= url('contact') ?>" class="mobile-nav-item"><span>✉️</span> <span><?= __('messages.contact') ?></span></a></li>
+            </ul>
+
+            <!-- Mobile Drawer Settings (Currency & Lang) -->
+            <div class="mobile-drawer-footer">
+                <div class="mobile-setting-row">
+                    <span>💱 العملة:</span>
+                    <select onchange="location.href='<?= url('currency') ?>/' + this.value" class="mobile-select-currency">
+                        <?php foreach (\App\Services\CurrencyService::getAllActive() as $curr): ?>
+                            <option value="<?= $curr->code ?>" <?= current_currency()->code === $curr->code ? 'selected' : '' ?>>
+                                <?= $curr->code ?> - <?= is_rtl() ? $curr->name_ar : $curr->name_en ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="mobile-setting-row" style="margin-top:10px;">
+                    <span>🌐 اللغة:</span>
+                    <a href="<?= url('lang/' . (current_locale() === 'ar' ? 'en' : 'ar')) ?>" style="color:#00d2ff; font-weight:800; font-size:0.85rem;">
+                        <?= current_locale() === 'ar' ? 'English (LTR)' : 'العربية (RTL)' ?>
+                    </a>
+                </div>
+
+                <a href="https://wa.me/213774444444" target="_blank" class="mobile-whatsapp-callout">
+                    <span>💬 تواصل واتساب VIP مباشر: +213 774 44 44 44</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu Bar (Desktop) -->
+    <nav class="main-nav desktop-only-nav">
         <div class="container">
             <ul class="nav-list">
                 <li><a href="<?= url('/') ?>" class="nav-link <?= ($_SERVER['REQUEST_URI'] == '/' || $_SERVER['REQUEST_URI'] == '') ? 'active' : '' ?>">🏠 <?= __('messages.home') ?></a></li>
                 <li><a href="<?= url('shop') ?>" class="nav-link <?= strpos($_SERVER['REQUEST_URI'] ?? '', 'shop') !== false ? 'active' : '' ?>">🛍️ <?= __('messages.shop') ?></a></li>
                 
-                <?php 
-                $navCategories = \App\Models\Category::where('status', 'active')->where('parent_id', null)->orderBy('sort_order', 'ASC')->limit(6)->get();
-                foreach ($navCategories as $navCat): 
-                ?>
+                <?php foreach ($navCategories as $navCat): ?>
                     <li><a href="<?= url('category/' . $navCat->slug) ?>" class="nav-link"><?= $navCat->getNameAttribute() ?></a></li>
                 <?php endforeach; ?>
 

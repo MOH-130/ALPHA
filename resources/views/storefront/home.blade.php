@@ -89,7 +89,7 @@
             </a>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1.25rem;">
+        <div class="categories-featured-grid">
             <?php foreach ($featuredCategories as $cat): ?>
                 <a href="<?= url('category/' . $cat->slug) ?>" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.5rem; text-align:center; transition:all 0.25s ease; display:flex; flex-direction:column; align-items:center;" onmouseover="this.style.borderColor='var(--color-primary)'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 210, 255, 0.15)';" onmouseout="this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                     <div style="width:60px; height:60px; background:rgba(0, 210, 255, 0.1); color:var(--color-primary); border:1px solid rgba(0, 210, 255, 0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.75rem; margin-bottom:1rem;">
@@ -104,7 +104,7 @@
 
     <!-- Flash Deals Section with Countdown -->
     <?php if (!empty($deals)): ?>
-    <section style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(249, 115, 22, 0.08) 100%), #0f1626; border: 1px solid rgba(239, 68, 68, 0.3); border-radius:var(--card-radius); padding:2.5rem; margin: 3.5rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <section class="flash-deals-banner">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
             <div>
                 <span style="background:linear-gradient(135deg, #ef4444, #f97316); color:#fff; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:6px; text-transform:uppercase;">🔥 LIMITED TIME PROMO</span>
@@ -112,7 +112,7 @@
             </div>
             
             <!-- Countdown Timer -->
-            <div style="display:flex; align-items:center; gap:8px;">
+            <div class="deal-timer-wrap">
                 <div style="background:#172238; border:1px solid rgba(255,255,255,0.1); color:var(--color-accent); padding:8px 14px; border-radius:10px; font-weight:800; font-size:1.1rem; text-align:center;">
                     <span id="deal-days">14</span><div style="font-size:0.65rem; color:var(--text-muted);">يوم</div>
                 </div>

@@ -23,7 +23,7 @@ function initSalesChart() {
             labels: labels,
             datasets: [
                 {
-                    label: 'إجمالي المبيعات (SAR)',
+                    label: 'إجمالي المبيعات (د.ج - DA)',
                     data: salesData,
                     borderColor: '#2563eb',
                     backgroundColor: 'rgba(37, 99, 235, 0.1)',

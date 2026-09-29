@@ -49,7 +49,7 @@ class OrderService {
             'customer_phone' => $data['phone'],
             'shipping_address' => $data['address'],
             'shipping_city' => $data['city'],
-            'shipping_country' => $data['country'] ?? 'Saudi Arabia',
+            'shipping_country' => $data['country'] ?? 'Algeria',
             'shipping_postal_code' => $data['postal_code'] ?? '',
             'subtotal' => $subtotal,
             'discount_amount' => $discount,

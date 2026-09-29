@@ -14,9 +14,9 @@
             <a href="<?= url('shop') ?>" class="btn btn-primary btn-lg"><?= __('messages.continue_shopping') ?> 🎮</a>
         </div>
     <?php else: ?>
-        <div style="display:grid; grid-template-columns: 1fr 380px; gap:2.5rem; align-items:start;">
+        <div class="cart-layout">
             <!-- Cart Items Table -->
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.5rem; overflow-x:auto; box-shadow: var(--shadow-sm);">
+            <div class="table-responsive" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.5rem; box-shadow: var(--shadow-sm);">
                 <table style="width:100%; border-collapse:collapse; text-align:inherit;">
                     <thead>
                         <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">

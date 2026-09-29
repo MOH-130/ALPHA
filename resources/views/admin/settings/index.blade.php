@@ -78,8 +78,8 @@
                         <input type="number" step="0.1" name="tax_percentage" class="form-control" value="<?= app_setting('tax_percentage', '15.0') ?>">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">الحد الأدنى للشحن المجاني (SAR)</label>
-                        <input type="number" step="0.1" name="free_shipping_threshold" class="form-control" value="<?= app_setting('free_shipping_threshold', '300.0') ?>">
+                        <label class="form-label">الحد الأدنى للشحن المجاني (د.ج - DZD)</label>
+                        <input type="number" step="0.1" name="free_shipping_threshold" class="form-control" value="<?= app_setting('free_shipping_threshold', '5000.0') ?>">
                     </div>
                 </div>
             </div>

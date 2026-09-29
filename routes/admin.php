@@ -70,6 +70,9 @@ Router::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'locale']]
     // Currencies & Languages
     Router::get('/currencies', [AdminController::class, 'currencies'])->name('admin.currencies');
     Router::post('/currencies/store', [AdminController::class, 'storeCurrency'])->name('admin.currencies.store');
+    Router::post('/currencies/sync-p2p', [AdminController::class, 'syncP2PRates'])->name('admin.currencies.sync_p2p');
+    Router::post('/currencies/{id}/update', [AdminController::class, 'updateCurrency'])->name('admin.currencies.update');
+    Router::get('/currencies/{id}/delete', [AdminController::class, 'deleteCurrency'])->name('admin.currencies.delete');
     Router::get('/languages', [AdminController::class, 'languages'])->name('admin.languages');
 
     // Pages
