@@ -56,7 +56,6 @@ Router::group(['middleware' => ['locale', 'visitor']], function() {
     // Google OAuth 2.0 Real Integration
     Router::get('/auth/google', [AuthController::class, 'googleRedirect'])->name('auth.google');
     Router::get('/auth/google/callback', [AuthController::class, 'googleCallback'])->name('auth.google.callback');
-    Router::post('/auth/google/simulate', [AuthController::class, 'googleSimulate'])->name('auth.google.simulate');
 
     // 2FA One-Time Password (OTP) Verification
     Router::get('/auth/verify-otp', [AuthController::class, 'showVerifyOtp'])->name('auth.otp.show');

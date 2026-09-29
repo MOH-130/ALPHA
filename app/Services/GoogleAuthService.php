@@ -72,7 +72,7 @@ class GoogleAuthService {
     public static function isConfigured(): bool {
         $id = self::getClientId();
         $sec = self::getClientSecret();
-        return !empty($id) && !empty($sec);
+        return !empty($id) && !empty($sec) && $id !== 'null' && $sec !== 'null' && !str_contains($id, 'YOUR_GOOGLE') && !str_contains($sec, 'YOUR_GOOGLE');
     }
 
     public static function getAuthUrl(): string {
@@ -162,22 +162,26 @@ class GoogleAuthService {
     }
 
     public static function findOrCreateUser(array $googleUser): User {
+        if (empty($googleUser['id']) || empty($googleUser['email']) || !filter_var($googleUser['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException('بيانات حساب Google المستلمة غير صالحة أو ينقصها المعرف الفريد والبريد الموثق.');
+        }
+
         $googleId = (string)$googleUser['id'];
         $email = strtolower(trim($googleUser['email']));
         $name = trim($googleUser['name'] ?? 'Google User');
         $avatar = $googleUser['avatar'] ?? null;
 
-        // 1. Try finding by Google ID
+        // 1. Try finding by Google Subject ID (Permanent immutable unique ID)
         $user = User::where('google_id', $googleId)->first();
         if ($user) {
             if (empty($user->avatar) && $avatar) {
                 $user->update(['avatar' => $avatar]);
             }
-            ActivityLogger::log('Google Login', 'Auth', "User {$user->email} logged in via Google OAuth");
+            ActivityLogger::log('Google Login', 'Auth', "User {$user->email} logged in via verified Google OAuth");
             return $user;
         }
 
-        // 2. Try finding by Email and link Google account
+        // 2. Try finding by verified Email and link Google account securely
         $user = User::where('email', $email)->first();
         if ($user) {
             $updates = ['google_id' => $googleId];
@@ -210,19 +214,5 @@ class GoogleAuthService {
 
         ActivityLogger::log('Google Register', 'Auth', "New user registered via Google OAuth: {$user->email}");
         return $user;
-    }
-
-    public static function simulateGoogleAccount(string $email, string $name = 'Google Gamer'): User {
-        $email = strtolower(trim($email));
-        $googleId = 'google_demo_' . md5($email);
-        $avatar = 'https://ui-avatars.com/api/?name=' . urlencode($name) . '&background=00d2ff&color=0a0e17&size=200';
-
-        return self::findOrCreateUser([
-            'id' => $googleId,
-            'email' => $email,
-            'name' => $name,
-            'avatar' => $avatar,
-            'verified' => true
-        ]);
     }
 }

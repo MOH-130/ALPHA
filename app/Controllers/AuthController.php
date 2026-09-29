@@ -292,10 +292,8 @@ class AuthController {
             return redirect(GoogleAuthService::getAuthUrl());
         }
 
-        // If credentials are not yet set in .env, display helpful interactive sandbox UI
-        return view('auth.google-sandbox', [
-            'redirectUri' => GoogleAuthService::getRedirectUri()
-        ]);
+        Session::flash('error', 'خدمة تسجيل الدخول بحساب Google غير مفعلة حالياً على هذا الخادم. يرجى تسجيل الدخول بالبريد الإلكتروني أو التواصل مع إدارة الموقع.');
+        return redirect(url('login'));
     }
 
     public function googleCallback(Request $request) {
@@ -346,6 +344,11 @@ class AuthController {
             return redirect(url('login'));
         }
 
+        if (isset($user->is_approved) && (int)$user->is_approved === 0) {
+            Session::flash('info', __('auth.registration_submitted_pending_approval'));
+            return redirect(url('login'));
+        }
+
         // Check if 2FA is enabled
         if ($user->two_factor_enabled == 1) {
             Session::set('auth_pending_user_id', $user->id);
@@ -355,6 +358,7 @@ class AuthController {
         }
 
         Auth::getInstance()->login($user);
+        ActivityLogger::log('User Google Login', 'Auth', "User logged in via Google: {$user->email}");
         Session::flash('success', "مرحباً بك يا {$user->name}! تم تسجيل الدخول بنجاح عبر حساب Google الفعلي.");
 
         $intended = Session::get('intended_url');
@@ -364,26 +368,6 @@ class AuthController {
         }
 
         return redirect(Auth::getInstance()->isAdmin() ? url('admin/dashboard') : url('account/dashboard'));
-    }
-
-    public function googleSimulate(Request $request) {
-        $data = $request->validate([
-            'email' => 'required|email',
-            'name' => 'required|min:2'
-        ]);
-
-        $user = GoogleAuthService::simulateGoogleAccount($data['email'], $data['name']);
-
-        if ($user->two_factor_enabled == 1) {
-            Session::set('auth_pending_user_id', $user->id);
-            OtpService::generate($user);
-            Session::flash('info', 'تم الدخول بحساب Google التجريبي. يرجى إدخال رمز OTP للمتابعة.');
-            return redirect(url('auth/verify-otp'));
-        }
-
-        Auth::getInstance()->login($user);
-        Session::flash('success', "تم تسجيل الدخول بنجاح عبر حساب Google المرتبط ({$user->email})!");
-        return redirect(url('account/dashboard'));
     }
 
     // ========================================================
