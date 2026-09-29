@@ -79,4 +79,9 @@ Router::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'locale']]
     // Visitors & Activity Logs
     Router::get('/visitors', [AdminController::class, 'visitors'])->name('admin.visitors');
     Router::get('/logs', [AdminController::class, 'logs'])->name('admin.logs');
+
+    // Admin Profile & Security
+    Router::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
+    Router::post('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
 });
+

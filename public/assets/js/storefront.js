@@ -391,3 +391,132 @@ function showToast(message, type = 'info') {
         setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
+
+// ================= 9. LUXURY CYBER SOUND SYNTHESIZER (Web Audio API) =================
+let audioCtx = null;
+function getAudioContext() {
+    if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    return audioCtx;
+}
+
+function isSfxEnabled() {
+    return localStorage.getItem('alpha_sfx_enabled') !== 'false';
+}
+
+function toggleSfx(btn) {
+    const current = isSfxEnabled();
+    const next = !current;
+    localStorage.setItem('alpha_sfx_enabled', next ? 'true' : 'false');
+    if (btn) {
+        btn.innerHTML = next ? '🔊 <span style="font-size:0.75rem;">المؤثرات: مفعلة</span>' : '🔇 <span style="font-size:0.75rem;">المؤثرات: معطلة</span>';
+    }
+    if (next) {
+        playCyberSound('success');
+        showToast('تم تفعيل المؤثرات الصوتية الفاخرة! 🔊', 'success');
+    } else {
+        showToast('تم كتم المؤثرات الصوتية 🔇', 'info');
+    }
+}
+
+function playCyberSound(type = 'click') {
+    if (!isSfxEnabled()) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'click') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(1400, now + 0.06);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+            osc.start(now);
+            osc.stop(now + 0.06);
+        } else if (type === 'hover') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, now);
+            gain.gain.setValueAtTime(0.02, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+            osc.start(now);
+            osc.stop(now + 0.03);
+        } else if (type === 'success') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        } else if (type === 'access') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(320, now);
+            osc.frequency.exponentialRampToValueAtTime(960, now + 0.15);
+            gain.gain.setValueAtTime(0.07, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+            osc.start(now);
+            osc.stop(now + 0.18);
+        }
+    } catch (e) {
+        // AudioContext not allowed or not supported
+    }
+}
+
+// ================= 10. DEMO AUTO-FILL CREDENTIALS =================
+function fillDemoCredentials(role) {
+    playCyberSound('success');
+    const emailInput = document.querySelector('input[name="email"]');
+    const passwordInput = document.querySelector('input[name="password"]');
+
+    if (!emailInput || !passwordInput) return;
+
+    if (role === 'customer') {
+        emailInput.value = 'customer@store.com';
+        passwordInput.value = 'password123';
+        showToast('تم إدراج بيانات حساب العميل VIP بنجاح! 🎮', 'success');
+    } else if (role === 'admin') {
+        emailInput.value = 'admin@store.com';
+        passwordInput.value = 'password123';
+        showToast('تم إدراج بيانات حساب المسؤول بنجاح! 👑', 'success');
+    }
+
+    // Trigger visual pulse on inputs
+    [emailInput, passwordInput].forEach(el => {
+        el.style.borderColor = '#00ff88';
+        el.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.4)';
+        setTimeout(() => {
+            el.style.borderColor = '';
+            el.style.boxShadow = '';
+        }, 1200);
+    });
+}
+
+// ================= 11. PASSWORD VISIBILITY TOGGLE =================
+function togglePasswordVisibility(inputId, btn) {
+    playCyberSound('click');
+    const input = document.getElementById(inputId) || document.querySelector(`input[name="${inputId}"]`);
+    if (!input) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = '👁️‍🗨️';
+        btn.setAttribute('title', 'إخفاء كلمة المرور');
+    } else {
+        input.type = 'password';
+        btn.innerHTML = '👁️';
+        btn.setAttribute('title', 'إظهار كلمة المرور');
+    }
+}
+

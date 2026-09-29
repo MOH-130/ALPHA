@@ -79,14 +79,48 @@ class Request {
     }
 
     public function file(string $key): ?array {
-        if (isset($this->files[$key]) && !empty($this->files[$key]['name'])) {
-            return $this->files[$key];
+        if (isset($this->files[$key])) {
+            $file = $this->files[$key];
+            if (is_array($file['tmp_name'] ?? null)) {
+                $hasValid = false;
+                foreach ($file['tmp_name'] as $idx => $tmpName) {
+                    $err = $file['error'][$idx] ?? UPLOAD_ERR_NO_FILE;
+                    if ($err === UPLOAD_ERR_OK && !empty($tmpName) && is_string($tmpName) && is_uploaded_file($tmpName)) {
+                        $hasValid = true;
+                        break;
+                    }
+                }
+                return $hasValid ? $file : null;
+            }
+
+            $err = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+            if ($err === UPLOAD_ERR_OK && !empty($file['tmp_name']) && is_string($file['tmp_name']) && is_uploaded_file($file['tmp_name'])) {
+                return $file;
+            }
         }
         return null;
     }
 
     public function hasFile(string $key): bool {
-        return isset($this->files[$key]) && !empty($this->files[$key]['tmp_name']) && is_uploaded_file($this->files[$key]['tmp_name']);
+        if (!isset($this->files[$key])) {
+            return false;
+        }
+
+        $file = $this->files[$key];
+        $tmp = $file['tmp_name'] ?? null;
+
+        if (is_array($tmp)) {
+            foreach ($tmp as $idx => $tmpName) {
+                $err = $file['error'][$idx] ?? UPLOAD_ERR_NO_FILE;
+                if ($err === UPLOAD_ERR_OK && !empty($tmpName) && is_string($tmpName) && is_uploaded_file($tmpName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        $err = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+        return $err === UPLOAD_ERR_OK && !empty($tmp) && is_string($tmp) && is_uploaded_file($tmp);
     }
 
     public function ip(): string {

@@ -36,6 +36,9 @@ class Auth {
 
     public function login(User $user): void {
         $this->user = $user;
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            @session_regenerate_id(true);
+        }
         Session::set('user_id', $user->id);
         Session::set('user_role', $user->role);
         Session::set('user_name', $user->name);
@@ -48,6 +51,9 @@ class Auth {
         Session::remove('user_role');
         Session::remove('user_name');
         Session::remove('user_email');
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            @session_regenerate_id(true);
+        }
     }
 
     public function attempt(string $email, string $password): bool {

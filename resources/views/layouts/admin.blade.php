@@ -92,6 +92,9 @@
             <li class="admin-nav-item <?= strpos($_SERVER['REQUEST_URI'] ?? '', 'admin/logs') !== false ? 'active' : '' ?>">
                 <a href="<?= url('admin/logs') ?>">📜 <?= __('admin.activity_logs') ?></a>
             </li>
+            <li class="admin-nav-item <?= strpos($_SERVER['REQUEST_URI'] ?? '', 'admin/profile') !== false ? 'active' : '' ?>" style="margin-top:4px;">
+                <a href="<?= url('admin/profile') ?>" style="color:#00d2ff; font-weight:700;">🔐 أمان حساب المشرف</a>
+            </li>
         </ul>
 
         <div style="padding:1rem; border-top:1px solid rgba(255,255,255,0.08);">
@@ -116,8 +119,12 @@
                 </div>
 
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-weight:700; font-size:0.9rem;">👤 <?= auth()->user() ? auth()->user()->name : 'Admin' ?></span>
-                    <a href="<?= url('logout') ?>" style="color:#ef4444; font-size:0.9rem; font-weight:600; padding:0.4rem 0.8rem; border:1px solid #fecaca; border-radius:6px; background:#fef2f2;">
+                    <a href="<?= url('admin/profile') ?>" title="إدارة حساب المشرف وكلمة المرور" style="display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:0.9rem; color:#fff; text-decoration:none; padding:0.4rem 0.85rem; background:#131c2e; border:1px solid rgba(0, 210, 255, 0.4); border-radius:8px; transition:all 0.2s ease;">
+                        <span>👤</span>
+                        <span><?= auth()->user() ? auth()->user()->name : 'Admin' ?></span>
+                        <span style="font-size:0.68rem; background:linear-gradient(135deg, #00d2ff, #0077ff); color:#000; font-weight:900; padding:1px 6px; border-radius:4px;">PRO</span>
+                    </a>
+                    <a href="<?= url('logout') ?>" style="color:#ef4444; font-size:0.9rem; font-weight:600; padding:0.4rem 0.8rem; border:1px solid #fecaca; border-radius:6px; background:#fef2f2; text-decoration:none;">
                         خروج 🚪
                     </a>
                 </div>

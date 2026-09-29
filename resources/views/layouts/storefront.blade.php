@@ -110,6 +110,45 @@
         </div>
     </div>
 
+    <!-- VIP Luxury Announcement Ticker -->
+    <div class="vip-ticker-bar">
+        <div class="vip-ticker-track">
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">⚡ تسليم فوري</span>
+                <span>استلام آلي فوري لبيانات الحسابات وأكواد التفعيل 24/7 عبر واتساب والإيميل</span>
+            </div>
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">🇩🇿 دفع محلي</span>
+                <span>دعم كامل ومباشر لتطبيق بريدي موب BaridiMob والحساب البريدي CCP</span>
+            </div>
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">🛡️ ضمان رسمي</span>
+                <span>جميع الألعاب والحسابات مرخصة وأصلية 100% مع ضمان استبدال كامل</span>
+            </div>
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">💎 عروض حصرية</span>
+                <span>أكثر من +45,000 لعبة Steam وبكجات خارقة تبدأ من 500 دينار فقط!</span>
+            </div>
+            <!-- Seamless loop duplicate -->
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">⚡ تسليم فوري</span>
+                <span>استلام آلي فوري لبيانات الحسابات وأكواد التفعيل 24/7 عبر واتساب والإيميل</span>
+            </div>
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">🇩🇿 دفع محلي</span>
+                <span>دعم كامل ومباشر لتطبيق بريدي موب BaridiMob والحساب البريدي CCP</span>
+            </div>
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">🛡️ ضمان رسمي</span>
+                <span>جميع الألعاب والحسابات مرخصة وأصلية 100% مع ضمان استبدال كامل</span>
+            </div>
+            <div class="vip-ticker-item">
+                <span class="vip-badge-mini">💎 عروض حصرية</span>
+                <span>أكثر من +45,000 لعبة Steam وبكجات خارقة تبدأ من 500 دينار فقط!</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Header -->
     <header class="main-header">
         <div class="container header-inner">
@@ -313,78 +352,100 @@
         </div>
     </footer>
 
-    <!-- Welcome Screen / Splash Intro Modal -->
+    <!-- Luxury VIP Entrance Gateway Modal -->
     <?php if (theme_setting('enable_welcome_modal', '1') === '1'): ?>
     <div id="welcome-modal-overlay" class="welcome-overlay">
-        <div class="welcome-modal">
+        <div class="welcome-modal vip-entrance-modal">
             <button type="button" class="welcome-close-btn" onclick="closeWelcomeModal()" title="إغلاق">&times;</button>
             
             <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; background:linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(0, 255, 136, 0.2)); border:1px solid rgba(0, 210, 255, 0.4); border-radius:20px; font-size:2rem; margin-bottom:1rem; box-shadow: 0 0 25px rgba(0, 210, 255, 0.3);">
+                <div class="vip-entrance-header-emblem">
                     🎮
                 </div>
-                <h2 style="font-size: 1.85rem; font-weight: 900; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ffffff, #00d2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    مرحباً بك في متجر Alpha Gaming Shop 🇩🇿
+                <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(0, 210, 255, 0.12); border:1px solid rgba(0, 210, 255, 0.3); border-radius:999px; padding:4px 14px; font-size:0.75rem; font-weight:800; color:var(--color-primary); margin-bottom:0.75rem;">
+                    <span>💎 ALPHA LUXURY GAMING GATEWAY</span>
+                    <span>•</span>
+                    <span style="color:#00ff88;">الجزائر 🇩🇿</span>
+                </div>
+                <h2 style="font-size: 1.95rem; font-weight: 900; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ffffff 30%, #00d2ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    مرحباً بك في البوابة الرقمية الفاخرة
                 </h2>
-                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 500px; margin: 0 auto;">
-                    المتجر الجزائري الأول المتخصص في بيع وتفعيل الألعاب الأصلية، بكجات Steam الضخمة، واشتراكات الترفيه بالدينار الجزائري وبطرق دفع محلية آمنة!
+                <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; max-width: 540px; margin: 0 auto;">
+                    المتجر الجزائري الأول المخصص لأقوى ألعاب PC و PlayStation و Xbox، بكجات Steam الضخمة، واشتراكات الترفيه بالدينار الجزائري مع تسليم فوري مشفر!
                 </p>
             </div>
 
-            <!-- Features Highlights List -->
+            <!-- 4 Luxury Pillars Grid -->
             <div class="welcome-features-list">
-                <div class="welcome-feat-item">
-                    <span class="welcome-feat-icon">⚡</span>
+                <div class="vip-portal-card">
+                    <span class="vip-portal-icon">⚡</span>
                     <div>
-                        <div class="welcome-feat-title">تسليم فوري ومباشر</div>
-                        <div class="welcome-feat-desc">استلم كود التفعيل أو بيانات الحساب فوراً عبر واتساب والإيميل.</div>
+                        <div class="welcome-feat-title" style="color:#00d2ff;">تسليم فوري ذكي</div>
+                        <div class="welcome-feat-desc">كود التفعيل أو بيانات الحساب تصلك فوراً على الإيميل والواتساب 24/7.</div>
                     </div>
                 </div>
 
-                <div class="welcome-feat-item">
-                    <span class="welcome-feat-icon">🇩🇿</span>
+                <div class="vip-portal-card">
+                    <span class="vip-portal-icon">🇩🇿</span>
                     <div>
-                        <div class="welcome-feat-title">دفع محلي بريدي موب</div>
+                        <div class="welcome-feat-title" style="color:#00ff88;">دفع محلي فوري وآمن</div>
                         <div class="welcome-feat-desc">دعم كامل لتطبيق بريدي موب BaridiMob، الحساب البريدي CCP، و PayPal.</div>
                     </div>
                 </div>
 
-                <div class="welcome-feat-item">
-                    <span class="welcome-feat-icon">🛡️</span>
+                <div class="vip-portal-card">
+                    <span class="vip-portal-icon">🛡️</span>
                     <div>
-                        <div class="welcome-feat-title">ألعاب أصلية 100% مع ضمان</div>
-                        <div class="welcome-feat-desc">حسابات رسمية ومضمونة مع إمكانية تغيير البيانات ودعم فني متواصل.</div>
+                        <div class="welcome-feat-title" style="color:#ffd700;">ضمان ذهبي شامل 100%</div>
+                        <div class="welcome-feat-desc">حسابات وألعاب أصلية ورسمية مع إمكانية تغيير البيانات وضمان استبدال دائم.</div>
                     </div>
                 </div>
 
-                <div class="welcome-feat-item">
-                    <span class="welcome-feat-icon">🎁</span>
+                <div class="vip-portal-card">
+                    <span class="vip-portal-icon">💎</span>
                     <div>
-                        <div class="welcome-feat-title">عروض وبكجات ضخمة</div>
-                        <div class="welcome-feat-desc">أكثر من +45,000 لعبة Steam وبكجات أسطورية تبدأ من 500 DA فقط!</div>
+                        <div class="welcome-feat-title" style="color:#ff77e9;">نادي النخبة VIP</div>
+                        <div class="welcome-feat-desc">أكثر من +45,000 لعبة Steam، وبكجات أسطورية تبدأ من 500 DA فقط!</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom Actions -->
-            <div style="margin-top: 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
-                <button type="button" class="btn btn-primary btn-lg btn-block" onclick="closeWelcomeModal()" style="font-size: 1.1rem; font-weight: 800;">
-                    ابدأ التسوق واستكشف العروض الآن 🔥
-                </button>
+            <!-- Action Buttons Group -->
+            <div style="margin-top: 1.75rem; display: flex; flex-direction: column; gap: 0.85rem;">
+                <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:0.75rem;">
+                    <button type="button" class="btn btn-luxury-shimmer btn-lg" onclick="playCyberSound('access'); closeWelcomeModal();" style="font-size: 1.05rem; font-weight: 800;">
+                        دخول واستكشاف العروض الفاخرة 🔥
+                    </button>
+                    <?php if (!auth()->check()): ?>
+                    <a href="<?= url('login') ?>" class="btn btn-outline btn-lg" onclick="playCyberSound('click');" style="border-color:rgba(0, 210, 255, 0.4); color:#00d2ff; font-weight:800; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">
+                        <span>👤</span> <span>دخول VIP</span>
+                    </a>
+                    <?php else: ?>
+                    <a href="<?= url('shop') ?>" class="btn btn-outline btn-lg" style="border-color:rgba(0, 255, 136, 0.4); color:#00ff88; font-weight:800; text-align:center; display:flex; align-items:center; justify-content:center; gap:6px;">
+                        <span>🛍️</span> <span>كل الألعاب</span>
+                    </a>
+                    <?php endif; ?>
+                </div>
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.825rem; color: var(--text-light); padding: 0 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.825rem; color: var(--text-light); padding: 4px 6px;">
                     <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                        <input type="checkbox" id="dont-show-welcome-again" onchange="toggleWelcomeDontShow(this.checked)" style="accent-color: var(--color-primary);">
-                        <span>عدم إظهار هذه الرسالة الترحيبية مجدداً</span>
+                        <input type="checkbox" id="dont-show-welcome-again" onchange="toggleWelcomeDontShow(this.checked)" style="accent-color: var(--color-primary); width:16px; height:16px;">
+                        <span>عدم إظهار هذه البوابة مجدداً</span>
                     </label>
-                    <a href="https://wa.me/213774444444" target="_blank" style="color: var(--color-secondary); font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-                        <span>💬 تواصل معنا واتساب (+213 774 44 44 44)</span>
+                    <a href="https://wa.me/213774444444" target="_blank" style="color: var(--color-secondary); font-weight: 700; display: inline-flex; align-items: center; gap: 4px; text-decoration:none;">
+                        <span>💬 تواصل مع مستشار VIP (+213 774 44 44 44)</span>
                     </a>
                 </div>
             </div>
         </div>
     </div>
     <?php endif; ?>
+
+    <!-- Floating VIP Concierge WhatsApp Button -->
+    <a href="https://wa.me/213774444444" target="_blank" class="vip-float-support" title="مستشار كبار الشخصيات VIP عبر واتساب">
+        <span class="vip-float-icon">💬</span>
+        <span>مستشار VIP مباشر</span>
+    </a>
 
     <!-- Toast Notifications Container -->
     <div class="toast-container"></div>

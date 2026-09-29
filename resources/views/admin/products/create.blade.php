@@ -115,8 +115,8 @@
             <div class="admin-card">
                 <div class="admin-card-body">
                     <div class="form-group">
-                        <label class="form-label">الصورة الرئيسية للمنتج *</label>
-                        <input type="file" name="primary_image" class="form-control image-file-input" data-preview="#primary-img-preview" required>
+                        <label class="form-label">الصورة الرئيسية للمنتج (اختياري)</label>
+                        <input type="file" name="primary_image" class="form-control image-file-input" data-preview="#primary-img-preview">
                         <img id="primary-img-preview" style="width:100%; height:160px; object-fit:contain; border:1px dashed #cbd5e1; border-radius:8px; margin-top:8px; display:none;">
                     </div>
 

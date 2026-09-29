@@ -160,14 +160,19 @@ class AdminController {
         // Multiple gallery images
         if ($request->hasFile('gallery_images')) {
             $files = $request->file('gallery_images');
-            if (is_array($files['name'])) {
+            if (isset($files['name']) && is_array($files['name'])) {
                 for ($i = 0; $i < count($files['name']); $i++) {
+                    $err = $files['error'][$i] ?? UPLOAD_ERR_NO_FILE;
+                    $tmpName = $files['tmp_name'][$i] ?? '';
+                    if ($err !== UPLOAD_ERR_OK || empty($tmpName) || !is_string($tmpName) || !is_uploaded_file($tmpName)) {
+                        continue;
+                    }
                     $singleFile = [
                         'name' => $files['name'][$i],
-                        'type' => $files['type'][$i],
-                        'tmp_name' => $files['tmp_name'][$i],
-                        'error' => $files['error'][$i],
-                        'size' => $files['size'][$i],
+                        'type' => $files['type'][$i] ?? '',
+                        'tmp_name' => $tmpName,
+                        'error' => $err,
+                        'size' => $files['size'][$i] ?? 0,
                     ];
                     $uploadedGall = ImageOptimizer::processAndSave($singleFile, __DIR__ . '/../../public/uploads/products');
                     if ($uploadedGall) {
@@ -690,4 +695,95 @@ class AdminController {
         $logs = ActivityLog::orderByDesc('id')->paginate(20);
         return view('admin.logs.index', compact('logs'));
     }
+
+    // ================= ADMIN PROFILE & CREDENTIALS SECURITY =================
+    public function profile(Request $request) {
+        $admin = Auth::getInstance()->user();
+        if (!$admin) {
+            return redirect(url('admin/login'));
+        }
+        $enableDemoMode = Setting::get('enable_demo_mode', '0');
+        $googleClientId = Setting::get('google_client_id', '');
+        $googleClientSecret = Setting::get('google_client_secret', '');
+        $googleRedirectUri = \App\Services\GoogleAuthService::getRedirectUri();
+
+        return view('admin.profile.index', compact('admin', 'enableDemoMode', 'googleClientId', 'googleClientSecret', 'googleRedirectUri'));
+    }
+
+    public function updateProfile(Request $request) {
+        $admin = Auth::getInstance()->user();
+        if (!$admin) {
+            return redirect(url('admin/login'));
+        }
+
+        $data = $request->validate([
+            'name' => 'required|min:3',
+            'email' => 'required|email'
+        ]);
+
+        // Check if email changed and is taken by another account
+        if ($data['email'] !== $admin->email) {
+            $existing = User::where('email', $data['email'])->first();
+            if ($existing && $existing->id !== $admin->id) {
+                Session::flash('error', 'البريد الإلكتروني المدخل مستخدم بالفعل من قبل حساب آخر. يرجى اختيار بريد مختلف.');
+                return redirect(url('admin/profile'));
+            }
+        }
+
+        $updateData = [
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $request->input('phone', $admin->phone),
+            'two_factor_enabled' => $request->input('two_factor_enabled') ? 1 : 0
+        ];
+
+        // Check password change if provided
+        $currentPassword = $request->input('current_password');
+        $newPassword = $request->input('new_password');
+        $confirmPassword = $request->input('confirm_password');
+
+        if (!empty($newPassword)) {
+            if (mb_strlen($newPassword) < 6) {
+                Session::flash('error', 'كلمة المرور الجديدة يجب ألا تقل عن 6 خانات.');
+                return redirect(url('admin/profile'));
+            }
+
+            if ($newPassword !== $confirmPassword) {
+                Session::flash('error', 'تأكيد كلمة المرور الجديدة غير متطابق.');
+                return redirect(url('admin/profile'));
+            }
+
+            if (!empty($currentPassword)) {
+                if (!password_verify($currentPassword, $admin->password)) {
+                    Session::flash('error', 'كلمة المرور الحالية غير صحيحة.');
+                    return redirect(url('admin/profile'));
+                }
+            }
+
+            $updateData['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
+        }
+
+        $admin->update($updateData);
+
+        // Update Session info
+        Session::set('user_name', $admin->name);
+        Session::set('user_email', $admin->email);
+
+        // Update Demo Mode setting (whether to show or hide demo auto-fill on login)
+        $enableDemo = $request->input('enable_demo_mode', '0') === '1' ? '1' : '0';
+        Setting::set('enable_demo_mode', $enableDemo, 'security');
+
+        // Update Google OAuth credentials
+        if ($request->input('google_client_id') !== null) {
+            Setting::set('google_client_id', trim((string)$request->input('google_client_id')), 'oauth');
+        }
+        if ($request->input('google_client_secret') !== null) {
+            Setting::set('google_client_secret', trim((string)$request->input('google_client_secret')), 'oauth');
+        }
+
+        ActivityLogger::log('Update Admin Profile', 'Admin', "Admin updated profile credentials & security: {$admin->email}");
+        Session::flash('success', 'تم تحديث بيانات المشرف وكلمة المرور وإعدادات الأمان والتحقق المزدوج بنجاح! 🔒');
+        return redirect(url('admin/profile'));
+    }
 }
+

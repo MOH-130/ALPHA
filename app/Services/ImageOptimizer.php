@@ -4,7 +4,7 @@ namespace App\Services;
 
 class ImageOptimizer {
     public static function processAndSave(array $file, string $destinationDir, int $maxWidth = 1200, int $maxHeight = 1200): ?string {
-        if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+        if (empty($file['tmp_name']) || !is_string($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
             return null;
         }
 

@@ -6,22 +6,39 @@
     <section class="hero-section">
         <div class="hero-banner" style="background: radial-gradient(circle at 75% 30%, rgba(0, 210, 255, 0.15), transparent 50%), linear-gradient(135deg, #0d1527 0%, #060911 100%);">
             <div class="hero-content">
-                <span class="hero-badge">⚡ المتجر الجزائري الأول للألعاب الأصلية 🇩🇿</span>
+                <span class="hero-badge">⚡ المتجر الجزائري الأول للألعاب الرقمية الفاخرة 🇩🇿</span>
                 <h1 class="hero-title">
                     <?= is_rtl() ? 'عالم الألعاب الأصلية، بكجات Steam، واشتراكات الترفيه' : 'Original Games, Steam Packs & Digital Subscriptions' ?>
                 </h1>
                 <p class="hero-desc">
                     <?= is_rtl() ? 'احصل على أقوى ألعاب PC و PS5 و Xbox وبكجات ستيم الضخمة بأفضل الأسعار بالدينار الجزائري مع تسليم فوري ودفع مريح عبر بريدي موب BaridiMob و CCP!' : 'Get the biggest PC & Console titles and Steam packages with instant delivery in Algeria.' ?>
                 </p>
+
+                <!-- Live Trust Metrics Strip -->
+                <div style="display:flex; gap:1.25rem; flex-wrap:wrap; margin-bottom:1.75rem; font-size:0.85rem; font-weight:700;">
+                    <div style="display:inline-flex; align-items:center; gap:6px; color:#00ff88; background:rgba(0, 255, 136, 0.08); border:1px solid rgba(0, 255, 136, 0.25); border-radius:999px; padding:4px 12px;">
+                        <span class="live-pulse-dot" style="width:8px; height:8px;"></span>
+                        <span>+15,400 لاعب مفعل 🇩🇿</span>
+                    </div>
+                    <div style="display:inline-flex; align-items:center; gap:6px; color:#00d2ff; background:rgba(0, 210, 255, 0.08); border:1px solid rgba(0, 210, 255, 0.25); border-radius:999px; padding:4px 12px;">
+                        <span>⚡</span>
+                        <span>تسليم آلي فوري 24/7</span>
+                    </div>
+                    <div style="display:inline-flex; align-items:center; gap:6px; color:#ffd700; background:rgba(255, 215, 0, 0.08); border:1px solid rgba(255, 215, 0, 0.25); border-radius:999px; padding:4px 12px;">
+                        <span>🛡️</span>
+                        <span>ضمان ذهبي معتمد</span>
+                    </div>
+                </div>
+
                 <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
-                    <a href="<?= url('shop') ?>" class="btn btn-primary btn-lg">
+                    <a href="<?= url('shop') ?>" class="btn btn-luxury-shimmer btn-lg" onclick="playCyberSound('access')">
                         <?= __('messages.shop') ?> 🎮
                     </a>
-                    <a href="<?= url('shop?deals_only=1') ?>" class="btn btn-accent btn-lg">
+                    <a href="<?= url('shop?deals_only=1') ?>" class="btn btn-accent btn-lg" onclick="playCyberSound('click')">
                         <?= __('messages.deals') ?> 🔥
                     </a>
-                    <button type="button" onclick="openWelcomeModal()" class="btn btn-outline btn-lg" style="border-color:rgba(0, 210, 255, 0.4); color:var(--color-primary);">
-                        ✨ مزايا المتجر
+                    <button type="button" onclick="playCyberSound('click'); openWelcomeModal();" class="btn btn-outline btn-lg" style="border-color:rgba(0, 210, 255, 0.4); color:var(--color-primary);">
+                        ✨ بوابة ومزايا VIP
                     </button>
                 </div>
             </div>

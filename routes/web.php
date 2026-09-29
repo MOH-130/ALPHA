@@ -52,6 +52,19 @@ Router::group(['middleware' => ['locale', 'visitor']], function() {
     // Admin Login Gateway
     Router::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
     Router::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login.submit');
+
+    // Google OAuth 2.0 Real Integration
+    Router::get('/auth/google', [AuthController::class, 'googleRedirect'])->name('auth.google');
+    Router::get('/auth/google/callback', [AuthController::class, 'googleCallback'])->name('auth.google.callback');
+    Router::post('/auth/google/simulate', [AuthController::class, 'googleSimulate'])->name('auth.google.simulate');
+
+    // 2FA One-Time Password (OTP) Verification
+    Router::get('/auth/verify-otp', [AuthController::class, 'showVerifyOtp'])->name('auth.otp.show');
+    Router::post('/auth/verify-otp', [AuthController::class, 'verifyOtp'])->name('auth.otp.verify');
+    Router::post('/auth/resend-otp', [AuthController::class, 'resendOtp'])->name('auth.otp.resend');
+
+    // Anti-Bot Dynamic CAPTCHA Refresh
+    Router::get('/captcha/refresh', [AuthController::class, 'refreshCaptcha'])->name('captcha.refresh');
 });
 
 // Customer Account Protected Routes

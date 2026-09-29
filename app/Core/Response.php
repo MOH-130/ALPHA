@@ -45,6 +45,20 @@ class Response {
     public function send(): void {
         if (!headers_sent()) {
             http_response_code($this->statusCode);
+
+            // Default Hardened Security Headers
+            $defaultSecurityHeaders = [
+                'X-Frame-Options' => 'SAMEORIGIN',
+                'X-Content-Type-Options' => 'nosniff',
+                'X-XSS-Protection' => '1; mode=block',
+                'Referrer-Policy' => 'strict-origin-when-cross-origin'
+            ];
+            foreach ($defaultSecurityHeaders as $name => $val) {
+                if (!isset($this->headers[$name])) {
+                    header("{$name}: {$val}");
+                }
+            }
+
             foreach ($this->headers as $name => $value) {
                 header("{$name}: {$value}");
             }

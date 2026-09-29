@@ -145,6 +145,12 @@ class RouteItem {
     }
 
     public function run(Request $request, array $params = []): Response {
+        // Enforce CSRF protection on state-changing requests
+        $csrfResponse = (new \App\Middleware\CsrfMiddleware())->handle($request);
+        if ($csrfResponse instanceof Response) {
+            return $csrfResponse;
+        }
+
         // Execute Middlewares
         foreach ($this->middlewares as $mw) {
             $mwClass = $this->resolveMiddleware($mw);
@@ -183,6 +189,7 @@ class RouteItem {
             'locale' => \App\Middleware\SetLocaleAndCurrencyMiddleware::class,
             'visitor' => \App\Middleware\TrackVisitorMiddleware::class,
             'price_visibility' => \App\Middleware\CheckPriceVisibilityMiddleware::class,
+            'csrf' => \App\Middleware\CsrfMiddleware::class,
         ];
         return $map[$alias] ?? (class_exists($alias) ? $alias : null);
     }

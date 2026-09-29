@@ -59,7 +59,8 @@ class CustomerController {
                 'phone' => $data['phone'],
                 'address' => $request->input('address', ''),
                 'city' => $request->input('city', ''),
-                'country' => $request->input('country', 'Saudi Arabia'),
+                'country' => $request->input('country', 'Algeria'),
+                'two_factor_enabled' => $request->input('two_factor_enabled') ? 1 : 0
             ];
 
             if ($request->input('password')) {

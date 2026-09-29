@@ -6,7 +6,7 @@ return [
     'connections' => [
         'sqlite' => [
             'driver' => 'sqlite',
-            'database' => env('DB_DATABASE', __DIR__ . '/../storage/data/database.sqlite'),
+            'database' => __DIR__ . '/../storage/data/database.sqlite',
             'prefix' => '',
             'foreign_key_constraints' => true,
         ],
