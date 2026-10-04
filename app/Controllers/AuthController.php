@@ -381,6 +381,11 @@ class AuthController {
             return redirect(url('login'));
         }
 
+        // Send Google Welcome Email safely upon first-time creation or linking
+        if (!empty($user->is_new_google_link) && (int)($user->google_welcome_sent ?? 0) === 0) {
+            GoogleAuthService::sendWelcomeEmailSafely($user);
+        }
+
         // Check if 2FA is enabled
         if ($user->two_factor_enabled == 1) {
             $sent = OtpService::sendOtp($user, 'login');

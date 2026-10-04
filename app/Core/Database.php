@@ -121,6 +121,9 @@ class Database {
             if (!in_array('google_id', $names)) {
                 self::$pdo->exec("ALTER TABLE users ADD COLUMN google_id VARCHAR(191) NULL");
             }
+            if (!in_array('google_welcome_sent', $names)) {
+                self::$pdo->exec("ALTER TABLE users ADD COLUMN google_welcome_sent INTEGER DEFAULT 0");
+            }
         } catch (\Throwable $e) {}
     }
 }

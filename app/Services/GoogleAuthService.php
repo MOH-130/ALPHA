@@ -271,6 +271,7 @@ class GoogleAuthService {
                 $user->update(['avatar' => $avatar]);
             }
             ActivityLogger::log('Google Login', 'Auth', "User {$user->email} logged in via verified Google OAuth");
+            $user->is_new_google_link = false;
             return $user;
         }
 
@@ -286,6 +287,7 @@ class GoogleAuthService {
             }
             $user->update($updates);
             ActivityLogger::log('Google Account Linked', 'Auth', "Existing user {$user->email} linked with Google ID");
+            $user->is_new_google_link = true;
             return $user;
         }
 
@@ -300,12 +302,44 @@ class GoogleAuthService {
             'status' => 'active',
             'is_approved' => 1,
             'google_id' => $googleId,
+            'google_welcome_sent' => 0,
             'avatar' => $avatar,
             'email_verified_at' => date('Y-m-d H:i:s'),
             'affiliate_code' => $affiliateCode
         ]);
 
         ActivityLogger::log('Google Register', 'Auth', "New user registered via Google OAuth: {$user->email}");
+        $user->is_new_google_link = true;
         return $user;
+    }
+
+    /**
+     * Send Google welcome email securely without blocking or failing login.
+     * Guaranteed to never send duplicate emails for the same account.
+     */
+    public static function sendWelcomeEmailSafely(User $user): bool {
+        // Prevent duplicate sending if already sent
+        if ((int)($user->google_welcome_sent ?? 0) === 1) {
+            return false;
+        }
+
+        try {
+            $sent = MailService::sendGoogleWelcomeEmail($user->email, $user->name);
+            // Mark as sent in DB regardless to avoid duplicate sends
+            $user->update(['google_welcome_sent' => 1]);
+
+            if ($sent) {
+                ActivityLogger::log('Google Welcome Email Sent', 'Mail', "Welcome email sent successfully to {$user->email}");
+                return true;
+            } else {
+                error_log("[Google OAuth] Could not deliver welcome email to {$user->email} via SMTP.");
+                ActivityLogger::log('Google Welcome Email Failed', 'Mail', "Welcome email delivery failed for {$user->email}");
+                return false;
+            }
+        } catch (\Throwable $e) {
+            error_log("[Google OAuth] Welcome email exception for {$user->email}: " . $e->getMessage());
+            $user->update(['google_welcome_sent' => 1]);
+            return false;
+        }
     }
 }
