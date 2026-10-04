@@ -210,6 +210,32 @@
                 </div>
             </div>
 
+            <!-- Platforms Showcase Settings -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h3 class="admin-card-title">🎮 قسم تصفح حسب المنصة (Platforms Showcase)</h3>
+                </div>
+                <div class="admin-card-body">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:var(--bg-input); border-radius:10px; margin-bottom:1.25rem;">
+                        <div>
+                            <div style="font-weight:700; color:#fff; font-size:0.95rem;">إظهار قسم "تصفح حسب المنصة" في الصفحة الرئيسية</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">عرض بطاقات بصرية كبرى وفخمة للمنصات (Xbox, PlayStation, Steam, EA SPORTS FC, Minecraft, etc.)</div>
+                        </div>
+                        <label style="position:relative; display:inline-block; width:48px; height:26px;">
+                            <input type="hidden" name="show_platforms_section" value="0">
+                            <input type="checkbox" name="show_platforms_section" value="1" <?= theme_setting('show_platforms_section', '1') === '1' ? 'checked' : '' ?> style="accent-color:var(--color-primary); width:20px; height:20px; cursor:pointer;">
+                        </label>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>تخصيص المنصات المتقدم عبر JSON (اختياري)</span>
+                            <span style="font-size:0.75rem; color:var(--text-muted);">اتركه فارغاً للاعتماد على الـ 12 منصة التلقائية</span>
+                        </label>
+                        <textarea name="home_platforms_json" rows="4" class="form-control" placeholder='[{"name_ar": "Xbox", "name_en": "Xbox", "url": "brand/xbox", "image": "assets/images/platforms/platform_xbox.webp", "accent_color": "#107c10"}]' style="font-family:monospace; font-size:0.82rem; direction:ltr; text-align:left;"><?= htmlspecialchars(theme_setting('home_platforms_json', '')) ?></textarea>
+                    </div>
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-primary btn-lg btn-block" style="font-size:1.1rem; font-weight:800;">
                 💾 حفظ وتطبيق تصميم المتجر مباشرة
             </button>

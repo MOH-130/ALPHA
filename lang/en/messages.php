@@ -7,6 +7,8 @@ return [
     'home' => 'Home',
     'shop' => 'Shop',
     'categories' => 'Categories',
+    'browse_by_platform' => 'Browse by Platform',
+    'browse_by_platform_desc' => 'Choose your favorite platform or category to explore original games, verified accounts, and digital subscriptions with instant delivery',
     'all_categories' => 'All Categories',
     'brands' => 'Brands',
     'deals' => 'Deals & Offers',

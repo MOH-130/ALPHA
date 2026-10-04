@@ -240,3 +240,22 @@ if (!function_exists('slugify')) {
         return $text;
     }
 }
+
+if (!function_exists('hex2rgba')) {
+    function hex2rgba(string $hex, float $alpha = 1.0): string {
+        $clean = ltrim(trim($hex), '#');
+        if (strlen($clean) === 3) {
+            $r = hexdec(str_repeat(substr($clean, 0, 1), 2));
+            $g = hexdec(str_repeat(substr($clean, 1, 1), 2));
+            $b = hexdec(str_repeat(substr($clean, 2, 1), 2));
+        } elseif (strlen($clean) >= 6) {
+            $r = hexdec(substr($clean, 0, 2));
+            $g = hexdec(substr($clean, 2, 2));
+            $b = hexdec(substr($clean, 4, 2));
+        } else {
+            return "rgba(0, 210, 255, {$alpha})";
+        }
+        return "rgba({$r}, {$g}, {$b}, {$alpha})";
+    }
+}
+

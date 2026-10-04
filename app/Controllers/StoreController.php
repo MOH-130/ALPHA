@@ -33,12 +33,188 @@ class StoreController {
         $bestSellers = Product::where('status', 'active')->orderByDesc('sales_count')->limit(8)->get();
         $deals = Product::where('status', 'active')->where('is_deal', 1)->limit(6)->get();
         $brands = Brand::where('status', 'active')->limit(12)->get();
+        $platforms = self::getHomePlatforms();
 
         return view('storefront.home', compact(
             'banners', 'categories', 'featuredCategories',
-            'bestSellers', 'deals', 'brands'
+            'bestSellers', 'deals', 'brands', 'platforms'
         ));
     }
+
+    public static function getHomePlatforms(): array {
+        $customJson = \App\Models\ThemeSetting::get('home_platforms_json');
+        if (!empty($customJson)) {
+            $decoded = json_decode($customJson, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return array_map(function($p) {
+                    if (isset($p['url']) && !str_starts_with($p['url'], 'http://') && !str_starts_with($p['url'], 'https://')) {
+                        $p['url'] = url($p['url']);
+                    }
+                    return $p;
+                }, $decoded);
+            }
+        }
+
+        return [
+            [
+                'key' => 'xbox',
+                'name_ar' => 'إكس بوكس (Xbox)',
+                'name_en' => 'Xbox',
+                'badge_ar' => 'كونسول & PC',
+                'badge_en' => 'CONSOLE & PC',
+                'tagline_ar' => 'ألعاب، حسابات واشتراكات Game Pass',
+                'tagline_en' => 'Games, Accounts & Subscriptions',
+                'image' => 'assets/images/platforms/platform_xbox.webp',
+                'accent_color' => '#107c10',
+                'icon' => '🎮',
+                'url' => url('brand/xbox')
+            ],
+            [
+                'key' => 'playstation',
+                'name_ar' => 'بلايستيشن (PlayStation)',
+                'name_en' => 'PlayStation',
+                'badge_ar' => 'PS5 & PS4',
+                'badge_en' => 'PS5 & PS4',
+                'tagline_ar' => 'تفعيلات رسمية، ألعاب واشتراكات Plus',
+                'tagline_en' => 'PS5/PS4 Activations & PS Plus',
+                'image' => 'assets/images/platforms/platform_playstation.webp',
+                'accent_color' => '#0070d1',
+                'icon' => '🕹️',
+                'url' => url('brand/playstation')
+            ],
+            [
+                'key' => 'steam',
+                'name_ar' => 'ستيم (Steam)',
+                'name_en' => 'Steam',
+                'badge_ar' => 'بكجات & أوفلاين',
+                'badge_en' => 'PACKS & OFFLINE',
+                'tagline_ar' => 'أضخم بكجات الألعاب وحسابات مفعلة',
+                'tagline_en' => 'Massive Packs & Verified Accounts',
+                'image' => 'assets/images/platforms/platform_steam.webp',
+                'accent_color' => '#00d2ff',
+                'icon' => '🚀',
+                'url' => url('category/steam-mega-packs')
+            ],
+            [
+                'key' => 'pc_gaming',
+                'name_ar' => 'ألعاب الكمبيوتر (PC Gaming)',
+                'name_en' => 'PC Gaming',
+                'badge_ar' => 'ألعاب AAA أصلية',
+                'badge_en' => 'AAA ORIGINAL GAMES',
+                'tagline_ar' => 'أقوى العناوين العالمية جاهزة للتحميل',
+                'tagline_en' => 'Top AAA PC Games Ready to Play',
+                'image' => 'assets/images/platforms/platform_pc_gaming.webp',
+                'accent_color' => '#e11d48',
+                'icon' => '💻',
+                'url' => url('category/pc-console-games')
+            ],
+            [
+                'key' => 'ea_sports_fc',
+                'name_ar' => 'سلسلة EA SPORTS FC',
+                'name_en' => 'EA SPORTS FC',
+                'badge_ar' => 'FC 27 / FC 26',
+                'badge_en' => 'FC 27 & FC 26',
+                'tagline_ar' => 'أحدث إصدارات كرة القدم وتفعيلات أونلاين',
+                'tagline_en' => 'Football Editions & Online Access',
+                'image' => 'assets/images/platforms/platform_ea_sports_fc.webp',
+                'accent_color' => '#00ff88',
+                'icon' => '⚽',
+                'url' => url('category/ea-sports-fc')
+            ],
+            [
+                'key' => 'minecraft',
+                'name_ar' => 'ماين كرافت (Minecraft)',
+                'name_en' => 'Minecraft Official',
+                'badge_ar' => 'حسابات أصلية',
+                'badge_en' => 'OFFICIAL LICENSE',
+                'tagline_ar' => 'Java + Bedrock على حسابك مدى الحياة',
+                'tagline_en' => 'Java & Bedrock Lifetime License',
+                'image' => 'assets/images/platforms/platform_minecraft.webp',
+                'accent_color' => '#22c55e',
+                'icon' => '⛏️',
+                'url' => url('category/minecraft')
+            ],
+            [
+                'key' => 'ubisoft',
+                'name_ar' => 'يوبي سوفت (Ubisoft)',
+                'name_en' => 'Ubisoft',
+                'badge_ar' => 'أساطير المغامرات',
+                'badge_en' => 'ADVENTURE LEGENDS',
+                'tagline_ar' => 'Assassin\'s Creed، Ghost Recon والمزيد',
+                'tagline_en' => 'Assassin\'s Creed, Ghost Recon & More',
+                'image' => 'assets/images/platforms/platform_ubisoft.webp',
+                'accent_color' => '#0ea5e9',
+                'icon' => '⚔️',
+                'url' => url('brand/ubisoft')
+            ],
+            [
+                'key' => 'rockstar_games',
+                'name_ar' => 'روكستار جيمز (Rockstar)',
+                'name_en' => 'Rockstar Games',
+                'badge_ar' => 'عالم مفتوح',
+                'badge_en' => 'OPEN WORLD HITS',
+                'tagline_ar' => 'GTA 6، Red Dead Redemption 2',
+                'tagline_en' => 'GTA 6 & Red Dead Redemption 2',
+                'image' => 'assets/images/platforms/platform_rockstar_games.webp',
+                'accent_color' => '#f59e0b',
+                'icon' => '⭐',
+                'url' => url('brand/rockstar-games')
+            ],
+            [
+                'key' => 'game_pass',
+                'name_ar' => 'إكس بوكس جيم باس (Game Pass)',
+                'name_en' => 'Xbox Game Pass',
+                'badge_ar' => '+450 لعبة مفتوحة',
+                'badge_en' => '450+ GAMES INCLUDED',
+                'tagline_ar' => 'اشتراكات التميت وسويتش مع EA Play',
+                'tagline_en' => 'Ultimate & Switch with EA Play',
+                'image' => 'assets/images/platforms/platform_game_pass.webp',
+                'accent_color' => '#107c10',
+                'icon' => '🟢',
+                'url' => url('shop?q=Game+Pass')
+            ],
+            [
+                'key' => 'software',
+                'name_ar' => 'برامج وتطبيقات (Software)',
+                'name_en' => 'Software & Design',
+                'badge_ar' => 'أدوبي وتطبيقات رسمية',
+                'badge_en' => 'ADOBE & PRO APPS',
+                'tagline_ar' => 'Adobe Creative Cloud وتطبيقات الإنتاجية',
+                'tagline_en' => 'Adobe Creative Cloud Suite',
+                'image' => 'assets/images/platforms/platform_software.webp',
+                'accent_color' => '#8b5cf6',
+                'icon' => '🎨',
+                'url' => url('brand/adobe')
+            ],
+            [
+                'key' => 'iptv',
+                'name_ar' => 'اشتراكات IPTV (Promax 4K)',
+                'name_en' => 'Promax 4K IPTV',
+                'badge_ar' => 'بث مباشر بدون تقطيع',
+                'badge_en' => 'LIVE 4K STREAMING',
+                'tagline_ar' => 'قنوات beIN الرياضية وأضخم مكتبة أفلام',
+                'tagline_en' => 'Global Sports, Movies & Series',
+                'image' => 'assets/images/platforms/platform_iptv.webp',
+                'accent_color' => '#06b6d4',
+                'icon' => '📺',
+                'url' => url('product/promax-4k-ott-iptv-12m')
+            ],
+            [
+                'key' => 'subscriptions',
+                'name_ar' => 'اشتراكات الترفيه و AI',
+                'name_en' => 'Entertainment & AI',
+                'badge_ar' => 'تطبيقات مميزة',
+                'badge_en' => 'PREMIUM SERVICES',
+                'tagline_ar' => 'Netflix, Spotify, ChatGPT, Gemini, VPN',
+                'tagline_en' => 'Netflix, Spotify, ChatGPT, Gemini, VPN',
+                'image' => 'assets/images/platforms/platform_subscriptions.webp',
+                'accent_color' => '#e50914',
+                'icon' => '🍿',
+                'url' => url('category/subscriptions')
+            ]
+        ];
+    }
+
 
     public function catalog(Request $request) {
         $query = Product::where('status', 'active');

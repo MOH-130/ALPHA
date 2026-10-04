@@ -550,7 +550,7 @@ class AdminController {
                 'footer_text_en', 'show_brands_section', 'show_flash_deals',
                 'show_newsletter', 'header_style', 'bg_preset', 'bg_main_color',
                 'bg_card_color', 'enable_custom_cursor', 'cursor_glow_color',
-                'enable_welcome_modal'
+                'enable_welcome_modal', 'show_platforms_section', 'home_platforms_json'
             ];
 
             foreach ($fields as $field) {

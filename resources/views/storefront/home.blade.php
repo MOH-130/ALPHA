@@ -77,6 +77,70 @@
         </div>
     </section>
 
+    <!-- Platforms Showcase Section: تصفح حسب المنصة -->
+    <?php if (!empty($platforms) && theme_setting('show_platforms_section', '1') !== '0'): ?>
+    <section class="platforms-showcase-section" aria-label="<?= __('messages.browse_by_platform') ?>">
+        <div class="platforms-header">
+            <div>
+                <span style="display:inline-block; font-size:0.75rem; font-weight:800; color:var(--color-primary); background:rgba(0, 210, 255, 0.1); border:1px solid rgba(0, 210, 255, 0.25); border-radius:999px; padding:3px 12px; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:0.5px;">
+                    ✨ TOP GAMING PLATFORMS
+                </span>
+                <h2 class="platforms-header-title">🎮 <?= __('messages.browse_by_platform') ?></h2>
+                <p class="platforms-header-subtitle"><?= __('messages.browse_by_platform_desc') ?></p>
+            </div>
+            <a href="<?= url('shop') ?>" style="color:var(--color-primary); font-weight:700; font-size:0.95rem; display:inline-flex; align-items:center; gap:8px; padding:0.5rem 1.1rem; border-radius:10px; background:rgba(0, 210, 255, 0.08); border:1px solid rgba(0, 210, 255, 0.25); text-decoration:none; transition:all 0.25s ease;">
+                <span><?= __('messages.view_all') ?></span>
+                <span style="transition:transform 0.2s ease;">&rarr;</span>
+            </a>
+        </div>
+
+        <div class="platforms-grid">
+            <?php foreach ($platforms as $platform): 
+                $isAr = current_locale() === 'ar';
+                $title = $isAr ? ($platform['name_ar'] ?? $platform['title'] ?? '') : ($platform['name_en'] ?? $platform['title'] ?? ($platform['name_ar'] ?? ''));
+                $badge = $isAr ? ($platform['badge_ar'] ?? $platform['badge'] ?? '') : ($platform['badge_en'] ?? $platform['badge'] ?? ($platform['badge_ar'] ?? ''));
+                $tagline = $isAr ? ($platform['tagline_ar'] ?? $platform['tagline'] ?? '') : ($platform['tagline_en'] ?? $platform['tagline'] ?? ($platform['tagline_ar'] ?? ''));
+                $accentColor = $platform['accent_color'] ?? $platform['color'] ?? '#00d2ff';
+                $platformUrl = $platform['url'] ?? url('shop');
+                $platformImg = $platform['image'] ?? 'assets/images/platforms/platform_xbox.webp';
+            ?>
+                <a href="<?= htmlspecialchars($platformUrl) ?>" 
+                   class="platform-card" 
+                   style="--card-accent: <?= htmlspecialchars($accentColor) ?>; --card-accent-glow: <?= htmlspecialchars($accentColor) ?>;"
+                   title="<?= htmlspecialchars($title) ?>">
+                    <div class="platform-card-img-wrap">
+                        <img src="<?= htmlspecialchars(asset($platformImg)) ?>" 
+                             alt="<?= htmlspecialchars($title) ?>" 
+                             class="platform-card-img" 
+                             loading="lazy" 
+                             decoding="async" 
+                             width="600" 
+                             height="400">
+                    </div>
+                    <div class="platform-card-overlay"></div>
+                    <?php if (!empty($badge)): ?>
+                        <div class="platform-card-badge"><?= htmlspecialchars($badge) ?></div>
+                    <?php endif; ?>
+                    <div class="platform-card-content">
+                        <div class="platform-card-title-row">
+                            <span class="platform-card-title">
+                                <?php if (!empty($platform['icon'])): ?>
+                                    <span style="font-size:1rem;"><?= $platform['icon'] ?></span>
+                                <?php endif; ?>
+                                <?= htmlspecialchars($title) ?>
+                            </span>
+                            <span class="platform-card-arrow" aria-hidden="true">&rarr;</span>
+                        </div>
+                        <?php if (!empty($tagline)): ?>
+                            <span class="platform-card-tagline"><?= htmlspecialchars($tagline) ?></span>
+                        <?php endif; ?>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- Featured Categories Grid -->
     <section style="margin: 3.5rem 0;">
         <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.75rem;">
