@@ -591,6 +591,31 @@ class AdminController {
         return view('admin.settings.index');
     }
 
+    public function testSmtp(Request $request) {
+        $email = trim((string)$request->input('email'));
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return Response::json([
+                'success' => false,
+                'message' => 'يرجى إدخال بريد إلكتروني صحيح لإجراء الاختبار.'
+            ], 422);
+        }
+
+        $res = \App\Services\MailService::sendTestEmail($email);
+        if ($res['success']) {
+            ActivityLogger::log('SMTP Test Success', 'Settings', "Admin dispatched test email to: {$email}");
+            return Response::json([
+                'success' => true,
+                'message' => "تم إرسال بريد الاختبار بنجاح إلى: {$email}"
+            ]);
+        } else {
+            ActivityLogger::log('SMTP Test Failed', 'Settings', "Admin test email failed for: {$email}");
+            return Response::json([
+                'success' => false,
+                'message' => "فشل إرسال بريد الاختبار: " . ($res['error'] ?? 'تعذر الاتصال بخادم البريد.')
+            ], 500);
+        }
+    }
+
     // ================= SHIPPING & PAYMENTS =================
     public function shipping(Request $request) {
         $methods = ShippingMethod::orderBy('sort_order', 'ASC')->get();
@@ -784,12 +809,11 @@ class AdminController {
         if (!$admin) {
             return redirect(url('admin/login'));
         }
-        $enableDemoMode = Setting::get('enable_demo_mode', '0');
         $googleClientId = Setting::get('google_client_id', '');
         $googleClientSecret = Setting::get('google_client_secret', '');
         $googleRedirectUri = \App\Services\GoogleAuthService::getRedirectUri();
 
-        return view('admin.profile.index', compact('admin', 'enableDemoMode', 'googleClientId', 'googleClientSecret', 'googleRedirectUri'));
+        return view('admin.profile.index', compact('admin', 'googleClientId', 'googleClientSecret', 'googleRedirectUri'));
     }
 
     public function updateProfile(Request $request) {
@@ -850,10 +874,6 @@ class AdminController {
         // Update Session info
         Session::set('user_name', $admin->name);
         Session::set('user_email', $admin->email);
-
-        // Update Demo Mode setting (whether to show or hide demo auto-fill on login)
-        $enableDemo = $request->input('enable_demo_mode', '0') === '1' ? '1' : '0';
-        Setting::set('enable_demo_mode', $enableDemo, 'security');
 
         // Update Google OAuth credentials
         if ($request->input('google_client_id') !== null) {

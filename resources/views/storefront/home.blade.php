@@ -91,7 +91,7 @@
 
         <div class="categories-featured-grid">
             <?php foreach ($featuredCategories as $cat): ?>
-                <a href="<?= url('category/' . $cat->slug) ?>" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--card-radius); padding:1.5rem; text-align:center; transition:all 0.25s ease; display:flex; flex-direction:column; align-items:center;" onmouseover="this.style.borderColor='var(--color-primary)'; this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 24px rgba(0, 210, 255, 0.15)';" onmouseout="this.style.borderColor='var(--border-color)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                <a href="<?= url('category/' . $cat->slug) ?>" class="featured-cat-card">
                     <div style="width:60px; height:60px; background:rgba(0, 210, 255, 0.1); color:var(--color-primary); border:1px solid rgba(0, 210, 255, 0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.75rem; margin-bottom:1rem;">
                         🎮
                     </div>
@@ -144,7 +144,7 @@
                     </div>
 
                     <a href="<?= url('product/' . $dealProduct->slug) ?>" class="product-image-box">
-                        <img src="<?= asset('uploads/products/' . ($dealProduct->primary_image ?: 'default-product.png')) ?>" alt="<?= $dealProduct->getNameAttribute() ?>" loading="lazy">
+                        <img src="<?= asset('uploads/products/' . ($dealProduct->primary_image ?: 'default-product.png')) ?>" alt="<?= $dealProduct->getNameAttribute() ?>" loading="lazy" decoding="async" width="260" height="260">
                     </a>
 
                     <div class="product-card-body">
@@ -201,7 +201,7 @@
                     </div>
 
                     <a href="<?= url('product/' . $prod->slug) ?>" class="product-image-box">
-                        <img src="<?= asset('uploads/products/' . ($prod->primary_image ?: 'default-product.png')) ?>" alt="<?= $prod->getNameAttribute() ?>" loading="lazy">
+                        <img src="<?= asset('uploads/products/' . ($prod->primary_image ?: 'default-product.png')) ?>" alt="<?= $prod->getNameAttribute() ?>" loading="lazy" decoding="async" width="260" height="260">
                     </a>
 
                     <div class="product-card-body">
@@ -294,7 +294,7 @@
         </h3>
         <div style="display:flex; justify-content:center; align-items:center; gap:1.5rem; flex-wrap:wrap;">
             <?php foreach ($brands as $brand): ?>
-                <a href="<?= url('brand/' . $brand->slug) ?>" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--btn-radius); padding:0.85rem 1.75rem; font-weight:700; color:#e2e8f0; transition:all 0.2s ease;" onmouseover="this.style.borderColor='var(--color-primary)'; this.style.color='var(--color-primary)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='#e2e8f0'; this.style.transform='translateY(0)';">
+                <a href="<?= url('brand/' . $brand->slug) ?>" class="brand-chip">
                     🎮 <?= $brand->getNameAttribute() ?>
                 </a>
             <?php endforeach; ?>

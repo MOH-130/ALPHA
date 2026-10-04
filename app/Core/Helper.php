@@ -172,9 +172,24 @@ if (!function_exists('base_url')) {
 
 if (!function_exists('asset')) {
     function asset($path) {
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, '//')) {
+            return $path;
+        }
         $baseUrl = base_url();
         $path = ltrim($path, '/');
         return $baseUrl . '/' . $path;
+    }
+}
+
+if (!function_exists('product_image_url')) {
+    function product_image_url(?string $image): string {
+        if (empty($image)) {
+            return asset('uploads/products/default-product.png');
+        }
+        if (str_starts_with($image, 'http://') || str_starts_with($image, 'https://') || str_starts_with($image, '//')) {
+            return $image;
+        }
+        return asset('uploads/products/' . $image);
     }
 }
 

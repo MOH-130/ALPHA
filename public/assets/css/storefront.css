@@ -55,17 +55,27 @@ html {
 body {
     font-family: var(--font-family);
     background-color: var(--bg-main);
-    background-image: 
-        radial-gradient(circle at 15% 10%, rgba(0, 210, 255, 0.07) 0%, transparent 40%),
-        radial-gradient(circle at 85% 30%, rgba(0, 255, 136, 0.05) 0%, transparent 45%),
-        radial-gradient(circle at 50% 80%, rgba(138, 43, 226, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     max-width: 100%;
     min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+        radial-gradient(circle at 15% 10%, rgba(0, 210, 255, 0.07) 0%, transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(0, 255, 136, 0.05) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(138, 43, 226, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 a {
@@ -122,6 +132,9 @@ img {
     top: 0;
     z-index: 100;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    contain: paint;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .header-inner {
@@ -514,8 +527,9 @@ html[dir="rtl"] .search-input {
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
     box-shadow: var(--shadow-sm);
+    will-change: transform;
 }
 .product-card:hover {
     border-color: rgba(0, 210, 255, 0.4);
@@ -929,9 +943,10 @@ html[dir="rtl"] .toast-container {
     border-radius: 50%;
     pointer-events: none;
     z-index: 999999;
-    transform: translate(-50%, -50%);
     box-shadow: 0 0 10px var(--cursor-glow, #00d2ff), 0 0 20px var(--cursor-glow, #00d2ff);
-    transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+    will-change: transform, opacity;
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease;
 }
 
 .custom-cursor-ring {
@@ -944,22 +959,62 @@ html[dir="rtl"] .toast-container {
     border-radius: 50%;
     pointer-events: none;
     z-index: 999998;
-    transform: translate(-50%, -50%);
     box-shadow: 0 0 15px rgba(0, 210, 255, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.15);
-    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+    will-change: transform, opacity;
+    opacity: 0;
+    transition: opacity 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .custom-cursor-ring.cursor-hover {
-    width: 54px;
-    height: 54px;
     background-color: rgba(0, 210, 255, 0.12);
     border-color: var(--color-secondary, #00ff88);
     box-shadow: 0 0 25px rgba(0, 255, 136, 0.4), inset 0 0 15px rgba(0, 255, 136, 0.2);
 }
 
 .custom-cursor-ring.cursor-click {
-    transform: translate(-50%, -50%) scale(0.7);
     background-color: rgba(0, 210, 255, 0.35);
+}
+
+/* Optimized Desktop Category & Brand Cards */
+.featured-cat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: transform;
+}
+.featured-cat-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 210, 255, 0.15);
+}
+
+.brand-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--btn-radius);
+    padding: 0.85rem 1.75rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    will-change: transform;
+}
+.brand-chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+/* Modern Rendering Optimization for Off-Screen Sections */
+.customer-reviews-section,
+.main-footer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 400px;
 }
 
 .cursor-trail {
@@ -1081,6 +1136,7 @@ html[dir="rtl"] .toast-container {
     gap: 3rem;
     white-space: nowrap;
     animation: luxuryTickerScroll 35s linear infinite;
+    will-change: transform;
 }
 .vip-ticker-track:hover {
     animation-play-state: paused;

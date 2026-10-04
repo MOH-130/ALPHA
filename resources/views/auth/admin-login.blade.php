@@ -228,14 +228,6 @@
             </div>
         <?php endif; ?>
 
-        <?php if (app_setting('enable_demo_mode', '0') === '1'): ?>
-        <!-- 1-Click Fast Admin Fill Button (Visible only when Demo Mode is Enabled) -->
-        <button type="button" class="quick-admin-fill-btn" onclick="autoFillAdmin()">
-            <span>⚡</span>
-            <span>إدراج بيانات المشرف فوراً بنقرة واحدة (1-Click Fill)</span>
-        </button>
-        <?php endif; ?>
-
         <form action="<?= url('admin/login') ?>" method="POST" onsubmit="playAdminSound()">
             <?= csrf_field() ?>
             <div class="admin-input-wrap">
@@ -277,24 +269,6 @@
     </div>
 
     <script>
-        <?php if (app_setting('enable_demo_mode', '0') === '1'): ?>
-        function autoFillAdmin() {
-            document.getElementById('admin-email').value = 'admin@store.com';
-            document.getElementById('admin-password').value = 'password123';
-            playAdminSound();
-            const btn = document.querySelector('.quick-admin-fill-btn');
-            if (btn) {
-                btn.innerHTML = '<span>✅</span> <span>تم ملء البيانات بنجاح! جاهز للدخول</span>';
-                btn.style.borderColor = '#00ff88';
-                btn.style.color = '#00ff88';
-                setTimeout(() => {
-                    btn.innerHTML = '<span>⚡</span> <span>إدراج بيانات المشرف فوراً بنقرة واحدة (1-Click Fill)</span>';
-                    btn.style.borderColor = 'rgba(0, 210, 255, 0.4)';
-                    btn.style.color = '#00d2ff';
-                }, 2500);
-            }
-        }
-        <?php endif; ?>
 
         function toggleAdminPass(btn) {
             const pass = document.getElementById('admin-password');

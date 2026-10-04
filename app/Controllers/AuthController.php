@@ -80,12 +80,19 @@ class AuthController {
             || (Setting::get('auth_require_otp_all', '1') === '1');
 
         if ($requireOtp) {
-            Session::set('auth_pending_user_id', $user->id);
-            OtpService::generate($user, [
+            $sent = OtpService::sendOtp($user, 'login', [
                 'ip' => $request->ip(),
                 'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
             ]);
-            Session::flash('info', 'تم التحقق من صحة بياناتك. 🔒 تم إرسال كود الأمان (OTP) إلى بريدك على Gmail لإتمام الدخول.');
+
+            if (!$sent) {
+                Session::flash('error', 'تعذر إرسال رمز التحقق، يرجى المحاولة مرة أخرى.');
+                return redirect(url('login'));
+            }
+
+            Session::set('auth_pending_user_id', $user->id);
+            Session::set('auth_otp_purpose', 'login');
+            Session::flash('info', 'تم التحقق من صحة بياناتك. 🔒 تم إرسال رمز الأمان (OTP) إلى بريدك الإلكتروني لإتمام الدخول.');
             return redirect(url('auth/verify-otp'));
         }
 
@@ -157,8 +164,13 @@ class AuthController {
         // 4. Admin 2FA OTP Check
         $requireOtp = ($user->two_factor_enabled == 1) || (Setting::get('admin_require_otp', '0') === '1');
         if ($requireOtp) {
+            $sent = OtpService::sendOtp($user, 'login');
+            if (!$sent) {
+                Session::flash('error', 'تعذر إرسال رمز التحقق، يرجى المحاولة مرة أخرى.');
+                return redirect(url('admin/login'));
+            }
             Session::set('auth_pending_user_id', $user->id);
-            OtpService::generate($user);
+            Session::set('auth_otp_purpose', 'login');
             Session::flash('info', 'بوابة الإدارة محمية بنظام التحقق المزدوج (2FA). تم إرسال رمز الأمان إلى بريدك الإلكتروني.');
             return redirect(url('auth/verify-otp'));
         }
@@ -234,13 +246,19 @@ class AuthController {
         }
 
         // High Security Protocol: Verify Email Ownership with OTP
-        Session::set('auth_pending_user_id', $user->id);
-        OtpService::generate($user, [
+        $sent = OtpService::sendOtp($user, 'register', [
             'ip' => $request->ip(),
             'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
         ]);
 
-        Session::flash('success', 'تم إنشاء حسابك بنجاح! 🔒 أرسلنا كود التحقق الأمني المكون من 6 أرقام إلى بريدك الإلكتروني (' . OtpService::maskEmail($user->email) . '). يرجى إدخال الكود لتأكيد ملكية البريد وإتمام الدخول.');
+        if (!$sent) {
+            Session::flash('error', 'تعذر إرسال رمز التحقق، يرجى المحاولة مرة أخرى.');
+            return redirect(url('login'));
+        }
+
+        Session::set('auth_pending_user_id', $user->id);
+        Session::set('auth_otp_purpose', 'register');
+        Session::flash('success', 'تم إنشاء حسابك بنجاح! 🔒 أرسلنا رمز التحقق إلى بريدك الإلكتروني (' . OtpService::maskEmail($user->email) . '). يرجى إدخال الرمز لتأكيد ملكية البريد وإتمام الدخول.');
         return redirect(url('auth/verify-otp'));
     }
 
@@ -274,13 +292,26 @@ class AuthController {
 
         RateLimiter::hit($rateKey, 300);
 
-        if ($user) {
-            ActivityLogger::log('Password Reset Requested', 'Auth', "Reset requested for: {$user->email}");
-            Session::flash('success', __('auth.password_reset_link_sent'));
-        } else {
-            Session::flash('error', __('auth.email_not_found'));
+        if (!$user) {
+            Session::flash('error', 'هذا البريد الإلكتروني غير مسجل لدينا.');
+            return redirect(url('forgot-password'));
         }
-        return redirect(url('forgot-password'));
+
+        $sent = OtpService::sendOtp($user, 'reset', [
+            'ip' => $request->ip(),
+            'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
+        ]);
+
+        if (!$sent) {
+            Session::flash('error', 'تعذر إرسال رمز التحقق، يرجى المحاولة مرة أخرى.');
+            return redirect(url('forgot-password'));
+        }
+
+        Session::set('auth_pending_user_id', $user->id);
+        Session::set('auth_otp_purpose', 'reset');
+        ActivityLogger::log('Password Reset Requested', 'Auth', "OTP Reset requested for: {$user->email}");
+        Session::flash('info', 'تم إرسال رمز التحقق (OTP) لاستعادة حسابك إلى بريدك الإلكتروني (' . OtpService::maskEmail($user->email) . '). يرجى إدخال الرمز لتأكيد هويتك.');
+        return redirect(url('auth/verify-otp'));
     }
 
     // ========================================================
@@ -351,8 +382,13 @@ class AuthController {
 
         // Check if 2FA is enabled
         if ($user->two_factor_enabled == 1) {
+            $sent = OtpService::sendOtp($user, 'login');
+            if (!$sent) {
+                Session::flash('error', 'تعذر إرسال رمز التحقق، يرجى المحاولة مرة أخرى.');
+                return redirect(url('login'));
+            }
             Session::set('auth_pending_user_id', $user->id);
-            OtpService::generate($user);
+            Session::set('auth_otp_purpose', 'login');
             Session::flash('info', 'تم ربط الدخول بحساب Google. يرجى إدخال رمز التحقق الأمني المزدوج (2FA).');
             return redirect(url('auth/verify-otp'));
         }
@@ -383,15 +419,18 @@ class AuthController {
         $user = User::find($userId);
         if (!$user) {
             Session::remove('auth_pending_user_id');
+            Session::remove('auth_otp_purpose');
             return redirect(url('login'));
         }
+
+        $purpose = Session::get('auth_otp_purpose', 'login');
 
         return view('auth.verify-otp', [
             'user' => $user,
             'maskedEmail' => OtpService::maskEmail($user->email),
             'secondsRemaining' => OtpService::secondsUntilResend($user),
             'remainingAttempts' => OtpService::remainingAttempts($user),
-            'debugOtp' => Session::flash('_latest_otp_hint')
+            'purpose' => $purpose
         ]);
     }
 
@@ -405,8 +444,11 @@ class AuthController {
         $user = User::find($userId);
         if (!$user) {
             Session::remove('auth_pending_user_id');
+            Session::remove('auth_otp_purpose');
             return redirect(url('login'));
         }
+
+        $purpose = Session::get('auth_otp_purpose', 'login');
 
         // Get 6-digit code (either single input or 6 box inputs)
         $code = trim((string)$request->input('otp_code'));
@@ -423,11 +465,12 @@ class AuthController {
             return redirect(url('auth/verify-otp'));
         }
 
-        if (!OtpService::verify($user, $code)) {
+        if (!OtpService::verify($user, $code, $purpose)) {
             $remaining = OtpService::remainingAttempts($user);
             if ($remaining <= 0) {
                 Session::remove('auth_pending_user_id');
-                Session::flash('error', 'تم استنفاد محاولات إدخال الرمز وإلغاء الجلسة لأسباب أمنية. يرجى تسجيل الدخول مجدداً.');
+                Session::remove('auth_otp_purpose');
+                Session::flash('error', 'تم استنفاد محاولات إدخال الرمز وإلغاء الجلسة لأسباب أمنية. يرجى إعادة المحاولة مجدداً.');
                 return redirect(url('login'));
             }
 
@@ -435,8 +478,18 @@ class AuthController {
             return redirect(url('auth/verify-otp'));
         }
 
-        // Success! Finalize Login
+        // OTP Verified successfully!
         Session::remove('auth_pending_user_id');
+        Session::remove('auth_otp_purpose');
+
+        // Check if this was for password reset
+        if ($purpose === 'reset') {
+            Session::set('password_reset_verified_user_id', $user->id);
+            Session::flash('success', 'تم تأكيد هويتك بنجاح! يرجى إدخال كلمة المرور الجديدة لحسابك.');
+            return redirect(url('reset-password'));
+        }
+
+        // Standard Login / Registration Completion
         Auth::getInstance()->login($user);
         ActivityLogger::log('2FA Verified', 'Auth', "User {$user->email} successfully verified OTP code");
 
@@ -454,9 +507,51 @@ class AuthController {
         return redirect(url('account/dashboard'));
     }
 
+    public function showResetPassword() {
+        if (!Session::has('password_reset_verified_user_id')) {
+            Session::flash('error', 'يرجى طلب رمز استرجاع كلمة المرور والتحقق منه أولاً.');
+            return redirect(url('forgot-password'));
+        }
+        return view('auth.reset-password');
+    }
+
+    public function resetPassword(Request $request) {
+        if (!Session::has('password_reset_verified_user_id')) {
+            Session::flash('error', 'انتهت صلاحية جلسة تغيير كلمة المرور. يرجى إعادة طلب رمز التحقق.');
+            return redirect(url('forgot-password'));
+        }
+
+        $userId = (int)Session::get('password_reset_verified_user_id');
+        $user = User::find($userId);
+        if (!$user) {
+            Session::remove('password_reset_verified_user_id');
+            return redirect(url('forgot-password'));
+        }
+
+        $data = $request->validate([
+            'password' => 'required|min:6',
+            'password_confirmation' => 'required'
+        ]);
+
+        if ($data['password'] !== $request->input('password_confirmation')) {
+            Session::flash('error', 'كلمة المرور وتأكيد كلمة المرور غير متطابقين.');
+            return redirect(url('reset-password'));
+        }
+
+        $user->update([
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT)
+        ]);
+
+        Session::remove('password_reset_verified_user_id');
+        ActivityLogger::log('Password Reset Done', 'Auth', "Password reset completed for: {$user->email}");
+
+        Session::flash('success', 'تم تعيين كلمة المرور الجديدة بنجاح! يمكنك الآن تسجيل الدخول بها.');
+        return redirect(url('login'));
+    }
+
     public function resendOtp() {
         if (!Session::has('auth_pending_user_id')) {
-            Session::flash('error', 'الجلسة غير صالحة. يرجى تسجيل الدخول أولاً.');
+            Session::flash('error', 'الجلسة غير صالحة. يرجى المحاولة أولاً.');
             return redirect(url('login'));
         }
 
@@ -464,6 +559,7 @@ class AuthController {
         $user = User::find($userId);
         if (!$user) {
             Session::remove('auth_pending_user_id');
+            Session::remove('auth_otp_purpose');
             return redirect(url('login'));
         }
 
@@ -473,10 +569,17 @@ class AuthController {
             return redirect(url('auth/verify-otp'));
         }
 
-        OtpService::generate($user, [
+        $purpose = Session::get('auth_otp_purpose', 'login');
+        $sent = OtpService::sendOtp($user, $purpose, [
             'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
             'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
         ]);
+
+        if (!$sent) {
+            Session::flash('error', 'تعذر إرسال رمز التحقق، يرجى المحاولة مرة أخرى.');
+            return redirect(url('auth/verify-otp'));
+        }
+
         Session::flash('success', 'تم إرسال رمز تحقق أمني جديد إلى بريدك الإلكتروني بنجاح.');
         return redirect(url('auth/verify-otp'));
     }
@@ -511,13 +614,19 @@ class AuthController {
 
         RateLimiter::hit($rateKey, 60);
 
-        Session::set('auth_pending_user_id', $user->id);
-        OtpService::generate($user, [
+        $sent = OtpService::sendOtp($user, 'login', [
             'ip' => $request->ip(),
             'agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser'
         ]);
 
-        Session::flash('info', 'تم إرسال كود التحقق الأمني (OTP) إلى بريدك الإلكتروني (' . OtpService::maskEmail($user->email) . '). يرجى إدخال الرمز لتسجيل الدخول.');
+        if (!$sent) {
+            Session::flash('error', 'تعذر إرسال رمز التحقق، يرجى المحاولة مرة أخرى.');
+            return redirect(url('login'));
+        }
+
+        Session::set('auth_pending_user_id', $user->id);
+        Session::set('auth_otp_purpose', 'login');
+        Session::flash('info', 'تم إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني (' . OtpService::maskEmail($user->email) . '). يرجى إدخال الرمز لتسجيل الدخول.');
         return redirect(url('auth/verify-otp'));
     }
 

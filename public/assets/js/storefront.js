@@ -107,6 +107,35 @@ function initInteractiveCursor() {
     let ringX = -100;
     let ringY = -100;
     let isVisible = false;
+    let isRafRunning = false;
+
+    function renderCursor() {
+        if (!isVisible) {
+            isRafRunning = false;
+            return;
+        }
+
+        const dx = mouseX - ringX;
+        const dy = mouseY - ringY;
+        ringX += dx * 0.22;
+        ringY += dy * 0.22;
+
+        ring.style.transform = `translate3d(${ringX - 18}px, ${ringY - 18}px, 0)`;
+
+        // Keep loop running only while lerp is closing the gap
+        if (Math.abs(dx) > 0.2 || Math.abs(dy) > 0.2) {
+            requestAnimationFrame(renderCursor);
+        } else {
+            isRafRunning = false;
+        }
+    }
+
+    function scheduleRingUpdate() {
+        if (!isRafRunning && isVisible) {
+            isRafRunning = true;
+            requestAnimationFrame(renderCursor);
+        }
+    }
 
     window.addEventListener('mousemove', function(e) {
         mouseX = e.clientX;
@@ -116,16 +145,19 @@ function initInteractiveCursor() {
             dot.style.opacity = '1';
             ring.style.opacity = '1';
             isVisible = true;
+            ringX = mouseX;
+            ringY = mouseY;
         }
 
-        dot.style.left = `${mouseX}px`;
-        dot.style.top = `${mouseY}px`;
-    });
+        dot.style.transform = `translate3d(${mouseX - 4}px, ${mouseY - 4}px, 0)`;
+        scheduleRingUpdate();
+    }, { passive: true });
 
     document.addEventListener('mouseleave', function() {
         dot.style.opacity = '0';
         ring.style.opacity = '0';
         isVisible = false;
+        isRafRunning = false;
     });
 
     document.addEventListener('mouseenter', function() {
@@ -134,42 +166,30 @@ function initInteractiveCursor() {
         isVisible = true;
     });
 
-    // Lerp loop for buttery-smooth follower ring
-    function renderCursor() {
-        if (isVisible) {
-            ringX += (mouseX - ringX) * 0.18;
-            ringY += (mouseY - ringY) * 0.18;
-            ring.style.left = `${ringX}px`;
-            ring.style.top = `${ringY}px`;
-        }
-        requestAnimationFrame(renderCursor);
-    }
-    requestAnimationFrame(renderCursor);
-
     // Interactive Hover Elements (links, buttons, inputs, cards)
-    const hoverSelectors = 'a, button, .btn, input, select, textarea, .product-card, .prop-card, .card-action-btn, .cat-pill, .product-thumb-item';
+    const hoverSelectors = 'a, button, .btn, input, select, textarea, .product-card, .prop-card, .card-action-btn, .cat-pill, .product-thumb-item, .featured-cat-card, .brand-chip';
 
     document.addEventListener('mouseover', function(e) {
         const target = e.target.closest(hoverSelectors);
         if (target) {
             ring.classList.add('cursor-hover');
         }
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseout', function(e) {
         const target = e.target.closest(hoverSelectors);
         if (target) {
             ring.classList.remove('cursor-hover');
         }
-    });
+    }, { passive: true });
 
     document.addEventListener('mousedown', function() {
         ring.classList.add('cursor-click');
-    });
+    }, { passive: true });
 
     document.addEventListener('mouseup', function() {
         ring.classList.remove('cursor-click');
-    });
+    }, { passive: true });
 }
 
 // ================= 2. WELCOME MODAL LOGIC =================

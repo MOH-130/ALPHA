@@ -44,12 +44,42 @@ switch ($command) {
         echo "\033[32mDatabase seeded successfully!\033[0m\n";
         break;
 
+    case 'mail:test':
+        $recipient = $argv[2] ?? '';
+        if (empty($recipient) || !filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+            echo "\033[31mError: Please provide a valid recipient email address.\033[0m\n";
+            echo "Usage: php artisan mail:test your-email@gmail.com\n";
+            exit(1);
+        }
+
+        $host = config('mail.mailers.smtp.host', env('MAIL_HOST', 'smtp.gmail.com'));
+        $port = config('mail.mailers.smtp.port', env('MAIL_PORT', 587));
+        $encryption = config('mail.mailers.smtp.encryption', env('MAIL_ENCRYPTION', 'tls'));
+        $username = config('mail.mailers.smtp.username', env('MAIL_USERNAME', ''));
+
+        echo "Connecting to SMTP server...\n";
+        echo "  - Host: {$host}\n";
+        echo "  - Port: {$port}\n";
+        echo "  - Encryption: {$encryption}\n";
+        echo "  - Username: " . (!empty($username) ? substr($username, 0, 3) . '***' : '(Not configured)') . "\n";
+        echo "  - Target: {$recipient}\n\n";
+
+        $res = \App\Services\MailService::sendTestEmail($recipient);
+        if ($res['success']) {
+            echo "\033[32m[SUCCESS] Test email dispatched successfully to: {$recipient} via {$res['sent_via']}!\033[0m\n";
+        } else {
+            echo "\033[31m[FAILED] Failed to send email: {$res['error']}\033[0m\n";
+            exit(1);
+        }
+        break;
+
     default:
-        echo "NovaStore CLI Manager\n";
+        echo "ALPHA GAMING SHOP CLI Manager\n";
         echo "Usage:\n";
-        echo "  php artisan serve            Start the local HTTP web server\n";
-        echo "  php artisan migrate          Run database schema migrations\n";
-        echo "  php artisan migrate --seed   Run migrations and seed demo data\n";
-        echo "  php artisan db:seed          Seed realistic demo products and settings\n";
+        echo "  php artisan serve                       Start the local HTTP web server\n";
+        echo "  php artisan migrate                     Run database schema migrations\n";
+        echo "  php artisan migrate --seed              Run migrations and seed demo data\n";
+        echo "  php artisan db:seed                     Seed realistic demo products and settings\n";
+        echo "  php artisan mail:test <email>           Test SMTP sending to a specific recipient\n";
         break;
 }

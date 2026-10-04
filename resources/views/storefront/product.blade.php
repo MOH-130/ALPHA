@@ -20,17 +20,17 @@
                 <?php if ($product->getDiscountPercentage() > 0): ?>
                     <span class="badge-discount" style="position:absolute; top:16px; right:16px; font-size:0.875rem; z-index:2;">-<?= $product->getDiscountPercentage() ?>% خصم</span>
                 <?php endif; ?>
-                <img src="<?= asset('uploads/products/' . ($product->primary_image ?: 'default-product.png')) ?>" alt="<?= $product->getNameAttribute() ?>" style="width:100%; height:460px; object-fit:contain;">
+                <img src="<?= asset('uploads/products/' . ($product->primary_image ?: 'default-product.png')) ?>" alt="<?= $product->getNameAttribute() ?>" style="width:100%; height:460px; object-fit:contain;" decoding="async">
             </div>
 
             <!-- Thumbnails -->
             <div style="display:flex; gap:10px; overflow-x:auto;">
                 <div class="product-thumb-item active" data-src="<?= asset('uploads/products/' . ($product->primary_image ?: 'default-product.png')) ?>" style="width:80px; height:80px; border:2px solid var(--color-primary); border-radius:8px; overflow:hidden; cursor:pointer; background:#070a12;">
-                    <img src="<?= asset('uploads/products/' . ($product->primary_image ?: 'default-product.png')) ?>" style="width:100%; height:100%; object-fit:cover;">
+                    <img src="<?= asset('uploads/products/' . ($product->primary_image ?: 'default-product.png')) ?>" style="width:100%; height:100%; object-fit:cover;" decoding="async">
                 </div>
                 <?php foreach ($images as $img): ?>
                     <div class="product-thumb-item" data-src="<?= asset('uploads/products/' . $img->image_path) ?>" style="width:80px; height:80px; border:1px solid var(--border-color); border-radius:8px; overflow:hidden; cursor:pointer; background:#070a12;">
-                        <img src="<?= asset('uploads/products/' . $img->image_path) ?>" style="width:100%; height:100%; object-fit:cover;">
+                        <img src="<?= asset('uploads/products/' . $img->image_path) ?>" style="width:100%; height:100%; object-fit:cover;" decoding="async">
                     </div>
                 <?php endforeach; ?>
             </div>

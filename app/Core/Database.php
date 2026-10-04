@@ -28,14 +28,22 @@ class Database {
 
                     if ($isNew) {
                         self::initializeDatabase();
+                    } else {
+                        self::ensureColumnsExist();
                     }
                 } else {
                     $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']};charset={$config['charset']}";
-                    self::$pdo = new PDO($dsn, $config['username'], $config['password'], [
+                    $pdoOptions = [
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
-                    ]);
+                    ];
+                    if (!empty($config['ssl']) || (isset($config['host']) && str_contains($config['host'], 'tidbcloud')) || (isset($config['port']) && $config['port'] == 4000)) {
+                        if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+                            $pdoOptions[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+                        }
+                    }
+                    self::$pdo = new PDO($dsn, $config['username'], $config['password'], $pdoOptions);
                 }
             } catch (PDOException $e) {
                 // If MySQL fails or database does not exist, fallback to SQLite automatically for zero-friction run
@@ -91,5 +99,28 @@ class Database {
 
         require_once __DIR__ . '/../../database/seeders/DatabaseSeeder.php';
         \Database\Seeders\DatabaseSeeder::run();
+    }
+
+    public static function ensureColumnsExist(): void {
+        if (!self::$pdo) return;
+        try {
+            $cols = self::$pdo->query("PRAGMA table_info(users)")->fetchAll(\PDO::FETCH_ASSOC);
+            $names = array_column($cols, 'name');
+            if (!in_array('otp_code', $names)) {
+                self::$pdo->exec("ALTER TABLE users ADD COLUMN otp_code VARCHAR(255) NULL");
+            }
+            if (!in_array('otp_expires_at', $names)) {
+                self::$pdo->exec("ALTER TABLE users ADD COLUMN otp_expires_at DATETIME NULL");
+            }
+            if (!in_array('otp_purpose', $names)) {
+                self::$pdo->exec("ALTER TABLE users ADD COLUMN otp_purpose VARCHAR(50) NULL");
+            }
+            if (!in_array('two_factor_enabled', $names)) {
+                self::$pdo->exec("ALTER TABLE users ADD COLUMN two_factor_enabled INTEGER DEFAULT 0");
+            }
+            if (!in_array('google_id', $names)) {
+                self::$pdo->exec("ALTER TABLE users ADD COLUMN google_id VARCHAR(191) NULL");
+            }
+        } catch (\Throwable $e) {}
     }
 }

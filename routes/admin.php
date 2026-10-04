@@ -60,6 +60,7 @@ Router::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'locale']]
     // Settings
     Router::get('/settings', [AdminController::class, 'settings'])->name('admin.settings');
     Router::post('/settings', [AdminController::class, 'settings'])->name('admin.settings.update');
+    Router::post('/settings/test-smtp', [AdminController::class, 'testSmtp'])->name('admin.settings.test_smtp');
 
     // Shipping & Payments
     Router::get('/shipping', [AdminController::class, 'shipping'])->name('admin.shipping');

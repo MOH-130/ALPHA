@@ -9,7 +9,7 @@ class User extends Model {
     protected array $fillable = [
         'name', 'email', 'password', 'phone', 'role', 'status', 'avatar',
         'is_approved', 'affiliate_code', 'email_verified_at', 'address', 'city', 'country',
-        'google_id', 'otp_code', 'otp_expires_at', 'two_factor_enabled'
+        'google_id', 'otp_code', 'otp_expires_at', 'otp_purpose', 'two_factor_enabled'
     ];
 
     public function orders(): array {

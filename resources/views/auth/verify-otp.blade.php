@@ -38,15 +38,7 @@
                 </div>
             </div>
 
-            <!-- Debug / Demo Helper Notice (for smooth local testing) -->
-            <?php if (!empty($debugOtp)): ?>
-            <div style="background: rgba(0, 255, 136, 0.12); border: 1px dashed #00ff88; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; text-align: center;">
-                <span style="font-size: 0.8rem; color: #94a3b8;">رمز التحقق للأغراض التجريبية (Local Sandbox):</span>
-                <div style="font-family: monospace; font-size: 1.5rem; font-weight: 900; color: #00ff88; letter-spacing: 4px; margin-top: 2px;">
-                    <?= $debugOtp ?>
-                </div>
-            </div>
-            <?php endif; ?>
+
 
             <!-- OTP Form -->
             <form action="<?= url('auth/verify-otp') ?>" method="POST" id="otp-form">

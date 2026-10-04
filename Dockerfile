@@ -4,7 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN mkdir -p storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
+RUN docker-php-ext-install pdo_mysql && \
+    mkdir -p storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 10000
 

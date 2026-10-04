@@ -114,6 +114,78 @@
             </div>
         </div>
 
+        <!-- 5. Production SMTP Mailer Status & Test Tool -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h3 class="admin-card-title">📧 خادم البريد الحقيقي (Production SMTP) واختبار الإرسال</h3>
+            </div>
+            <div class="admin-card-body">
+                <div style="background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 8px; padding: 12px 16px; margin-bottom: 1.25rem; font-size: 0.85rem; color: #cbd5e1;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div><strong>خادم SMTP:</strong> <code style="color: #00d2ff;"><?= htmlspecialchars(config('mail.mailers.smtp.host', env('MAIL_HOST', 'smtp.gmail.com'))) ?></code></div>
+                        <div><strong>المنفذ:</strong> <code style="color: #00d2ff;"><?= (int)config('mail.mailers.smtp.port', env('MAIL_PORT', 587)) ?></code></div>
+                        <div><strong>التشفير:</strong> <code style="color: #00d2ff;"><?= htmlspecialchars(config('mail.mailers.smtp.encryption', env('MAIL_ENCRYPTION', 'tls'))) ?></code></div>
+                        <div><strong>بريد الإرسال:</strong> <code style="color: #00ff88;"><?= htmlspecialchars(config('mail.from.address', env('MAIL_FROM_ADDRESS', ''))) ?></code></div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <input type="email" id="test-smtp-email" class="form-control" placeholder="أدخل بريدك لاختبار وصول رسائل OTP الحقيقية..." style="max-width: 380px;">
+                    <button type="button" id="btn-test-smtp" onclick="executeSmtpTest()" class="btn btn-secondary btn-sm" style="height: 38px; font-weight: 700;">
+                        🚀 إرسال رسالة اختبار الآن
+                    </button>
+                    <span id="smtp-test-status" style="font-size: 0.85rem; font-weight: 700;"></span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        function executeSmtpTest() {
+            const emailInput = document.getElementById('test-smtp-email');
+            const statusEl = document.getElementById('smtp-test-status');
+            const btn = document.getElementById('btn-test-smtp');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                alert('يرجى كتابة بريد إلكتروني صالح لاختبار الإرسال.');
+                emailInput.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'جاري الإرسال...';
+            statusEl.innerText = '⏳ جاري الاتصال بخادم البريد...';
+            statusEl.style.color = '#ffaa00';
+
+            fetch('<?= url('admin/settings/test-smtp') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: '_token=<?= csrf_token() ?>&email=' + encodeURIComponent(email)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerText = '🚀 إرسال رسالة اختبار الآن';
+                if (data.success) {
+                    statusEl.innerText = '✅ ' + data.message;
+                    statusEl.style.color = '#00ff88';
+                } else {
+                    statusEl.innerText = '❌ ' + data.message;
+                    statusEl.style.color = '#ef4444';
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerText = '🚀 إرسال رسالة اختبار الآن';
+                statusEl.innerText = '❌ خطأ في الاتصال بالخادم.';
+                statusEl.style.color = '#ef4444';
+            });
+        }
+        </script>
+
         <button type="submit" class="btn btn-primary btn-lg">
             💾 <?= __('admin.settings_saved_success') ?>
         </button>

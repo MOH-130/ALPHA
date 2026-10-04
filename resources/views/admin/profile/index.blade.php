@@ -131,7 +131,7 @@
             </div>
         </div>
 
-        <!-- SECTION 3: Production Live Shield & Demo Mode Controls -->
+        <!-- SECTION 3: Production Live Shield & 2FA Controls -->
         <div class="admin-card" style="margin-bottom:2rem; border:1px solid rgba(255, 170, 0, 0.35); box-shadow:0 10px 30px rgba(0,0,0,0.4);">
             <div class="admin-card-header" style="display:flex; justify-content:space-between; align-items:center; background:rgba(255, 170, 0, 0.05); border-bottom:1px solid rgba(255,255,255,0.06);">
                 <div style="display:flex; align-items:center; gap:10px;">
@@ -143,19 +143,6 @@
                 </span>
             </div>
             <div class="admin-card-body" style="padding:1.75rem;">
-                <!-- Demo Mode Toggle -->
-                <label style="display:flex; align-items:flex-start; gap:14px; cursor:pointer; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);">
-                    <input type="checkbox" name="enable_demo_mode" value="1" <?= $enableDemoMode === '1' ? 'checked' : '' ?> style="accent-color:var(--color-primary); width:22px; height:22px; margin-top:2px; flex-shrink:0; cursor:pointer;">
-                    <div>
-                        <div style="font-weight:800; font-size:0.95rem; color:#ffffff;">
-                            إظهار أزرار الحسابات التجريبية والتعبئة بنقرة واحدة على شاشات الدخول (Demo Mode)
-                        </div>
-                        <p style="color:#94a3b8; font-size:0.85rem; line-height:1.6; margin:6px 0 0;">
-                            ⚠️ <strong>توصية النشر:</strong> عند <span style="color:#ffaa00; font-weight:700;">إلغاء تحديد هذا الخيار</span>، سيتم فوراً إخفاء أي بيانات تجريبية وأزرار ملء تلقائي من واجهات تسجيل الدخول، وبذلك لن يستطيع أي زائر معرفة أو تخمين أي بيانات وستكون أنت الوحيد الذي يمتلك مفاتيح الدخول!
-                        </p>
-                    </div>
-                </label>
-
                 <!-- 2FA OTP Toggle -->
                 <label style="display:flex; align-items:flex-start; gap:14px; cursor:pointer; margin-top:1.5rem;">
                     <input type="checkbox" name="two_factor_enabled" value="1" <?= ($admin->two_factor_enabled ?? 0) == 1 ? 'checked' : '' ?> style="accent-color:#00ff88; width:22px; height:22px; margin-top:2px; flex-shrink:0; cursor:pointer;">

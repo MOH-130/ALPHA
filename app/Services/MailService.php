@@ -4,275 +4,165 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Services\ActivityLogger;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 class MailService {
     private const LOG_FILE = __DIR__ . '/../../storage/logs/email.log';
-    private const HTML_PREVIEW_FILE = __DIR__ . '/../../storage/logs/sent_emails.html';
 
     /**
-     * Send OTP Verification Email
+     * Send Real OTP Verification Email via SMTP
      */
-    public static function sendOtpEmail(User $user, string $code, array $context = []): array {
-        $ip = $context['ip'] ?? ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
-        $userAgent = $context['agent'] ?? ($_SERVER['HTTP_USER_AGENT'] ?? 'Web Browser');
-        $dateTime = date('Y-m-d H:i:s') . ' (توقيت الجزائر GMT+1)';
+    public static function sendOtp(string $to, string $code, string $purpose = 'login'): bool {
+        $subject = "رمز التحقق - ALPHA GAMING SHOP";
 
-        $subject = "🛡️ كود التحقق الأمني: [{$code}] - متجر ALPHA Gaming ⚡";
-        $htmlBody = self::renderOtpTemplate($user, $code, [
-            'ip' => $ip,
-            'userAgent' => self::simplifyUserAgent($userAgent),
-            'dateTime' => $dateTime
-        ]);
+        $htmlBody = self::renderOtpTemplate($to, $code, $purpose);
+        $textBody = self::renderOtpTextFallback($code);
 
-        $textBody = self::renderOtpTextFallback($user, $code, [
-            'ip' => $ip,
-            'dateTime' => $dateTime
-        ]);
-
-        return self::send($user->email, $subject, $htmlBody, $textBody);
+        return self::send($to, $subject, $htmlBody, $textBody);
     }
 
     /**
-     * Core Email Dispatcher: SMTP Socket -> PHP mail() Fallback -> File Logging
+     * Send Real Password Reset Email via SMTP
      */
-    public static function send(string $to, string $subject, string $htmlBody, string $textBody = ''): array {
-        $fromAddress = config('mail.from.address', 'noreply@alpha-efxl.onrender.com');
-        $fromName = config('mail.from.name', 'ALPHA Gaming Security Shield 🛡️');
+    public static function sendPasswordReset(string $to, string $code): bool {
+        $subject = "استعادة كلمة المرور - ALPHA GAMING SHOP";
 
-        // Always save HTML preview for testing/inspection
-        self::savePreviewLog($to, $subject, $htmlBody);
+        $htmlBody = self::renderPasswordResetTemplate($to, $code);
+        $textBody = self::renderPasswordResetTextFallback($code);
 
-        $sentVia = 'none';
-        $success = false;
-        $error = null;
+        return self::send($to, $subject, $htmlBody, $textBody);
+    }
 
-        // 1. Try Direct Pure-PHP SMTP if credentials are configured
-        $smtpHost = config('mail.mailers.smtp.host');
-        $smtpUser = config('mail.mailers.smtp.username');
-        $smtpPass = config('mail.mailers.smtp.password');
+    /**
+     * Send Real Welcome Email via SMTP
+     */
+    public static function sendWelcomeEmail(string $to, string $name): bool {
+        $subject = "مرحباً بك في ALPHA GAMING SHOP 🎮";
 
-        if (!empty($smtpHost) && !empty($smtpUser) && !empty($smtpPass) && $smtpUser !== 'null') {
-            try {
-                $smtpRes = self::sendViaSmtp($to, $subject, $htmlBody, $textBody, $fromAddress, $fromName);
-                if ($smtpRes['success']) {
-                    $success = true;
-                    $sentVia = 'smtp';
-                } else {
-                    $error = $smtpRes['error'];
-                }
-            } catch (\Throwable $e) {
-                $error = $e->getMessage();
-            }
-        }
+        $htmlBody = self::renderWelcomeTemplate($to, $name);
+        $textBody = "مرحباً {$name}،\n\nأهلاً بك في متجر ALPHA GAMING SHOP! لقد تم تفعيل حسابك بنجاح.\n\nALPHA GAMING SHOP";
 
-        // 2. Fallback to standard PHP mail() if SMTP not configured or failed
-        if (!$success) {
-            $boundary = '=_alpha_' . md5(uniqid(microtime(true)));
-            $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-            $encodedFromName = '=?UTF-8?B?' . base64_encode($fromName) . '?=';
+        return self::send($to, $subject, $htmlBody, $textBody);
+    }
 
-            $headers = [
-                "From: {$encodedFromName} <{$fromAddress}>",
-                "Reply-To: {$fromAddress}",
-                "MIME-Version: 1.0",
-                "Content-Type: multipart/alternative; boundary=\"{$boundary}\"",
-                "X-Mailer: AlphaGamingSecureMailer/2.0",
-                "X-Priority: 1"
-            ];
+    /**
+     * Send SMTP Diagnostic Test Email (Admin / CLI only)
+     */
+    public static function sendTestEmail(string $to): array {
+        $subject = "اختبار إعدادات البريد SMTP - ALPHA GAMING SHOP";
+        $time = date('Y-m-d H:i:s');
+        $host = $_ENV['MAIL_HOST'] ?? getenv('MAIL_HOST') ?: config('mail.mailers.smtp.host', 'smtp.gmail.com');
+        $port = (int)($_ENV['MAIL_PORT'] ?? getenv('MAIL_PORT') ?: config('mail.mailers.smtp.port', 587));
+        $encryption = $_ENV['MAIL_ENCRYPTION'] ?? getenv('MAIL_ENCRYPTION') ?: config('mail.mailers.smtp.encryption', 'tls');
 
-            $multipartBody = "--{$boundary}\r\n" .
-                "Content-Type: text/plain; charset=UTF-8\r\n" .
-                "Content-Transfer-Encoding: 8bit\r\n\r\n" .
-                $textBody . "\r\n\r\n" .
-                "--{$boundary}\r\n" .
-                "Content-Type: text/html; charset=UTF-8\r\n" .
-                "Content-Transfer-Encoding: 8bit\r\n\r\n" .
-                $htmlBody . "\r\n\r\n" .
-                "--{$boundary}--";
+        $htmlBody = <<<HTML
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><title>SMTP Test</title></head>
+<body style="margin:0; padding:20px; background-color:#050811; font-family:'Segoe UI', Tahoma, sans-serif; direction:rtl; text-align:right; color:#e2e8f0;">
+    <div style="max-width:550px; margin:0 auto; background:#0c1326; border:1px solid #00d2ff; border-radius:14px; padding:25px; box-shadow:0 10px 30px rgba(0,0,0,0.7);">
+        <h2 style="color:#00ff88; margin-top:0;">⚡ نجاح اختبار اتصال SMTP - ALPHA GAMING SHOP</h2>
+        <p style="color:#cbd5e1; font-size:14px; line-height:1.7;">
+            تم إرسال هذه الرسالة بنجاح عبر خادم البريد الحقيقي (SMTP) للتحقق من إمكانية إرسال رسائل التحقق (OTP) للمستخدمين.
+        </p>
+        <table style="width:100%; border-collapse:collapse; margin:20px 0; font-size:13px; color:#94a3b8;">
+            <tr><td style="padding:6px 0;"><strong>خادم SMTP:</strong></td><td style="color:#00d2ff; direction:ltr; text-align:left;">{$host}</td></tr>
+            <tr><td style="padding:6px 0;"><strong>المنفذ (Port):</strong></td><td style="color:#00d2ff; direction:ltr; text-align:left;">{$port}</td></tr>
+            <tr><td style="padding:6px 0;"><strong>التشفير:</strong></td><td style="color:#00d2ff; direction:ltr; text-align:left;">{$encryption}</td></tr>
+            <tr><td style="padding:6px 0;"><strong>وقت الإرسال:</strong></td><td style="color:#ffffff;">{$time}</td></tr>
+        </table>
+        <div style="text-align:center; font-size:12px; color:#64748b; border-top:1px solid #1e293b; padding-top:15px;">
+            ALPHA GAMING SHOP • نظام الحماية وإدارة البريد الإلكتروني
+        </div>
+    </div>
+</body>
+</html>
+HTML;
 
-            $mailSuccess = @mail($to, $encodedSubject, $multipartBody, implode("\r\n", $headers));
-            if ($mailSuccess) {
-                $success = true;
-                $sentVia = 'php_mail';
-            }
-        }
+        $textBody = "نجاح اختبار اتصال SMTP - ALPHA GAMING SHOP\n\nتم إرسال هذه الرسالة بنجاح في {$time}.\nالخادم: {$host}:{$port} ({$encryption})\n\nALPHA GAMING SHOP";
 
-        // 3. Log results to email.log
-        $logDir = dirname(self::LOG_FILE);
-        if (!is_dir($logDir)) {
-            @mkdir($logDir, 0777, true);
-        }
-        $logEntry = sprintf(
-            "[%s] To: %s | Subject: %s | SentVia: %s | Status: %s %s\n",
-            date('Y-m-d H:i:s'),
-            $to,
-            $subject,
-            $sentVia,
-            $success ? 'SUCCESS' : 'SAVED_TO_SANDBOX',
-            $error ? "| Error: {$error}" : ''
-        );
-        @file_put_contents(self::LOG_FILE, $logEntry, FILE_APPEND);
+        $smtpPass = $_ENV['MAIL_PASSWORD'] ?? getenv('MAIL_PASSWORD') ?: config('mail.mailers.smtp.password', '');
+        $ok = self::send($to, $subject, $htmlBody, $textBody);
 
         return [
-            'success' => true, // We consider saved/sent as successful so the user is never blocked
-            'sent_via' => $sentVia,
+            'success' => $ok,
+            'sent_via' => $ok ? 'smtp' : 'failed',
             'to' => $to,
-            'error' => $error
+            'error' => $ok ? null : 'فشل الاتصال بخادم SMTP. يرجى مراجعة إعدادات البريد.'
         ];
     }
 
     /**
-     * Lightweight direct socket SMTP transport
+     * Core SMTP Dispatcher using PHPMailer.
+     * Strictly requires real SMTP credentials.
      */
-    private static function sendViaSmtp(
-        string $to,
-        string $subject,
-        string $htmlBody,
-        string $textBody,
-        string $fromAddress,
-        string $fromName
-    ): array {
-        $host = config('mail.mailers.smtp.host', 'smtp.gmail.com');
-        $port = (int)config('mail.mailers.smtp.port', 587);
-        $user = config('mail.mailers.smtp.username', '');
-        $pass = config('mail.mailers.smtp.password', '');
-        $enc = strtolower((string)config('mail.mailers.smtp.encryption', 'tls'));
-        $timeout = (int)config('mail.mailers.smtp.timeout', 5);
+    public static function send(string $to, string $subject, string $htmlBody, string $textBody = ''): bool {
+        // Read strictly from Environment Variables (or config fallback)
+        $smtpHost = $_ENV['MAIL_HOST'] ?? getenv('MAIL_HOST') ?: config('mail.mailers.smtp.host', 'smtp.gmail.com');
+        $smtpPort = (int)($_ENV['MAIL_PORT'] ?? getenv('MAIL_PORT') ?: config('mail.mailers.smtp.port', 587));
+        $smtpUser = $_ENV['MAIL_USERNAME'] ?? getenv('MAIL_USERNAME') ?: config('mail.mailers.smtp.username', '');
+        $smtpPass = $_ENV['MAIL_PASSWORD'] ?? getenv('MAIL_PASSWORD') ?: config('mail.mailers.smtp.password', '');
+        $smtpEnc  = strtolower((string)($_ENV['MAIL_ENCRYPTION'] ?? getenv('MAIL_ENCRYPTION') ?: config('mail.mailers.smtp.encryption', 'tls')));
+        $fromAddress = $_ENV['MAIL_FROM_ADDRESS'] ?? getenv('MAIL_FROM_ADDRESS') ?: config('mail.from.address', $smtpUser);
+        $fromName = $_ENV['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME') ?: config('mail.from.name', 'ALPHA GAMING SHOP');
+        $timeout  = 12;
 
-        $protocol = ($enc === 'ssl' || $port === 465) ? 'ssl://' : 'tcp://';
-        $socket = @stream_socket_client(
-            $protocol . $host . ':' . $port,
-            $errno,
-            $errstr,
-            $timeout,
-            STREAM_CLIENT_CONNECT
-        );
+        // Verify valid production SMTP credentials
+        $hasSmtpCredentials = !empty($smtpHost) && !empty($smtpUser) && !empty($smtpPass)
+            && $smtpUser !== 'null' && $smtpPass !== 'null'
+            && !str_contains($smtpUser, 'YOUR_GMAIL')
+            && !str_contains($smtpPass, 'YOUR_GOOGLE');
 
-        if (!$socket) {
-            return ['success' => false, 'error' => "Cannot connect to SMTP {$host}:{$port} ({$errstr})"];
+        if (!$hasSmtpCredentials) {
+            self::logTransaction($to, $subject, 'FAILED', 'SMTP credentials not configured or placeholder values');
+            return false;
         }
 
-        stream_set_timeout($socket, $timeout);
-        $read = self::readSmtpResponse($socket);
+        try {
+            $mail = new PHPMailer(true);
+            $mail->isSMTP();
+            $mail->Host       = $smtpHost;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $smtpUser;
+            $mail->Password   = $smtpPass;
+            $mail->Port       = $smtpPort;
+            $mail->Timeout    = $timeout;
+            $mail->CharSet    = 'UTF-8';
 
-        // HELO/EHLO
-        fwrite($socket, "EHLO " . ($_SERVER['SERVER_NAME'] ?? 'alphagaming.store') . "\r\n");
-        $read = self::readSmtpResponse($socket);
-
-        // STARTTLS if requested on port 587 / tcp
-        if ($enc === 'tls' && $protocol === 'tcp://') {
-            fwrite($socket, "STARTTLS\r\n");
-            $read = self::readSmtpResponse($socket);
-            if (strpos($read, '220') === false) {
-                fclose($socket);
-                return ['success' => false, 'error' => 'STARTTLS failed: ' . $read];
+            if ($smtpEnc === 'ssl' || $smtpPort === 465) {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             }
 
-            $cryptoMethod = STREAM_CRYPTO_METHOD_TLS_CLIENT;
-            if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
-                $cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
-            }
-            if (defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT')) {
-                $cryptoMethod |= STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
-            }
+            $mail->setFrom($fromAddress, $fromName);
+            $mail->addAddress($to);
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $htmlBody;
+            $mail->AltBody = $textBody;
 
-            if (!stream_socket_enable_crypto($socket, true, $cryptoMethod)) {
-                fclose($socket);
-                return ['success' => false, 'error' => 'TLS negotiation failed'];
-            }
+            $mail->send();
 
-            fwrite($socket, "EHLO " . ($_SERVER['SERVER_NAME'] ?? 'alphagaming.store') . "\r\n");
-            $read = self::readSmtpResponse($socket);
+            self::logTransaction($to, $subject, 'SUCCESS');
+            return true;
+        } catch (\Throwable $e) {
+            $safeError = self::sanitizeError($e->getMessage(), $smtpPass);
+            self::logTransaction($to, $subject, 'FAILED', $safeError);
+            return false;
         }
-
-        // AUTH LOGIN
-        fwrite($socket, "AUTH LOGIN\r\n");
-        $read = self::readSmtpResponse($socket);
-
-        fwrite($socket, base64_encode($user) . "\r\n");
-        $read = self::readSmtpResponse($socket);
-
-        fwrite($socket, base64_encode($pass) . "\r\n");
-        $read = self::readSmtpResponse($socket);
-
-        if (strpos($read, '235') === false) {
-            fclose($socket);
-            return ['success' => false, 'error' => 'SMTP Authentication failed: ' . $read];
-        }
-
-        // MAIL FROM
-        fwrite($socket, "MAIL FROM:<{$fromAddress}>\r\n");
-        $read = self::readSmtpResponse($socket);
-
-        // RCPT TO
-        fwrite($socket, "RCPT TO:<{$to}>\r\n");
-        $read = self::readSmtpResponse($socket);
-
-        // DATA
-        fwrite($socket, "DATA\r\n");
-        $read = self::readSmtpResponse($socket);
-
-        $boundary = '=_alpha_' . md5(uniqid(microtime(true)));
-        $encodedSubject = '=?UTF-8?B?' . base64_encode($subject) . '?=';
-        $encodedFromName = '=?UTF-8?B?' . base64_encode($fromName) . '?=';
-
-        $headers = [
-            "From: {$encodedFromName} <{$fromAddress}>",
-            "To: <{$to}>",
-            "Subject: {$encodedSubject}",
-            "Date: " . date('r'),
-            "MIME-Version: 1.0",
-            "Content-Type: multipart/alternative; boundary=\"{$boundary}\"",
-            "X-Mailer: AlphaGamingSecureMailer/2.0",
-            "X-Priority: 1"
-        ];
-
-        $payload = implode("\r\n", $headers) . "\r\n\r\n" .
-            "--{$boundary}\r\n" .
-            "Content-Type: text/plain; charset=UTF-8\r\n" .
-            "Content-Transfer-Encoding: 8bit\r\n\r\n" .
-            $textBody . "\r\n\r\n" .
-            "--{$boundary}\r\n" .
-            "Content-Type: text/html; charset=UTF-8\r\n" .
-            "Content-Transfer-Encoding: 8bit\r\n\r\n" .
-            $htmlBody . "\r\n\r\n" .
-            "--{$boundary}--\r\n.\r\n";
-
-        fwrite($socket, $payload);
-        $read = self::readSmtpResponse($socket);
-
-        fwrite($socket, "QUIT\r\n");
-        fclose($socket);
-
-        return ['success' => true];
-    }
-
-    private static function readSmtpResponse($socket): string {
-        $response = '';
-        while ($line = fgets($socket, 515)) {
-            $response .= $line;
-            if (isset($line[3]) && $line[3] === ' ') {
-                break;
-            }
-        }
-        return $response;
     }
 
     /**
-     * Authoring the Ultra-Luxury Cyberpunk Email Template
+     * Dark Gaming RTL Template for OTP
      */
-    public static function renderOtpTemplate(User $user, string $code, array $meta): string {
-        $userName = htmlspecialchars($user->name ?: 'اللاعب البطل');
+    private static function renderOtpTemplate(string $to, string $code, string $purpose = 'login'): string {
         $codeDigits = str_split($code);
-        $ip = htmlspecialchars($meta['ip']);
-        $userAgent = htmlspecialchars($meta['userAgent']);
-        $dateTime = htmlspecialchars($meta['dateTime']);
-        $supportWhatsApp = "https://wa.me/213770000000?text=" . urlencode("مرحباً فريق ALPHA Gaming، لدي استفسار بخصوص رمز التحقق الأمني.");
-
-        // Digits rendered individually for sublime visual presence
         $digitsHtml = '';
         foreach ($codeDigits as $d) {
-            $digitsHtml .= '<span style="display:inline-block; width:44px; height:54px; line-height:54px; margin:0 4px; background:#040711; border:2px solid #00d2ff; border-radius:10px; font-size:32px; font-weight:900; color:#00ff88; text-align:center; font-family:monospace, Courier New, sans-serif; box-shadow:0 0 15px rgba(0,210,255,0.25);">' . $d . '</span>';
+            $digitsHtml .= '<span style="display:inline-block; width:44px; height:54px; line-height:54px; margin:0 4px; background:#040711; border:2px solid #00d2ff; border-radius:10px; font-size:32px; font-weight:900; color:#00ff88; text-align:center; font-family:monospace, Courier New, sans-serif; box-shadow:0 0 15px rgba(0,210,255,0.3);">' . htmlspecialchars($d) . '</span>';
         }
 
         return <<<HTML
@@ -281,122 +171,63 @@ class MailService {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كود التحقق الأمني - متجر ALPHA Gaming</title>
+    <title>رمز التحقق - ALPHA GAMING SHOP</title>
 </head>
 <body style="margin:0; padding:0; background-color:#050811; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction:rtl; text-align:right; -webkit-font-smoothing:antialiased; color:#e2e8f0;">
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#050811; padding:30px 10px;">
         <tr>
             <td align="center">
-                <!-- Main Container Card -->
-                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:620px; background:#0c1326; border-radius:18px; border:1px solid #1e293b; box-shadow:0 25px 60px rgba(0,0,0,0.85); overflow:hidden;">
-                    
-                    <!-- Top Glowing Neon Accent Line -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px; background:#0c1326; border-radius:18px; border:1px solid #1e293b; box-shadow:0 25px 60px rgba(0,0,0,0.85); overflow:hidden;">
                     <tr>
                         <td style="height:4px; background:linear-gradient(90deg, #00d2ff 0%, #00ff88 50%, #7928ca 100%); font-size:0; line-height:0;">&nbsp;</td>
                     </tr>
-
-                    <!-- Header with Store Logo & VIP Badge -->
                     <tr>
-                        <td style="padding:32px 36px 20px; text-align:center; background:#080e1c;">
-                            <div style="display:inline-block; margin-bottom:14px;">
-                                <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(0,210,255,0.1); border:1px solid rgba(0,210,255,0.3); border-radius:999px; padding:6px 16px; font-size:12px; font-weight:800; color:#00d2ff; text-transform:uppercase; letter-spacing:0.5px;">
-                                    <span>⚡ ALPHA GAMING SECURITY SHIELD</span>
-                                    <span>•</span>
-                                    <span style="color:#00ff88;">DZ-VAULT 🇩🇿</span>
-                                </div>
+                        <td style="padding:30px 36px 20px; text-align:center; background:#080e1c;">
+                            <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(0,210,255,0.1); border:1px solid rgba(0,210,255,0.3); border-radius:999px; padding:6px 16px; font-size:12px; font-weight:800; color:#00d2ff; text-transform:uppercase; margin-bottom:12px;">
+                                <span>⚡ ALPHA GAMING SHOP</span>
+                                <span>•</span>
+                                <span style="color:#00ff88;">رمز التحقق 🛡️</span>
                             </div>
-                            <h1 style="margin:0; font-size:26px; font-weight:900; color:#ffffff; letter-spacing:0.5px;">
-                                متجر <span style="color:#00d2ff;">ALPHA</span> للألعاب الرقمية
+                            <h1 style="margin:0; font-size:24px; font-weight:900; color:#ffffff; letter-spacing:0.5px;">
+                                ALPHA GAMING SHOP
                             </h1>
-                            <p style="margin:6px 0 0; font-size:13px; color:#94a3b8;">
-                                الوجهة الأولى لألعاب PC و PlayStation و Steam الأصلية في الجزائر
-                            </p>
                         </td>
                     </tr>
-
-                    <!-- Main Body Content -->
                     <tr>
                         <td style="padding:28px 36px;">
-                            <!-- Greeting -->
-                            <div style="font-size:17px; font-weight:700; color:#ffffff; margin-bottom:12px;">
-                                تحية طيبة يا <span style="color:#00ff88;">{$userName}</span>، 🎮
-                            </div>
-                            
-                            <p style="font-size:14px; line-height:1.7; color:#cbd5e1; margin:0 0 20px;">
-                                لقد تلقينا طلباً لتأكيد هويتك والتحقق من أمان بريدك الإلكتروني (Gmail) في متجر <strong>ALPHA Gaming Shop</strong>.
-                                <br>
-                                يرجى استخدام <strong>رمز الأمان لمرة واحدة (OTP)</strong> الموضح أدناه لإتمام عملية الدخول وتفعيل حسابك بأعلى معايير الحماية والتشفير:
+                            <p style="font-size:16px; line-height:1.7; color:#f8fafc; margin:0 0 16px;">
+                                مرحباً،
                             </p>
-
-                            <!-- The VIP OTP Code Box -->
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#060a17; border:2px dashed rgba(0,210,255,0.35); border-radius:14px; margin:24px 0; text-align:center;">
+                            <p style="font-size:15px; line-height:1.8; color:#cbd5e1; margin:0 0 24px;">
+                                لقد طلبت رمز تحقق لحسابك في <strong>ALPHA GAMING SHOP</strong>.
+                            </p>
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#060a17; border:2px dashed rgba(0,210,255,0.4); border-radius:14px; margin:24px 0; text-align:center;">
                                 <tr>
-                                    <td style="padding:26px 16px;">
-                                        <div style="font-size:12px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
-                                            🔒 رمز التحقق الأمني المكون من 6 أرقام:
+                                    <td style="padding:24px 16px;">
+                                        <div style="font-size:13px; font-weight:800; color:#94a3b8; margin-bottom:14px;">
+                                            رمز التحقق:
                                         </div>
-                                        
-                                        <!-- Code Digits -->
-                                        <div style="direction:ltr; unicode-bidi:bidi-override; margin:8px 0 14px;">
+                                        <div style="direction:ltr; unicode-bidi:bidi-override; margin:10px 0 16px;">
                                             {$digitsHtml}
                                         </div>
-
-                                        <!-- Copyable plain text code & Expiry note -->
-                                        <div style="display:inline-block; background:rgba(255,170,0,0.12); border:1px solid rgba(255,170,0,0.3); border-radius:6px; padding:5px 14px; font-size:12px; font-weight:700; color:#ffaa00;">
-                                            ⏳ ينتهي هذا الرمز خلال <strong>5 دقائق</strong> فقط
+                                        <div style="display:inline-block; background:rgba(255,170,0,0.12); border:1px solid rgba(255,170,0,0.3); border-radius:6px; padding:6px 16px; font-size:13px; font-weight:700; color:#ffaa00;">
+                                            ⏳ هذا الرمز صالح لمدة 5 دقائق.
                                         </div>
                                     </td>
                                 </tr>
                             </table>
-
-                            <!-- Strict Security Rules -->
-                            <div style="background:rgba(239, 68, 68, 0.08); border-right:4px solid #ef4444; border-radius:8px; padding:14px 18px; margin-bottom:24px;">
-                                <div style="font-size:13px; font-weight:800; color:#fca5a5; margin-bottom:4px;">
-                                    ⚠️ بروتوكول الأمان الصارم من ALPHA:
-                                </div>
-                                <div style="font-size:12px; line-height:1.6; color:#fecaca;">
-                                    لا تشارك هذا الرمز مع أي شخص، بما في ذلك فريق خدمة العملاء أو الدعم الفني. موظفو متجر ALPHA لن يطلبوا منك رمز الأمان الخاص بك إطلاقاً تحت أي ظرف.
-                                </div>
-                            </div>
-
-                            <!-- Session Audit Information -->
-                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:12px 16px; margin-bottom:24px; font-size:12px; color:#94a3b8;">
-                                <tr>
-                                    <td style="padding:4px 0;"><strong>🕒 توقيت الطلب:</strong> {$dateTime}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:4px 0;"><strong>🌐 عنوان الـ IP:</strong> <code style="color:#00d2ff; font-family:monospace;">{$ip}</code></td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:4px 0;"><strong>💻 نوع المتصفح:</strong> {$userAgent}</td>
-                                </tr>
-                            </table>
-
-                            <!-- Non-solicited Notice -->
-                            <p style="font-size:12px; line-height:1.6; color:#64748b; margin:0 0 20px;">
-                                ❓ <strong>هل لم تقم بطلب هذا الكود؟</strong> إذا لم تكن أنت صاحب هذا الإجراء، فقد يكون شخص ما حاول الدخول إلى حسابك دون علمك. يمكنك تجاهل هذه الرسالة بأمان تام، فحسابك محمي بتشفير متعدد الطبقات.
+                            <p style="font-size:14px; line-height:1.7; color:#94a3b8; margin:24px 0 0;">
+                                إذا لم تطلب هذا الرمز، تجاهل هذه الرسالة.
                             </p>
-
-                            <!-- VIP WhatsApp Help Concierge -->
-                            <div style="text-align:center; padding-top:16px; border-top:1px solid #1e293b;">
-                                <p style="font-size:13px; color:#cbd5e1; margin-bottom:12px;">
-                                    هل تواجه صعوبة في استلام الأكواد أو تفعيل ألعابك؟ فريقنا الجزائري في خدمتك 24/7:
-                                </p>
-                                <a href="{$supportWhatsApp}" target="_blank" style="display:inline-block; background:linear-gradient(135deg, #00ff88, #00a86b); color:#050811; font-weight:800; font-size:13px; text-decoration:none; padding:10px 22px; border-radius:8px; box-shadow:0 4px 15px rgba(0,255,136,0.3);">
-                                    💬 محادثة الدعم الفني عبر واتساب (WhatsApp VIP)
-                                </a>
-                            </div>
+                            <p style="font-size:14px; font-weight:700; color:#00ff88; margin:20px 0 0;">
+                                ALPHA GAMING SHOP
+                            </p>
                         </td>
                     </tr>
-
-                    <!-- Footer -->
                     <tr>
-                        <td style="padding:22px 36px; background:#080e1c; text-align:center; border-top:1px solid #1e293b;">
-                            <p style="margin:0 0 6px; font-size:12px; color:#64748b;">
-                                متجر <strong>ALPHA Gaming Shop</strong> • رائد التجارة الرقمية للألعاب وبكجات ستيم في الجزائر 🇩🇿
-                            </p>
-                            <p style="margin:0; font-size:11px; color:#475569;">
-                                الدفع المعتمد محلياً: بريدي موب BaridiMob و الحساب البريدي CCP | جميع الحقوق محفوظة © 2026
+                        <td style="padding:20px 36px; background:#080e1c; text-align:center; border-top:1px solid #1e293b;">
+                            <p style="margin:0; font-size:12px; color:#64748b;">
+                                جميع الحقوق محفوظة © ALPHA GAMING SHOP 2026
                             </p>
                         </td>
                     </tr>
@@ -409,65 +240,103 @@ class MailService {
 HTML;
     }
 
-    /**
-     * Plain Text Fallback for Email Clients without HTML
-     */
-    public static function renderOtpTextFallback(User $user, string $code, array $meta): string {
-        $userName = $user->name ?: 'اللاعب الموقر';
-        $ip = $meta['ip'];
-        $dateTime = $meta['dateTime'];
+    private static function renderPasswordResetTemplate(string $to, string $code): string {
+        $codeDigits = str_split($code);
+        $digitsHtml = '';
+        foreach ($codeDigits as $d) {
+            $digitsHtml .= '<span style="display:inline-block; width:44px; height:54px; line-height:54px; margin:0 4px; background:#040711; border:2px solid #00d2ff; border-radius:10px; font-size:32px; font-weight:900; color:#00ff88; text-align:center; font-family:monospace, Courier New, sans-serif; box-shadow:0 0 15px rgba(0,210,255,0.3);">' . htmlspecialchars($d) . '</span>';
+        }
 
-        return <<<TEXT
-=== متجر ALPHA Gaming Shop الجزائر ===
-رمز التحقق الأمني الخاص بك لتأكيد الحساب والدخول
-
-مرحباً بك يا {$userName}،
-
-كود الأمان الخاص بك لمرة واحدة (OTP) هو:
-[ {$code} ]
-
-• صلاحية الرمز: 5 دقائق فقط.
-• تحذير أمني: لا تشارك هذا الرمز مطلقاً مع أي شخص. فريق متجر ALPHA لن يطلبه منك أبداً.
-• تفاصيل المحاولة:
-  - التوقيت: {$dateTime}
-  - عنوان الـ IP: {$ip}
-
-إذا لم تكن أنت من طلب هذا الرمز، يرجى تجاهل هذه الرسالة.
-
-خدمة العملاء والدعم الفني 24/7 عبر واتساب:
-https://wa.me/213770000000
-
-متجر ALPHA Gaming Shop • تسليم فوري للألعاب والبكجات 100% مضمونة
-TEXT;
+        return <<<HTML
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><title>استعادة كلمة المرور - ALPHA GAMING SHOP</title></head>
+<body style="margin:0; padding:0; background-color:#050811; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction:rtl; text-align:right; color:#e2e8f0;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#050811; padding:30px 10px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px; background:#0c1326; border-radius:18px; border:1px solid #1e293b; box-shadow:0 25px 60px rgba(0,0,0,0.85); overflow:hidden;">
+                    <tr><td style="height:4px; background:linear-gradient(90deg, #ffaa00 0%, #00d2ff 100%);"></td></tr>
+                    <tr>
+                        <td style="padding:30px 36px 20px; text-align:center; background:#080e1c;">
+                            <h1 style="margin:0; font-size:24px; font-weight:900; color:#ffffff;">استعادة كلمة المرور</h1>
+                            <div style="color:#00d2ff; font-size:13px; font-weight:700; margin-top:4px;">ALPHA GAMING SHOP</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:28px 36px;">
+                            <p style="font-size:16px; color:#f8fafc; margin:0 0 16px;">مرحباً،</p>
+                            <p style="font-size:15px; color:#cbd5e1; line-height:1.7;">لقد تلقينا طلباً لاستعادة كلمة المرور لحسابك في <strong>ALPHA GAMING SHOP</strong>.</p>
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#060a17; border:2px dashed rgba(255,170,0,0.4); border-radius:14px; margin:24px 0; text-align:center;">
+                                <tr>
+                                    <td style="padding:24px 16px;">
+                                        <div style="font-size:13px; font-weight:800; color:#94a3b8; margin-bottom:14px;">رمز التحقق:</div>
+                                        <div style="direction:ltr; margin:10px 0 16px;">{$digitsHtml}</div>
+                                        <div style="display:inline-block; background:rgba(255,170,0,0.12); border:1px solid rgba(255,170,0,0.3); border-radius:6px; padding:6px 16px; font-size:13px; font-weight:700; color:#ffaa00;">⏳ هذا الرمز صالح لمدة 5 دقائق.</div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="font-size:14px; color:#94a3b8;">إذا لم تطلب استعادة كلمة المرور، يرجى تجاهل هذه الرسالة وتأمين حسابك.</p>
+                            <p style="font-size:14px; font-weight:700; color:#00ff88; margin-top:20px;">ALPHA GAMING SHOP</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
     }
 
-    /**
-     * Keep an HTML preview file for developer/admin review
-     */
-    private static function savePreviewLog(string $to, string $subject, string $htmlBody): void {
-        $dir = dirname(self::HTML_PREVIEW_FILE);
-        if (!is_dir($dir)) {
-            @mkdir($dir, 0777, true);
+    private static function renderWelcomeTemplate(string $to, string $name): string {
+        $safeName = htmlspecialchars($name);
+        return <<<HTML
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><title>مرحباً بك في ALPHA GAMING SHOP</title></head>
+<body style="margin:0; padding:0; background-color:#050811; font-family:'Segoe UI', Tahoma, sans-serif; direction:rtl; text-align:right; color:#e2e8f0;">
+    <table role="presentation" width="100%" style="background-color:#050811; padding:30px 10px;">
+        <tr><td align="center">
+            <div style="max-width:580px; background:#0c1326; border-radius:18px; border:1px solid #1e293b; padding:30px; text-align:right;">
+                <h2 style="color:#00ff88; margin-top:0;">🎮 مرحباً بك يا {$safeName}!</h2>
+                <p style="color:#cbd5e1; line-height:1.8;">سعداء بانضمامك إلى مجتمع <strong>ALPHA GAMING SHOP</strong>. حسابك الآن جاهز ومفعل بالكامل للاستمتاع بأفضل عروض الألعاب والعتاد الاحترافي.</p>
+                <div style="margin-top:25px; padding-top:15px; border-top:1px solid #1e293b; text-align:center; color:#64748b; font-size:13px;">
+                    ALPHA GAMING SHOP
+                </div>
+            </div>
+        </td></tr>
+    </table>
+</body>
+</html>
+HTML;
+    }
+
+    private static function renderOtpTextFallback(string $code): string {
+        return "مرحباً،\n\nلقد طلبت رمز تحقق لحسابك في ALPHA GAMING SHOP.\n\nرمز التحقق:\n{$code}\n\nهذا الرمز صالح لمدة 5 دقائق.\n\nإذا لم تطلب هذا الرمز، تجاهل هذه الرسالة.\n\nALPHA GAMING SHOP";
+    }
+
+    private static function renderPasswordResetTextFallback(string $code): string {
+        return "مرحباً،\n\nرمز استعادة كلمة المرور لحسابك في ALPHA GAMING SHOP هو:\n{$code}\n\nهذا الرمز صالح لمدة 5 دقائق.\n\nALPHA GAMING SHOP";
+    }
+
+    private static function logTransaction(string $to, string $subject, string $status, ?string $error = null): void {
+        $logDir = dirname(self::LOG_FILE);
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0777, true);
         }
 
         $timestamp = date('Y-m-d H:i:s');
-        $card = <<<CARD
-<div style="margin: 30px auto; max-width: 680px; border: 2px solid #00d2ff; border-radius: 12px; overflow: hidden; background: #000; font-family: sans-serif;">
-    <div style="background: #0d1527; padding: 12px 18px; color: #fff; font-size: 13px; border-bottom: 1px solid #1e293b;">
-        <strong>✉️ Email Preview</strong> | To: <span style="color:#00ff88;">{$to}</span> | Subject: <span style="color:#00d2ff;">{$subject}</span> | Sent At: {$timestamp}
-    </div>
-    {$htmlBody}
-</div>
-CARD;
+        $errorPart = $error ? " | Error: {$error}" : "";
+        $logEntry = "[{$timestamp}] To: {$to} | Subject: {$subject} | Status: {$status}{$errorPart}" . PHP_EOL;
 
-        @file_put_contents(self::HTML_PREVIEW_FILE, $card . PHP_EOL, FILE_APPEND);
+        @file_put_contents(self::LOG_FILE, $logEntry, FILE_APPEND);
     }
 
-    private static function simplifyUserAgent(string $ua): string {
-        if (strpos($ua, 'Chrome') !== false) return 'Google Chrome';
-        if (strpos($ua, 'Firefox') !== false) return 'Mozilla Firefox';
-        if (strpos($ua, 'Safari') !== false && strpos($ua, 'Chrome') === false) return 'Apple Safari';
-        if (strpos($ua, 'Edge') !== false) return 'Microsoft Edge';
-        return substr($ua, 0, 40);
+    private static function sanitizeError(string $error, string $password): string {
+        if (!empty($password)) {
+            $error = str_replace($password, '********', $error);
+        }
+        return substr(strip_tags($error), 0, 300);
     }
 }

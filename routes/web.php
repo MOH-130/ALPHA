@@ -48,6 +48,8 @@ Router::group(['middleware' => ['locale', 'visitor']], function() {
     Router::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Router::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Router::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Router::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
+    Router::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
     // Admin Login Gateway
     Router::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');

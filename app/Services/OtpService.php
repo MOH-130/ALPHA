@@ -9,48 +9,91 @@ use App\Services\MailService;
 
 class OtpService {
     public const EXPIRY_SECONDS = 300; // 5 minutes
-    public const RESEND_COOLDOWN = 60; // 60 seconds
-    private const LOG_FILE = __DIR__ . '/../../storage/logs/otp.log';
+    public const RESEND_COOLDOWN = 60; // 60 seconds cooldown
+    public const MAX_ATTEMPTS = 5;     // Maximum failed attempts before invalidation
 
     /**
-     * Generate a cryptographic 6-digit OTP code, save hashed version, and send email
+     * Generate secure 6-digit OTP, store cryptographic hash in DB, and dispatch real email via SMTP.
+     * NEVER returns the OTP code string to Controller or View!
+     *
+     * @param User|string $userOrEmail
+     * @param string $purpose ('login', 'register', 'reset')
+     * @param array $context
+     * @return bool True if generated and dispatched via SMTP successfully, false otherwise.
      */
-    public static function generate(User $user, array $context = []): string {
+    public static function sendOtp(User|string $userOrEmail, string $purpose = 'login', array $context = []): bool {
         Session::getInstance();
 
-        $code = (string)random_int(100000, 999999);
-        $expiresAt = date('Y-m-d H:i:s', time() + self::EXPIRY_SECONDS);
+        // 1. Resolve User Model
+        if ($userOrEmail instanceof User) {
+            $user = $userOrEmail;
+        } else {
+            $email = strtolower(trim((string)$userOrEmail));
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                return false;
+            }
+        }
 
-        // Store hashed OTP code in user record for high security
-        $user->update([
-            'otp_code' => password_hash($code, PASSWORD_DEFAULT),
-            'otp_expires_at' => $expiresAt
-        ]);
-
-        $_SESSION['_otp_last_sent_' . $user->id] = time();
-        $_SESSION['_otp_attempts_' . $user->id] = 0;
-
-        self::send($user, $code, $context);
-
-        return $code;
-    }
-
-    /**
-     * Verify the entered OTP code with rate-limiting and replay protection
-     */
-    public static function verify(User $user, ?string $inputCode): bool {
-        Session::getInstance();
-
-        if (empty($inputCode) || strlen(trim($inputCode)) !== 6) {
+        // 2. Cooldown check
+        if (!self::canResend($user)) {
             return false;
         }
 
-        // Increment attempts
+        // 3. Generate 6-digit random code using Cryptographically Secure Pseudo-Random Number Generator (CSPRNG)
+        $code = (string)random_int(100000, 999999);
+        $expiresAt = date('Y-m-d H:i:s', time() + self::EXPIRY_SECONDS);
+
+        // 4. Store ONLY cryptographic BCRYPT hash in database (Never plaintext)
+        $user->update([
+            'otp_code' => password_hash($code, PASSWORD_DEFAULT),
+            'otp_expires_at' => $expiresAt,
+            'otp_purpose' => $purpose
+        ]);
+
+        // 5. Track cooldown and reset attempts in session
+        $_SESSION['_otp_last_sent_' . $user->id] = time();
+        $_SESSION['_otp_attempts_' . $user->id] = 0;
+        $_SESSION['_otp_purpose_' . $user->id] = $purpose;
+
+        // 6. Dispatch real email via SMTP
+        if ($purpose === 'reset') {
+            $sent = MailService::sendPasswordReset($user->email, $code);
+        } else {
+            $sent = MailService::sendOtp($user->email, $code, $purpose);
+        }
+
+        // 7. Security: Immediately wipe raw code from memory
+        unset($code);
+
+        // 8. If email delivery failed, invalidate DB record immediately
+        if (!$sent) {
+            self::clear($user);
+            return false;
+        }
+
+        ActivityLogger::log('OTP Security Code', 'Auth', "Secure OTP sent to {$user->email} for purpose: {$purpose}");
+        return true;
+    }
+
+    /**
+     * Verify the entered OTP code against the database hash.
+     * Enforces rate limiting, attempt lockout, purpose validation, and immediate invalidation.
+     */
+    public static function verify(User $user, ?string $inputCode, ?string $expectedPurpose = null): bool {
+        Session::getInstance();
+
+        if (empty($inputCode) || strlen(trim($inputCode)) !== 6 || !ctype_digit(trim($inputCode))) {
+            return false;
+        }
+
+        // Increment attempts count
         $attemptsKey = '_otp_attempts_' . $user->id;
         $attempts = ($_SESSION[$attemptsKey] ?? 0) + 1;
         $_SESSION[$attemptsKey] = $attempts;
 
-        if ($attempts > 5) {
+        // Lockout after exceeding maximum attempts
+        if ($attempts > self::MAX_ATTEMPTS) {
             self::clear($user);
             return false;
         }
@@ -59,20 +102,30 @@ class OtpService {
             return false;
         }
 
+        // Expiry check (5 minutes)
         if (time() > strtotime($user->otp_expires_at)) {
             self::clear($user);
             return false;
         }
 
+        // Purpose isolation check
+        if ($expectedPurpose !== null && !empty($user->otp_purpose) && $user->otp_purpose !== $expectedPurpose) {
+            return false;
+        }
+
+        // Verify cryptographic hash
         if (password_verify(trim($inputCode), $user->otp_code)) {
+            // Immediate invalidation on success to prevent replay attacks
             self::clear($user);
             unset($_SESSION[$attemptsKey]);
 
-            // Mark email as verified and account active
-            $user->update([
-                'email_verified_at' => $user->email_verified_at ?: date('Y-m-d H:i:s'),
-                'status' => ($user->status === 'pending_verification') ? 'active' : $user->status
-            ]);
+            // Activate account and verify email if not a reset purpose
+            if ($expectedPurpose !== 'reset') {
+                $user->update([
+                    'email_verified_at' => $user->email_verified_at ?: date('Y-m-d H:i:s'),
+                    'status' => ($user->status === 'pending_verification') ? 'active' : $user->status
+                ]);
+            }
 
             return true;
         }
@@ -95,39 +148,18 @@ class OtpService {
     public static function remainingAttempts(User $user): int {
         Session::getInstance();
         $attempts = $_SESSION['_otp_attempts_' . $user->id] ?? 0;
-        return max(0, 5 - $attempts);
+        return max(0, self::MAX_ATTEMPTS - $attempts);
     }
 
     public static function clear(User $user): void {
         $user->update([
             'otp_code' => null,
-            'otp_expires_at' => null
+            'otp_expires_at' => null,
+            'otp_purpose' => null
         ]);
         Session::getInstance();
         unset($_SESSION['_otp_attempts_' . $user->id]);
-    }
-
-    /**
-     * Dispatch OTP to user's email via MailService and write activity logs
-     */
-    public static function send(User $user, string $code, array $context = []): void {
-        $logDir = dirname(self::LOG_FILE);
-        if (!is_dir($logDir)) {
-            @mkdir($logDir, 0777, true);
-        }
-
-        $timestamp = date('Y-m-d H:i:s');
-        $logEntry = "[{$timestamp}] OTP for {$user->email} (User ID: {$user->id}): {$code} (Expires in 5m)" . PHP_EOL;
-        @file_put_contents(self::LOG_FILE, $logEntry, FILE_APPEND);
-
-        ActivityLogger::log('OTP Security Code', 'Auth', "OTP generated for {$user->email}");
-
-        // Store OTP in flash for dev/demo display helper so user is never locked out during development
-        Session::flash('_latest_otp_hint', $code);
-        Session::flash('_latest_otp_email', self::maskEmail($user->email));
-
-        // Dispatch VIP Authored HTML Email via MailService
-        MailService::sendOtpEmail($user, $code, $context);
+        unset($_SESSION['_otp_purpose_' . $user->id]);
     }
 
     public static function maskEmail(string $email): string {

@@ -30,8 +30,20 @@ class Product extends Model {
         return $locale === 'en' && !empty($this->description_en) ? $this->description_en : ($this->description_ar ?? '');
     }
 
+    public function getImageUrlAttribute(): string {
+        return product_image_url($this->primary_image);
+    }
+
+    protected static array $categoryMemo = [];
+    protected static array $ratingMemo = [];
+    protected static array $reviewsCountMemo = [];
+
     public function category(): ?Category {
-        return $this->category_id ? Category::find($this->category_id) : null;
+        if (!$this->category_id) return null;
+        if (!isset(self::$categoryMemo[$this->category_id])) {
+            self::$categoryMemo[$this->category_id] = Category::find($this->category_id);
+        }
+        return self::$categoryMemo[$this->category_id];
     }
 
     public function brand(): ?Brand {
@@ -51,12 +63,18 @@ class Product extends Model {
     }
 
     public function averageRating(): float {
-        $avg = Review::where('product_id', $this->id)->where('is_approved', 1)->avg('rating');
-        return round($avg, 1) ?: 5.0;
+        if (!isset(self::$ratingMemo[$this->id])) {
+            $avg = Review::where('product_id', $this->id)->where('is_approved', 1)->avg('rating');
+            self::$ratingMemo[$this->id] = round($avg, 1) ?: 5.0;
+        }
+        return self::$ratingMemo[$this->id];
     }
 
     public function reviewsCount(): int {
-        return Review::where('product_id', $this->id)->where('is_approved', 1)->count();
+        if (!isset(self::$reviewsCountMemo[$this->id])) {
+            self::$reviewsCountMemo[$this->id] = Review::where('product_id', $this->id)->where('is_approved', 1)->count();
+        }
+        return self::$reviewsCountMemo[$this->id];
     }
 
     public function getEffectivePrice(): float {
@@ -89,5 +107,13 @@ class Product extends Model {
 
     public function isLowStock(): bool {
         return $this->stock_quantity <= ($this->low_stock_threshold ?: 5) && $this->stock_quantity > 0;
+    }
+
+    protected static ?int $activeCount = null;
+    public static function activeCount(): int {
+        if (self::$activeCount === null) {
+            self::$activeCount = self::where('status', 'active')->count();
+        }
+        return self::$activeCount;
     }
 }

@@ -5,7 +5,8 @@
     "keywords": ["laravel", "ecommerce", "admin", "store", "php"],
     "license": "MIT",
     "require": {
-        "php": "^8.1|^8.2|^8.3"
+        "php": "^8.1|^8.2|^8.3",
+        "phpmailer/phpmailer": "^7.1"
     },
     "autoload": {
         "psr-4": {

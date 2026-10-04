@@ -13,7 +13,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <!-- CSS Assets -->
     <link rel="stylesheet" href="<?= asset('assets/css/storefront.css') ?>">
@@ -267,7 +267,7 @@
                 
                 <div class="mobile-nav-group-title" style="margin-top:16px;">📁 تصنيفات الألعاب</div>
                 <?php 
-                $navCategories = \App\Models\Category::where('status', 'active')->where('parent_id', null)->orderBy('sort_order', 'ASC')->limit(6)->get();
+                $navCategories = \App\Models\Category::getNavCategories();
                 foreach ($navCategories as $navCat): 
                 ?>
                     <li><a href="<?= url('category/' . $navCat->slug) ?>" class="mobile-nav-item"><span>🎮</span> <span><?= $navCat->getNameAttribute() ?></span></a></li>
@@ -331,7 +331,7 @@
             <div class="category-strip-inner">
                 <a href="<?= url('shop') ?>" class="cat-pill <?= ($_SERVER['REQUEST_URI'] == '/shop') ? 'active' : '' ?>">
                     <span>🔥 جميع الألعاب</span>
-                    <span class="cat-pill-count"><?= \App\Models\Product::where('status', 'active')->count() ?></span>
+                    <span class="cat-pill-count"><?= \App\Models\Product::activeCount() ?></span>
                 </a>
                 <?php 
                 $iconsMap = [

@@ -29,7 +29,20 @@ class Category extends Model {
         return Category::where('parent_id', $this->id)->where('status', 'active')->orderBy('sort_order', 'ASC')->get();
     }
 
+    protected static array $productsCountCache = [];
+    protected static ?array $activeNavCategories = null;
+
+    public static function getNavCategories(): array {
+        if (self::$activeNavCategories === null) {
+            self::$activeNavCategories = self::where('status', 'active')->where('parent_id', null)->orderBy('sort_order', 'ASC')->limit(6)->get();
+        }
+        return self::$activeNavCategories;
+    }
+
     public function productsCount(): int {
-        return Product::where('category_id', $this->id)->where('status', 'active')->count();
+        if (!isset(self::$productsCountCache[$this->id])) {
+            self::$productsCountCache[$this->id] = Product::where('category_id', $this->id)->where('status', 'active')->count();
+        }
+        return self::$productsCountCache[$this->id];
     }
 }

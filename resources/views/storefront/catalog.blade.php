@@ -132,7 +132,7 @@
                             </div>
 
                             <a href="<?= url('product/' . $prod->slug) ?>" class="product-image-box">
-                                <img src="<?= asset('uploads/products/' . ($prod->primary_image ?: 'default-product.png')) ?>" alt="<?= $prod->getNameAttribute() ?>" loading="lazy">
+                                <img src="<?= asset('uploads/products/' . ($prod->primary_image ?: 'default-product.png')) ?>" alt="<?= $prod->getNameAttribute() ?>" loading="lazy" decoding="async" width="260" height="260">
                             </a>
 
                             <div class="product-card-body">

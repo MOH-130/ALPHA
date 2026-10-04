@@ -11,7 +11,7 @@ return [
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME', ''),
             'password' => env('MAIL_PASSWORD', ''),
-            'timeout' => 5,
+            'timeout' => 10,
         ],
         'sendmail' => [
             'transport' => 'sendmail',
@@ -23,7 +23,7 @@ return [
     ],
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@alpha-efxl.onrender.com'),
-        'name' => env('MAIL_FROM_NAME', 'ALPHA Gaming Security Shield 🛡️'),
+        'address' => env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME', 'support@alphagaming.store')),
+        'name' => env('MAIL_FROM_NAME', 'ALPHA GAMING SHOP'),
     ],
 ];

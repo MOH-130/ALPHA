@@ -1,0 +1,815 @@
+﻿[
+    {
+        "group_id":  1,
+        "chosen_name":  "# Model Set Context 1. [2025-04-14]. User is working on an original superhero character named Stray, whose real name is Michael Christian. He was born on September 1, 1995, and gained his superhuman abilities after.png",
+        "all_names":  [
+                          "# Model Set Context 1. [2025-04-14]. User is working on an original superhero character named Stray, whose real name is Michael Christian. He was born on September 1, 1995, and gained his superhuman abilities after.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\# Model Set Context 1. [2025-04-14]. User is working on an original superhero character named Stray, whose real name is Michael Christian. He was born on September 1, 1995, and gained his superhuman abilities after.png",
+        "size":  2881791,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  2,
+        "chosen_name":  "Affiche Adobe Creative Cloud colorée en arabe.png",
+        "all_names":  [
+                          "Affiche Adobe Creative Cloud colorée en arabe.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Affiche Adobe Creative Cloud colorée en arabe.png",
+        "size":  1606646,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  3,
+        "chosen_name":  "Affiche marketing Steam néon rétrofuturiste.png",
+        "all_names":  [
+                          "Affiche marketing Steam néon rétrofuturiste.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Affiche marketing Steam néon rétrofuturiste.png",
+        "size":  2436452,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  4,
+        "chosen_name":  "Affiche néon Alpha Gaming Shop Steam.png",
+        "all_names":  [
+                          "Affiche néon Alpha Gaming Shop Steam.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Affiche néon Alpha Gaming Shop Steam.png",
+        "size":  2489547,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  5,
+        "chosen_name":  "Affiche néon du pack Steam 500+ jeux.png",
+        "all_names":  [
+                          "Affiche néon du pack Steam 500+ jeux.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Affiche néon du pack Steam 500+ jeux.png",
+        "size":  2526820,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  6,
+        "chosen_name":  "Affiche promotionnelle Steam néonʻani.png",
+        "all_names":  [
+                          "Affiche promotionnelle Steam néonʻani.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Affiche promotionnelle Steam néonʻani.png",
+        "size":  2476182,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  7,
+        "chosen_name":  "Affiche promotionnelle des écrans avec prix.png",
+        "all_names":  [
+                          "Affiche promotionnelle des écrans avec prix.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Affiche promotionnelle des écrans avec prix.png",
+        "size":  1291138,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  8,
+        "chosen_name":  "Boutique gaming Minecraft néon verte.png",
+        "all_names":  [
+                          "Boutique gaming Minecraft néon verte.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Boutique gaming Minecraft néon verte.png",
+        "size":  2212992,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  9,
+        "chosen_name":  "Bundle Steam 500 jeux en promotion.png",
+        "all_names":  [
+                          "Bundle Steam 500 jeux en promotion.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Bundle Steam 500 jeux en promotion.png",
+        "size":  2658040,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  10,
+        "chosen_name":  "ChatGPT Image 10 juil. 2026, 17_57_38.png",
+        "all_names":  [
+                          "ChatGPT Image 10 juil. 2026, 17_57_38.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 10 juil. 2026, 17_57_38.png",
+        "size":  1497006,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  11,
+        "chosen_name":  "Offre Netflix 4K Premium.png",
+        "all_names":  [
+                          "ChatGPT Image 10 juil. 2026, 18_03_36.png",
+                          "Offre Netflix 4K Premium.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Offre Netflix 4K Premium.png",
+        "size":  1690550,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  12,
+        "chosen_name":  "ChatGPT Image 10 juil. 2026, 18_06_19.png",
+        "all_names":  [
+                          "ChatGPT Image 10 juil. 2026, 18_06_19.png",
+                          "ChatGPT Image 28 juil. 2026, 12_48_08.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 10 juil. 2026, 18_06_19.png",
+        "size":  1985402,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  13,
+        "chosen_name":  "ChatGPT Image 14 juil. 2026, 19_18_03.png",
+        "all_names":  [
+                          "ChatGPT Image 14 juil. 2026, 19_18_03.png",
+                          "ChatGPT Image 28 juil. 2026, 12_48_01.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 14 juil. 2026, 19_18_03.png",
+        "size":  1841880,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  14,
+        "chosen_name":  "ChatGPT Image 14 juil. 2026, 19_21_36.png",
+        "all_names":  [
+                          "ChatGPT Image 14 juil. 2026, 19_21_36.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 14 juil. 2026, 19_21_36.png",
+        "size":  2179814,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  15,
+        "chosen_name":  "ChatGPT Image 14 juil. 2026, 21_01_29.png",
+        "all_names":  [
+                          "ChatGPT Image 14 juil. 2026, 21_01_29.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 14 juil. 2026, 21_01_29.png",
+        "size":  2323543,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  16,
+        "chosen_name":  "ChatGPT Image 16 juil. 2026, 03_02_32.png",
+        "all_names":  [
+                          "ChatGPT Image 16 juil. 2026, 03_02_32.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 16 juil. 2026, 03_02_32.png",
+        "size":  2384452,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  17,
+        "chosen_name":  "ChatGPT Image 16 juil. 2026, 15_53_40.png",
+        "all_names":  [
+                          "ChatGPT Image 16 juil. 2026, 15_53_40.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 16 juil. 2026, 15_53_40.png",
+        "size":  1591218,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  18,
+        "chosen_name":  "ChatGPT Image 16 juil. 2026, 16_18_29.png",
+        "all_names":  [
+                          "ChatGPT Image 16 juil. 2026, 16_18_29.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 16 juil. 2026, 16_18_29.png",
+        "size":  1635259,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  19,
+        "chosen_name":  "ChatGPT Image 16 juil. 2026, 17_01_55.png",
+        "all_names":  [
+                          "ChatGPT Image 16 juil. 2026, 17_01_55.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 16 juil. 2026, 17_01_55.png",
+        "size":  1326418,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  20,
+        "chosen_name":  "ChatGPT Image 16 juil. 2026, 17_29_24.png",
+        "all_names":  [
+                          "ChatGPT Image 16 juil. 2026, 17_29_24.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 16 juil. 2026, 17_29_24.png",
+        "size":  1493352,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  21,
+        "chosen_name":  "ChatGPT Image 18 juil. 2026, 18_35_29.png",
+        "all_names":  [
+                          "ChatGPT Image 18 juil. 2026, 18_35_29.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 18 juil. 2026, 18_35_29.png",
+        "size":  1537322,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  22,
+        "chosen_name":  "ChatGPT Image 21 juil. 2026, 17_20_21.png",
+        "all_names":  [
+                          "ChatGPT Image 21 juil. 2026, 17_20_21.png",
+                          "ChatGPT Image 28 juil. 2026, 12_46_51.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 21 juil. 2026, 17_20_21.png",
+        "size":  1775887,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  23,
+        "chosen_name":  "ChatGPT Image 22 août 2026, 12_51_47.png",
+        "all_names":  [
+                          "ChatGPT Image 22 août 2026, 12_51_47.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 22 août 2026, 12_51_47.png",
+        "size":  2216123,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  24,
+        "chosen_name":  "ChatGPT Image 23 août 2026, 15_31_43.png",
+        "all_names":  [
+                          "ChatGPT Image 23 août 2026, 15_31_43.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 23 août 2026, 15_31_43.png",
+        "size":  2239966,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  25,
+        "chosen_name":  "ChatGPT Image 23 août 2026, 15_33_15.png",
+        "all_names":  [
+                          "ChatGPT Image 23 août 2026, 15_33_15.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 23 août 2026, 15_33_15.png",
+        "size":  2137779,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  26,
+        "chosen_name":  "عرض حساب ستيم المميز.png",
+        "all_names":  [
+                          "ChatGPT Image 24 juil. 2026, 19_23_06.png",
+                          "ChatGPT Image 28 juil. 2026, 12_46_23.png",
+                          "عرض حساب ستيم المميز.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\عرض حساب ستيم المميز.png",
+        "size":  2257753,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  27,
+        "chosen_name":  "Promotion spéciale GTA 6 sur PS5.png",
+        "all_names":  [
+                          "ChatGPT Image 24 juil. 2026, 20_51_04.png",
+                          "ChatGPT Image 28 juil. 2026, 12_46_18.png",
+                          "Promotion spéciale GTA 6 sur PS5.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Promotion spéciale GTA 6 sur PS5.png",
+        "size":  2097049,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  28,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_45_28.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_45_28.png",
+                          "ChatGPT Image 28 juil. 2026, 14_01_00.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_45_28.png",
+        "size":  2486361,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  29,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_45_37.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_45_37.png",
+                          "ChatGPT Image 28 juil. 2026, 14_01_11.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_45_37.png",
+        "size":  1926132,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  30,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_45_42.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_45_42.png",
+                          "ChatGPT Image 28 juil. 2026, 14_01_16.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_45_42.png",
+        "size":  1907951,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  31,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_45_51.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_45_51.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_45_51.png",
+        "size":  1926088,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  32,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_46_02.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_46_02.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_46_02.png",
+        "size":  1873367,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  33,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_46_07.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_46_07.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_46_07.png",
+        "size":  2089426,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  34,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_46_12.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_46_12.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_46_12.png",
+        "size":  1921453,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  35,
+        "chosen_name":  "إعلان متجر ألفا للألعاب.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_46_38.png",
+                          "إعلان متجر ألفا للألعاب.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\إعلان متجر ألفا للألعاب.png",
+        "size":  1840569,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  36,
+        "chosen_name":  "Publicité futuriste pour Gemini 3.1.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_47_00.png",
+                          "Publicité futuriste pour Gemini 3.1.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Publicité futuriste pour Gemini 3.1.png",
+        "size":  1960138,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  37,
+        "chosen_name":  "النسخة الكاملة من لعبة القراصنة.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_47_49.png",
+                          "النسخة الكاملة من لعبة القراصنة.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\النسخة الكاملة من لعبة القراصنة.png",
+        "size":  2317782,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  38,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 12_48_29.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_48_29.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 12_48_29.png",
+        "size":  1984686,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  39,
+        "chosen_name":  "Snapchat Plus abonnement exceptionnel.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 12_48_42.png",
+                          "Snapchat Plus abonnement exceptionnel.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Snapchat Plus abonnement exceptionnel.png",
+        "size":  1716543,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  40,
+        "chosen_name":  "ChatGPT Image 28 juil. 2026, 14_11_18.png",
+        "all_names":  [
+                          "ChatGPT Image 28 juil. 2026, 14_11_18.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ChatGPT Image 28 juil. 2026, 14_11_18.png",
+        "size":  2359372,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  41,
+        "chosen_name":  "Minecraft Java et Bedrock _ compte premium à vie.png",
+        "all_names":  [
+                          "Minecraft Java et Bedrock _ compte premium à vie.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Minecraft Java et Bedrock _ compte premium à vie.png",
+        "size":  2265087,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  42,
+        "chosen_name":  "Pack Steam 500 jeux — Offre gaming ultime.png",
+        "all_names":  [
+                          "Pack Steam 500 jeux — Offre gaming ultime.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Pack Steam 500 jeux — Offre gaming ultime.png",
+        "size":  2469765,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  43,
+        "chosen_name":  "Please provide a short, engaging title for the image.png",
+        "all_names":  [
+                          "Please provide a short, engaging title for the image.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Please provide a short, engaging title for the image.png",
+        "size":  1933704,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  44,
+        "chosen_name":  "Publicité vibrante pour eFootball PES 2026.png",
+        "all_names":  [
+                          "Publicité vibrante pour eFootball PES 2026.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Publicité vibrante pour eFootball PES 2026.png",
+        "size":  2319450,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  45,
+        "chosen_name":  "We need title in French locale fr-DZ. Need succinct, _=7 words, sentence case. Capture poster essence. Maybe _Affiche Rust _ compte Steam à 2800 DA_ That\u0027s 7_ Affiche1 Rust2 compte3 Steam4 à5 2800 6 DA7. Sentence c.png",
+        "all_names":  [
+                          "We need title in French locale fr-DZ. Need succinct, _=7 words, sentence case. Capture poster essence. Maybe _Affiche Rust _ compte Steam à 2800 DA_ That\u0027s 7_ Affiche1 Rust2 compte3 Steam4 à5 2800 6 DA7. Sentence c.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\We need title in French locale fr-DZ. Need succinct, _=7 words, sentence case. Capture poster essence. Maybe _Affiche Rust _ compte Steam à 2800 DA_ That\u0027s 7_ Affiche1 Rust2 compte3 Steam4 à5 2800 6 DA7. Sentence c.png",
+        "size":  2887251,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  46,
+        "chosen_name":  "XBOX Game Pass Ultimate promotion.png",
+        "all_names":  [
+                          "XBOX Game Pass Ultimate promotion.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\XBOX Game Pass Ultimate promotion.png",
+        "size":  1929437,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  47,
+        "chosen_name":  "Xbox Game Pass Ultimate promotion(1).png",
+        "all_names":  [
+                          "Xbox Game Pass Ultimate promotion(1).png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Xbox Game Pass Ultimate promotion(1).png",
+        "size":  2082197,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  48,
+        "chosen_name":  "Xbox Game Pass Ultimate promotion(2).png",
+        "all_names":  [
+                          "Xbox Game Pass Ultimate promotion(2).png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\Xbox Game Pass Ultimate promotion(2).png",
+        "size":  1961083,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  49,
+        "chosen_name":  "image-gen-1(20260811-170402).png",
+        "all_names":  [
+                          "image-gen-1(20260811-170402).png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\image-gen-1(20260811-170402).png",
+        "size":  2115776,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  50,
+        "chosen_name":  "image-gen-1(3).png",
+        "all_names":  [
+                          "image-gen-1(3).png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\image-gen-1(3).png",
+        "size":  2203167,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  51,
+        "chosen_name":  "image-gen-1.png",
+        "all_names":  [
+                          "image-gen-1.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\image-gen-1.png",
+        "size":  2619321,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  52,
+        "chosen_name":  "ألفا_ أكبر باقة ألعاب PC.png",
+        "all_names":  [
+                          "ألفا_ أكبر باقة ألعاب PC.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\ألفا_ أكبر باقة ألعاب PC.png",
+        "size":  2557049,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  53,
+        "chosen_name":  "إعلانات Alpha Gaming Shop الجديدة.png",
+        "all_names":  [
+                          "إعلانات Alpha Gaming Shop الجديدة.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\إعلانات Alpha Gaming Shop الجديدة.png",
+        "size":  2112446,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  54,
+        "chosen_name":  "بسعر.png",
+        "all_names":  [
+                          "بسعر.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\بسعر.png",
+        "size":  902370,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  55,
+        "chosen_name":  "عرض ألفا_ اشتراك Adobe الإبداعي.png",
+        "all_names":  [
+                          "عرض ألفا_ اشتراك Adobe الإبداعي.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\عرض ألفا_ اشتراك Adobe الإبداعي.png",
+        "size":  2054563,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  56,
+        "chosen_name":  "عروض غوست ريكون برايكبوينت أونلاين.png",
+        "all_names":  [
+                          "عروض غوست ريكون برايكبوينت أونلاين.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\عروض غوست ريكون برايكبوينت أونلاين.png",
+        "size":  2258134,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    },
+    {
+        "group_id":  57,
+        "chosen_name":  "متجر ألفا للألعاب والخدمات الرقمية.png",
+        "all_names":  [
+                          "متجر ألفا للألعاب والخدمات الرقمية.png"
+                      ],
+        "file_path":  "C:\\Users\\elnou\\Downloads\\New folder\\متجر ألفا للألعاب والخدمات الرقمية.png",
+        "size":  2044526,
+        "ocr_ar":  "",
+        "ocr_en":  "",
+        "detected_prices":  [
+
+                            ]
+    }
+]

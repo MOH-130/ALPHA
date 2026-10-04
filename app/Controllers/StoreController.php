@@ -30,15 +30,13 @@ class StoreController {
         $categories = Category::where('status', 'active')->where('parent_id', null)->orderBy('sort_order', 'ASC')->get();
         $featuredCategories = Category::where('status', 'active')->where('is_featured', 1)->orderBy('sort_order', 'ASC')->limit(8)->get();
         
-        $featuredProducts = Product::where('status', 'active')->where('is_featured', 1)->limit(8)->get();
         $bestSellers = Product::where('status', 'active')->orderByDesc('sales_count')->limit(8)->get();
-        $newArrivals = Product::where('status', 'active')->orderByDesc('id')->limit(8)->get();
         $deals = Product::where('status', 'active')->where('is_deal', 1)->limit(6)->get();
         $brands = Brand::where('status', 'active')->limit(12)->get();
 
         return view('storefront.home', compact(
-            'banners', 'categories', 'featuredCategories', 'featuredProducts',
-            'bestSellers', 'newArrivals', 'deals', 'brands'
+            'banners', 'categories', 'featuredCategories',
+            'bestSellers', 'deals', 'brands'
         ));
     }
 

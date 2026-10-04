@@ -43,6 +43,11 @@ class CreateAllTables {
                 address TEXT NULL,
                 city VARCHAR(100) NULL,
                 country VARCHAR(100) DEFAULT 'Saudi Arabia',
+                google_id VARCHAR(191) NULL,
+                otp_code VARCHAR(255) NULL,
+                otp_expires_at DATETIME NULL,
+                otp_purpose VARCHAR(50) NULL,
+                two_factor_enabled INTEGER DEFAULT 0,
                 created_at DATETIME NOT NULL,
                 updated_at DATETIME NOT NULL
             );",

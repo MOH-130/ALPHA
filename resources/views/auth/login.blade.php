@@ -97,23 +97,6 @@
                     </button>
                 </div>
 
-                <!-- 1-Click Fast Demo Credentials Buttons (Protected by Production Shield) -->
-                <?php if (app_setting('enable_demo_mode', '0') === '1'): ?>
-                <div class="demo-quick-bar">
-                    <div class="demo-quick-title">
-                        <span>⚡ تجربة الحسابات بنقرة واحدة (1-Click Fill)</span>
-                        <span style="color:var(--color-primary); font-size:0.75rem;">اختر حسابك:</span>
-                    </div>
-                    <div class="demo-chips-grid">
-                        <button type="button" class="btn-demo-quick" onclick="fillDemoCredentials('customer')">
-                            <span>🎮</span> <span>عميل VIP تجريبي</span>
-                        </button>
-                        <a href="<?= url('admin/login') ?>" class="btn-demo-quick admin" style="text-decoration:none;">
-                            <span>👑</span> <span>بوابة المشرف (Admin)</span>
-                        </a>
-                    </div>
-                </div>
-                <?php endif; ?>
 
                 <!-- 1. Google OAuth 2.0 Sign-In Button (Official & Instant) -->
                 <div style="margin-bottom: 1.5rem;">
