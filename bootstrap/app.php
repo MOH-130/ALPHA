@@ -61,6 +61,16 @@ if (file_exists($envFilePath)) {
     }
 }
 
+// Synchronize $_SERVER into $_ENV and putenv for critical environment variables (supports Render/Docker/CLI)
+foreach (['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REDIRECT_URI', 'APP_URL', 'DATABASE_URL', 'DB_HOST'] as $k) {
+    if (!isset($_ENV[$k]) && isset($_SERVER[$k]) && is_string($_SERVER[$k])) {
+        $_ENV[$k] = $_SERVER[$k];
+        if (getenv($k) === false) {
+            putenv("{$k}={$_SERVER[$k]}");
+        }
+    }
+}
+
 // Load Global Helpers
 require_once __DIR__ . '/../app/Core/Helper.php';
 

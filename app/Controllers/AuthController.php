@@ -353,7 +353,8 @@ class AuthController {
 
         $tokens = GoogleAuthService::exchangeCodeForTokens($code);
         if (!$tokens || empty($tokens['access_token'])) {
-            Session::flash('error', 'تعذر استبدال رمز التفويض مع خوادم Google. يرجى التحقق من إعدادات الربط أو المحاولة لاحقاً.');
+            $reason = GoogleAuthService::$lastError ? ' (' . GoogleAuthService::$lastError . ')' : '';
+            Session::flash('error', 'تعذر استبدال رمز التفويض مع خوادم Google' . htmlspecialchars($reason) . '. يرجى التحقق من إعدادات الربط أو المحاولة لاحقاً.');
             return redirect(url('login'));
         }
 

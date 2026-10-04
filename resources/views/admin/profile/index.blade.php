@@ -198,10 +198,10 @@
                         <div style="color:#60a5fa; font-weight:800; margin-bottom:6px;">📋 الروابط الواجب إدخالها في Google Cloud Console لتعمل البيئتان معاً:</div>
                         <div style="font-family:monospace; font-size:0.8rem; direction:ltr; text-align:left; background:rgba(10,15,26,0.8); padding:8px 12px; border-radius:6px; line-height:1.7;">
                             <div style="color:#94a3b8; font-size:0.75rem; font-weight:bold;"># Authorized redirect URIs:</div>
-                            <div><span style="color:#00ff88;">https://alpha-efxl.onrender.com/auth/google/callback</span> <span style="color:#64748b;">(Production Render)</span></div>
+                            <div><span style="color:#00ff88;">https://alpha-1-mshm.onrender.com/auth/google/callback</span> <span style="color:#64748b;">(Production Render)</span></div>
                             <div><span style="color:#facc15;">http://localhost:8000/auth/google/callback</span> <span style="color:#64748b;">(Local Dev)</span></div>
                             <div style="color:#94a3b8; font-size:0.75rem; font-weight:bold; margin-top:6px;"># Authorized JavaScript origins:</div>
-                            <div><span style="color:#00d2ff;">https://alpha-efxl.onrender.com</span></div>
+                            <div><span style="color:#00d2ff;">https://alpha-1-mshm.onrender.com</span></div>
                             <div><span style="color:#38bdf8;">http://localhost:8000</span></div>
                         </div>
                     </div>

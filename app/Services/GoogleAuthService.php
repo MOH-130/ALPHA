@@ -8,24 +8,62 @@ use App\Core\Session;
 use App\Services\ActivityLogger;
 
 class GoogleAuthService {
+    public static ?string $lastError = null;
+
     public static function getClientId(): string {
-        $envVal = $_ENV['GOOGLE_CLIENT_ID'] ?? getenv('GOOGLE_CLIENT_ID');
-        if (!empty($envVal) && !str_contains($envVal, 'YOUR_GOOGLE')) {
-            return trim($envVal);
+        $val = function_exists('env') ? env('GOOGLE_CLIENT_ID') : null;
+        if (empty($val)) {
+            $val = $_SERVER['GOOGLE_CLIENT_ID'] ?? ($_ENV['GOOGLE_CLIENT_ID'] ?? getenv('GOOGLE_CLIENT_ID'));
         }
-        return trim(Setting::get('google_client_id', ''));
+
+        if (is_string($val)) {
+            $val = trim($val);
+            if ((str_starts_with($val, '"') && str_ends_with($val, '"')) ||
+                (str_starts_with($val, "'") && str_ends_with($val, "'"))) {
+                $val = trim(substr($val, 1, -1));
+            }
+            if (!empty($val) && !str_contains($val, 'YOUR_GOOGLE') && $val !== 'null') {
+                return $val;
+            }
+        }
+
+        return trim((string)Setting::get('google_client_id', ''));
     }
 
     public static function getClientSecret(): string {
-        $envVal = $_ENV['GOOGLE_CLIENT_SECRET'] ?? getenv('GOOGLE_CLIENT_SECRET');
-        if (!empty($envVal) && !str_contains($envVal, 'YOUR_GOOGLE')) {
-            return trim($envVal);
+        $val = function_exists('env') ? env('GOOGLE_CLIENT_SECRET') : null;
+        if (empty($val)) {
+            $val = $_SERVER['GOOGLE_CLIENT_SECRET'] ?? ($_ENV['GOOGLE_CLIENT_SECRET'] ?? getenv('GOOGLE_CLIENT_SECRET'));
         }
-        return trim(Setting::get('google_client_secret', ''));
+
+        if (is_string($val)) {
+            $val = trim($val);
+            if ((str_starts_with($val, '"') && str_ends_with($val, '"')) ||
+                (str_starts_with($val, "'") && str_ends_with($val, "'"))) {
+                $val = trim(substr($val, 1, -1));
+            }
+            if (!empty($val) && !str_contains($val, 'YOUR_GOOGLE') && $val !== 'null') {
+                return $val;
+            }
+        }
+
+        return trim((string)Setting::get('google_client_secret', ''));
     }
 
     public static function getRedirectUri(): string {
-        // 1. Check incoming request headers for HTTPS (supports Render reverse proxy & SSL termination)
+        // 1. Explicit GOOGLE_REDIRECT_URI environment variable has top priority
+        $configuredUri = function_exists('env') ? env('GOOGLE_REDIRECT_URI') : null;
+        if (empty($configuredUri)) {
+            $configuredUri = $_SERVER['GOOGLE_REDIRECT_URI'] ?? ($_ENV['GOOGLE_REDIRECT_URI'] ?? getenv('GOOGLE_REDIRECT_URI'));
+        }
+        if (!empty($configuredUri) && is_string($configuredUri)) {
+            $configuredUri = trim($configuredUri);
+            if (!str_contains($configuredUri, 'YOUR_GOOGLE') && $configuredUri !== 'null') {
+                return $configuredUri;
+            }
+        }
+
+        // 2. Check incoming request headers for HTTPS (supports Render reverse proxy & SSL termination)
         $isHttps = false;
         if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
             $isHttps = true;
@@ -37,8 +75,15 @@ class GoogleAuthService {
             $isHttps = true;
         }
 
-        // 2. Check if request host is live public host (e.g. alpha-efxl.onrender.com)
-        $hostHeader = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+        // 3. Check if request host is live public host (e.g. alpha-1-mshm.onrender.com)
+        $rawHost = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+        $hostHeader = trim(explode(',', $rawHost)[0]);
+        if (str_ends_with($hostHeader, ':443')) {
+            $hostHeader = substr($hostHeader, 0, -4);
+        } elseif (str_ends_with($hostHeader, ':80')) {
+            $hostHeader = substr($hostHeader, 0, -3);
+        }
+
         $isLocalHostHeader = empty($hostHeader) || str_contains($hostHeader, 'localhost') || str_contains($hostHeader, '127.0.0.1');
 
         if (!empty($hostHeader) && !$isLocalHostHeader) {
@@ -46,8 +91,8 @@ class GoogleAuthService {
             return "{$scheme}://{$hostHeader}/auth/google/callback";
         }
 
-        // 3. Fall back to APP_URL from .env or config
-        $appUrl = env('APP_URL');
+        // 4. Fall back to APP_URL from .env or config
+        $appUrl = function_exists('env') ? env('APP_URL') : null;
         if (empty($appUrl) && isset($_ENV['APP_URL'])) {
             $appUrl = $_ENV['APP_URL'];
         }
@@ -63,7 +108,7 @@ class GoogleAuthService {
             return "{$cleanUrl}/auth/google/callback";
         }
 
-        // 4. Default fallback for local environment
+        // 5. Default fallback for local environment
         $scheme = $isHttps ? 'https' : 'http';
         $host = !empty($hostHeader) ? $hostHeader : 'localhost:8000';
         return "{$scheme}://{$host}/auth/google/callback";
@@ -78,11 +123,15 @@ class GoogleAuthService {
     public static function getAuthUrl(): string {
         Session::getInstance();
         $state = bin2hex(random_bytes(32));
+        $redirectUri = self::getRedirectUri();
+
+        // Persist state AND exact redirect_uri in user session to prevent any byte-level mismatch
         $_SESSION['_google_oauth_state'] = $state;
+        $_SESSION['_google_oauth_redirect_uri'] = $redirectUri;
 
         $params = [
             'client_id' => self::getClientId(),
-            'redirect_uri' => self::getRedirectUri(),
+            'redirect_uri' => $redirectUri,
             'response_type' => 'code',
             'scope' => 'openid email profile',
             'state' => $state,
@@ -100,13 +149,31 @@ class GoogleAuthService {
         return !empty($state) && !empty($expected) && hash_equals($expected, $state);
     }
 
-    public static function exchangeCodeForTokens(string $code): ?array {
+    public static function exchangeCodeForTokens(string $code, ?string $explicitRedirectUri = null): ?array {
+        self::$lastError = null;
+        Session::getInstance();
+
+        // Use the exact redirect_uri stored when generating the auth URL, or fallback to current
+        $redirectUri = $explicitRedirectUri 
+            ?: ($_SESSION['_google_oauth_redirect_uri'] ?? self::getRedirectUri());
+        unset($_SESSION['_google_oauth_redirect_uri']);
+
         $tokenUrl = 'https://oauth2.googleapis.com/token';
+        $clientId = self::getClientId();
+        $clientSecret = self::getClientSecret();
+
+        if (empty($clientId) || empty($clientSecret)) {
+            $err = 'Google Client ID or Client Secret is missing from server environment';
+            self::$lastError = $err;
+            error_log("[Google OAuth] exchangeCodeForTokens failed: {$err}");
+            return null;
+        }
+
         $postData = [
             'code' => $code,
-            'client_id' => self::getClientId(),
-            'client_secret' => self::getClientSecret(),
-            'redirect_uri' => self::getRedirectUri(),
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'redirect_uri' => $redirectUri,
             'grant_type' => 'authorization_code'
         ];
 
@@ -114,18 +181,40 @@ class GoogleAuthService {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded',
+            'Accept: application/json',
+            'User-Agent: AlphaGamingShop-OAuth/1.0'
+        ]);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
-        if ($err || !$response) {
+        $response = curl_exec($ch);
+        $curlErr = curl_error($ch);
+        $curlErrNo = curl_errno($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        @curl_close($ch);
+
+        if ($curlErr || !$response) {
+            $errDetail = "Network/cURL error (#{$curlErrNo}): " . ($curlErr ?: 'Empty response');
+            self::$lastError = $errDetail;
+            error_log("[Google OAuth] Token exchange network error: {$errDetail}");
+            ActivityLogger::log('Google OAuth Failed', 'Auth', "Token exchange cURL error: {$errDetail}");
             return null;
         }
 
         $data = json_decode($response, true);
-        return is_array($data) && isset($data['access_token']) ? $data : null;
+        if (!is_array($data) || empty($data['access_token'])) {
+            $errCode = $data['error'] ?? 'unknown_error';
+            $errDesc = $data['error_description'] ?? ($response ?: 'Unknown error');
+            self::$lastError = "{$errCode}: {$errDesc}";
+            error_log("[Google OAuth] Token exchange rejected by Google (HTTP {$httpCode}): error={$errCode}, description={$errDesc}, redirect_uri={$redirectUri}");
+            ActivityLogger::log('Google OAuth Failed', 'Auth', "Google rejected token exchange (HTTP {$httpCode}): error={$errCode}");
+            return null;
+        }
+
+        return $data;
     }
 
     public static function fetchUserInfo(string $accessToken): ?array {
@@ -135,20 +224,24 @@ class GoogleAuthService {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Authorization: Bearer ' . $accessToken,
-            'Accept: application/json'
+            'Accept: application/json',
+            'User-Agent: AlphaGamingShop-OAuth/1.0'
         ]);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         $response = curl_exec($ch);
         $err = curl_error($ch);
-        curl_close($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        @curl_close($ch);
 
         if ($err || !$response) {
+            error_log("[Google OAuth] fetchUserInfo cURL error: " . $err);
             return null;
         }
 
         $data = json_decode($response, true);
         if (!is_array($data) || empty($data['sub']) || empty($data['email'])) {
+            error_log("[Google OAuth] fetchUserInfo failed (HTTP {$httpCode}): " . json_encode($data));
             return null;
         }
 
