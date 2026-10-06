@@ -899,6 +899,51 @@ html[dir="rtl"] .footer-links a:hover {
     color: #64748b;
 }
 
+.footer-bottom-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+.footer-sep {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.85rem;
+    user-select: none;
+}
+
+.created-by-amine {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #94a3b8;
+    font-weight: 500;
+    transition: color 0.25s ease;
+}
+
+.created-by-amine:hover {
+    color: #f8fafc;
+}
+
+.amine-brand-signature {
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    background: linear-gradient(135deg, #00d2ff 0%, #00ff88 50%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.4));
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.created-by-amine:hover .amine-brand-signature {
+    transform: translateY(-1px) scale(1.08);
+    filter: drop-shadow(0 0 14px rgba(0, 255, 136, 0.75)) drop-shadow(0 0 4px #00d2ff);
+}
+
 /* ================= TOAST NOTIFICATIONS ================= */
 .toast-container {
     position: fixed;
@@ -1613,6 +1658,71 @@ html[dir="rtl"] .vip-float-support {
     flex-shrink: 0;
 }
 
+/* VIP Entrance Developer Credit Badge - By Amine */
+.vip-developer-credit-wrap {
+    text-align: center;
+    margin: 1.25rem 0 0.5rem;
+}
+
+.vip-developer-credit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 18px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(10, 15, 29, 0.95) 100%);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    border-radius: 999px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 210, 255, 0.12);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+}
+
+.vip-developer-credit:hover {
+    border-color: rgba(0, 255, 136, 0.5);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 28px rgba(0, 210, 255, 0.3), 0 0 15px rgba(0, 255, 136, 0.2);
+    transform: translateY(-2px);
+}
+
+.vip-credit-sparkle {
+    font-size: 0.95rem;
+    animation: sparkleSpin 4s ease-in-out infinite alternate;
+}
+
+@keyframes sparkleSpin {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+    50% { transform: scale(1.15) rotate(15deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+}
+
+.vip-credit-text {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.vip-credit-name {
+    font-weight: 900;
+    font-size: 0.96rem;
+    letter-spacing: 0.8px;
+    background: linear-gradient(135deg, #00d2ff 0%, #00ff88 60%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.5));
+    display: inline-block;
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.vip-developer-credit:hover .vip-credit-name {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 16px rgba(0, 255, 136, 0.8)) drop-shadow(0 0 6px #00d2ff);
+}
+
 /* ==========================================================
    5. COMPLETE RESPONSIVE WEB DESIGN SYSTEM (MOBILE & DESKTOP)
    Adaptive CSS Grid, Flexbox, Touch Targets & Media Queries
@@ -2161,6 +2271,22 @@ body.mobile-nav-open {
     }
     .vip-entrance-modal div[style*="grid-template-columns: 1.2fr 0.8fr"] {
         grid-template-columns: 1fr !important;
+    }
+    .vip-developer-credit {
+        padding: 5px 14px !important;
+    }
+    .vip-credit-text {
+        font-size: 0.76rem !important;
+    }
+    .vip-credit-name {
+        font-size: 0.88rem !important;
+    }
+    .footer-bottom-text {
+        flex-direction: column;
+        gap: 6px;
+    }
+    .footer-sep {
+        display: none;
     }
     .auth-split-wrapper {
         margin: 1.5rem auto 2.5rem;

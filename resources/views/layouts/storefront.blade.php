@@ -446,7 +446,11 @@
             </div>
 
             <div class="footer-bottom">
-                <p><?= is_rtl() ? theme_setting('footer_text_ar', 'جميع الحقوق محفوظة © Alpha Gaming Shop 2026') : theme_setting('footer_text_en', 'All Rights Reserved © Alpha Gaming Shop 2026') ?></p>
+                <p class="footer-bottom-text">
+                    <span>© <?= date('Y') ?> Alpha Gaming Shop — <?= is_rtl() ? 'جميع الحقوق محفوظة' : 'All Rights Reserved' ?></span>
+                    <span class="footer-sep" aria-hidden="true">|</span>
+                    <span class="created-by-amine">Created by <strong class="amine-brand-signature">Amine</strong></span>
+                </p>
             </div>
         </div>
     </footer>
@@ -506,6 +510,15 @@
                         <div class="welcome-feat-title" style="color:#ff77e9;">نادي النخبة VIP</div>
                         <div class="welcome-feat-desc">أكثر من +45,000 لعبة Steam، وبكجات أسطورية تبدأ من 500 DA فقط!</div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- VIP Signature / Personal Developer Branding -->
+            <div class="vip-developer-credit-wrap">
+                <div class="vip-developer-credit">
+                    <span class="vip-credit-sparkle" aria-hidden="true">✨</span>
+                    <span class="vip-credit-text">Designed &amp; Developed by</span>
+                    <span class="vip-credit-name">Amine</span>
                 </div>
             </div>
 

@@ -1,6 +1,15 @@
 @extends('layouts.storefront')
 
 @section('content')
+<?php
+$cart = $cart ?? [];
+$subtotal = $subtotal ?? 0;
+$discount = $discount ?? 0;
+$tax = $tax ?? 0;
+$shippingMethods = $shippingMethods ?? [];
+$total = $total ?? 0;
+$user = $user ?? null;
+?>
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
     <h1 style="font-size:1.85rem; font-weight:800; margin-bottom:2rem; color:#fff;">
         🔐 <?= __('messages.checkout') ?>

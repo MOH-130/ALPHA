@@ -18,6 +18,22 @@ class ImageOptimizer {
             return null;
         }
 
+        // Strict byte-level MIME type verification
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
+            if (!in_array($mime, $allowedMimes)) {
+                return null;
+            }
+        } elseif (function_exists('mime_content_type')) {
+            $mime = mime_content_type($file['tmp_name']);
+            if (!in_array($mime, $allowedMimes)) {
+                return null;
+            }
+        }
+
         $newFileName = 'img_' . uniqid() . '.' . $extension;
         $targetPath = rtrim($destinationDir, '/') . '/' . $newFileName;
 

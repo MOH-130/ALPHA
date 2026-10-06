@@ -189,6 +189,7 @@ return [
         'remember_me' => 'تذكرني على هذا الجهاز',
         'forgot_password' => 'نسيت كلمة المرور؟',
         'reset_password' => 'استعادة كلمة المرور',
+        'back_to_login' => 'العودة لتسجيل الدخول',
         'dont_have_account' => 'ليس لديك حساب بعد؟',
         'already_have_account' => 'لديك حساب بالفعل؟',
         'failed' => 'بيانات الدخول غير صحيحة، يرجى المحاولة مرة أخرى.',

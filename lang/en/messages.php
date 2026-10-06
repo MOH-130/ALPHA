@@ -189,6 +189,7 @@ return [
         'remember_me' => 'Remember Me',
         'forgot_password' => 'Forgot Password?',
         'reset_password' => 'Reset Password',
+        'back_to_login' => 'Back to Login',
         'dont_have_account' => "Don't have an account?",
         'already_have_account' => 'Already have an account?',
         'failed' => 'These credentials do not match our records.',

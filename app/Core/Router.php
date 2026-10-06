@@ -80,17 +80,32 @@ class Router {
         $method = $request->method();
         $path = $request->path();
 
-        foreach (self::$routes as $route) {
-            if ($route->matches($method, $path, $params)) {
-                return $route->run($request, $params);
+        try {
+            foreach (self::$routes as $route) {
+                if ($route->matches($method, $path, $params)) {
+                    return $route->run($request, $params);
+                }
             }
-        }
 
-        // 404 Not Found
-        if ($request->isAjax()) {
-            return Response::json(['error' => 'Not Found', 'message' => 'The requested endpoint was not found'], 404);
+            // 404 Not Found
+            if ($request->isAjax()) {
+                return Response::json(['error' => 'Not Found', 'message' => 'The requested endpoint was not found'], 404);
+            }
+            return Response::html(view('storefront.404', ['title' => '404 - الصفحة غير موجودة']), 404);
+        } catch (\Throwable $e) {
+            error_log('[Router Error] ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            $isDev = env('APP_DEBUG', false) === true;
+            if ($request->isAjax()) {
+                return Response::json([
+                    'error' => 'Server Error',
+                    'message' => $isDev ? $e->getMessage() : 'حدث خطأ غير متوقع في الخادم. يرجى المحاولة لاحقاً.'
+                ], 500);
+            }
+            if ($isDev) {
+                return Response::html("<h1>Application Error</h1><p>" . htmlspecialchars($e->getMessage()) . "</p><pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>", 500);
+            }
+            return Response::html(view('storefront.500', ['title' => '500 - خطأ في الخادم']), 500);
         }
-        return Response::html(view('storefront.404', ['title' => '404 - الصفحة غير موجودة']), 404);
     }
 }
 
