@@ -8,17 +8,25 @@ class ImageOptimizer {
             return null;
         }
 
+        // 1. Strict File Size Limit (Max 8 MB, Min 100 bytes)
+        $maxBytes = 8 * 1024 * 1024;
+        $fileSize = $file['size'] ?? @filesize($file['tmp_name']);
+        if (!$fileSize || $fileSize > $maxBytes || $fileSize < 100) {
+            return null;
+        }
+
         if (!is_dir($destinationDir)) {
             @mkdir($destinationDir, 0777, true);
         }
 
+        // 2. Strict Extension Whitelist
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
         if (!in_array($extension, $allowed)) {
             return null;
         }
 
-        // Strict byte-level MIME type verification
+        // 3. Strict byte-level MIME type verification
         $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
         if (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -34,7 +42,8 @@ class ImageOptimizer {
             }
         }
 
-        $newFileName = 'img_' . uniqid() . '.' . $extension;
+        // 4. Cryptographically Secure Random Filename (Eliminates path traversal and predictability)
+        $newFileName = 'img_' . bin2hex(random_bytes(16)) . '.' . $extension;
         $targetPath = rtrim($destinationDir, '/') . '/' . $newFileName;
 
         // If GD is available, optimize and resize
@@ -85,9 +94,11 @@ class ImageOptimizer {
                     return $newFileName;
                 }
             }
+            // Strict defense: if GD is installed but cannot decode the file, reject it
+            return null;
         }
 
-        // Fallback: standard move_uploaded_file
+        // Fallback ONLY when GD extension is not installed on the system
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {
             return $newFileName;
         }

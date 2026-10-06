@@ -39,10 +39,10 @@
                                 <td style="font-size:0.85rem; color:var(--admin-text-muted);"><?= date('Y-m-d', strtotime($rev->created_at)) ?></td>
                                 <td style="text-align:center;">
                                     <div style="display:inline-flex; gap:6px;">
-                                        <a href="<?= url('admin/reviews/' . $rev->id . '/toggle') ?>" class="btn btn-outline btn-sm">
+                                        <a href="<?= url('admin/reviews/' . $rev->id . '/toggle', ['_token' => csrf_token()]) ?>" class="btn btn-outline btn-sm">
                                             <?= $rev->is_approved ? 'إخفاء 👁️' : 'اعتماد ونشر ✓' ?>
                                         </a>
-                                        <a href="<?= url('admin/reviews/' . $rev->id . '/delete') ?>" onclick="return confirm('حذف هذا التقييم نهائياً؟');" class="btn btn-outline btn-sm" style="color:#ef4444;">حذف</a>
+                                        <a href="<?= url('admin/reviews/' . $rev->id . '/delete', ['_token' => csrf_token()]) ?>" onclick="return confirm('حذف هذا التقييم نهائياً؟');" class="btn btn-outline btn-sm" style="color:#ef4444;">حذف</a>
                                     </div>
                                 </td>
                             </tr>

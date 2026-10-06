@@ -26,7 +26,7 @@
                                 <td><?= $brand->productsCount() ?></td>
                                 <td><span class="status-pill bg-green-100 text-green-800"><?= strtoupper($brand->status) ?></span></td>
                                 <td>
-                                    <a href="<?= url('admin/brands/' . $brand->id . '/delete') ?>" onclick="return confirm('هل تريد حذف هذه الماركة؟');" class="btn btn-outline btn-sm" style="color:#ef4444;">حذف</a>
+                                    <a href="<?= url('admin/brands/' . $brand->id . '/delete', ['_token' => csrf_token()]) ?>" onclick="return confirm('هل تريد حذف هذه الماركة؟');" class="btn btn-outline btn-sm" style="color:#ef4444;">حذف</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

@@ -367,16 +367,19 @@ class StoreController {
             'comment' => 'required|min:3'
         ]);
 
-        $authorName = Auth::getInstance()->check() ? Auth::getInstance()->user()->name : ($request->input('name') ?: 'عميل');
-        $authorEmail = Auth::getInstance()->check() ? Auth::getInstance()->user()->email : ($request->input('email') ?: 'guest@store.com');
+        $rawAuthorName = Auth::getInstance()->check() ? Auth::getInstance()->user()->name : ($request->input('name') ?: 'عميل');
+        $authorName = htmlspecialchars(strip_tags(trim((string)$rawAuthorName)), ENT_QUOTES, 'UTF-8');
+
+        $rawEmail = Auth::getInstance()->check() ? Auth::getInstance()->user()->email : ($request->input('email') ?: 'guest@store.com');
+        $authorEmail = filter_var($rawEmail, FILTER_VALIDATE_EMAIL) ? $rawEmail : 'guest@store.com';
 
         Review::create([
             'product_id' => $product->id,
             'user_id' => Auth::getInstance()->id(),
-            'author_name' => $authorName,
-            'author_email' => $authorEmail,
-            'rating' => (int)$data['rating'],
-            'comment' => htmlspecialchars($data['comment']),
+            'author_name' => mb_substr($authorName, 0, 100),
+            'author_email' => mb_substr($authorEmail, 0, 150),
+            'rating' => max(1, min(5, (int)$data['rating'])),
+            'comment' => htmlspecialchars(strip_tags(trim((string)$data['comment'])), ENT_QUOTES, 'UTF-8'),
             'is_verified_purchase' => Auth::getInstance()->check() ? 1 : 0,
             'is_approved' => 1 // auto-approve or moderate based on admin setting
         ]);
@@ -523,18 +526,20 @@ class StoreController {
     }
 
     public function trackOrder(Request $request) {
-        $orderNumber = $request->input('order_number');
-        $email = $request->input('email');
+        $orderNumber = trim((string)$request->input('order_number', ''));
+        $email = strtolower(trim((string)$request->input('email', '')));
         $order = null;
 
-        if ($orderNumber) {
-            $query = Order::where('order_number', trim($orderNumber));
-            if ($email) {
-                $query->where('customer_email', trim($email));
-            }
-            $order = $query->first();
-            if (!$order) {
-                Session::flash('error', __('messages.order_not_found'));
+        if (!empty($orderNumber)) {
+            if (empty($email)) {
+                Session::flash('error', 'يرجى إدخال البريد الإلكتروني المقترن بالطلب للتحقق من هويتك وحماية خصوصية بياناتك.');
+            } else {
+                $order = Order::where('order_number', $orderNumber)
+                              ->where('customer_email', $email)
+                              ->first();
+                if (!$order) {
+                    Session::flash('error', __('messages.order_not_found'));
+                }
             }
         }
 

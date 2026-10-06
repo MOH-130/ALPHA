@@ -80,7 +80,7 @@
                                     <div style="display:inline-flex; gap:6px;">
                                         <a href="<?= url('product/' . $p->slug) ?>" target="_blank" class="btn btn-outline btn-sm" title="معاينة">👁️</a>
                                         <a href="<?= url('admin/products/' . $p->id . '/edit') ?>" class="btn btn-outline btn-sm" title="تعديل">✏️</a>
-                                        <a href="<?= url('admin/products/' . $p->id . '/delete') ?>" onclick="return confirm('هل أنت متأكد من رغبتك في حذف هذا المنتج نهائياً؟');" class="btn btn-outline btn-sm" style="color:#ef4444;" title="حذف">🗑️</a>
+                                        <a href="<?= url('admin/products/' . $p->id . '/delete', ['_token' => csrf_token()]) ?>" onclick="return confirm('هل أنت متأكد من رغبتك في حذف هذا المنتج نهائياً؟');" class="btn btn-outline btn-sm" style="color:#ef4444;" title="حذف">🗑️</a>
                                     </div>
                                 </td>
                             </tr>

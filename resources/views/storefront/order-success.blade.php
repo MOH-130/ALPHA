@@ -58,11 +58,12 @@
             </div>
         </div>
 
-        <!-- Direct WhatsApp confirmation banner -->
+        <!-- Official Page Confirmation & Support Notice -->
         <div style="background:rgba(0, 210, 255, 0.1); border:1px dashed var(--color-primary); border-radius:10px; padding:1.25rem; margin-bottom:2rem; text-align:center;">
-            <div style="font-weight:700; color:#fff; margin-bottom:6px;">لتسريع استلام طلبك، أرسل رقم الطلب عبر واتساب:</div>
-            <a href="https://wa.me/213774444444?text=<?= urlencode('مرحباً، قمت بطلب رقم: ' . $order->order_number) ?>" target="_blank" class="btn btn-primary" style="background:#25d366; border-color:#25d366; color:#fff; font-weight:800; display:inline-flex; align-items:center; gap:6px;">
-                <span>💬 إرسال عبر واتساب (+213 774 44 44 44)</span>
+            <div style="font-weight:700; color:#fff; margin-bottom:8px;">لتأكيد وصل الدفع أو استلام بيانات حسابك فوراً:</div>
+            <a href="<?= htmlspecialchars(app_setting('payment_official_page_url', 'https://www.facebook.com/AlphaGamingShop1/')) ?>" target="_blank" class="btn btn-primary" style="font-weight:800; display:inline-flex; align-items:center; gap:8px;">
+                <span>🌐</span>
+                <span><?= htmlspecialchars(app_setting('payment_contact_notice', 'للتواصل والاستفسارات، تواصلوا معنا عبر صفحتنا الرسمية.')) ?></span>
             </a>
         </div>
 

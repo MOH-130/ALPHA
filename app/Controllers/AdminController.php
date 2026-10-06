@@ -254,7 +254,19 @@ class AdminController {
         return redirect(url('admin/products'));
     }
 
+    private function validateAdminCsrf(Request $request): bool {
+        $token = $request->input('_token') ?? $request->getQuery('_token');
+        if (!Session::validateCsrf($token)) {
+            Session::flash('error', 'انتهت صلاحية جلسة الأمان (CSRF Token Mismatch). يرجى المحاولة مجدداً.');
+            return false;
+        }
+        return true;
+    }
+
     public function deleteProduct(Request $request, int $id) {
+        if (!$this->validateAdminCsrf($request)) {
+            return redirect(url('admin/products'));
+        }
         $product = Product::find($id);
         if ($product) {
             ActivityLogger::log('Delete Product', 'Products', "Deleted product: {$product->name_en} (ID: {$product->id})");
@@ -301,6 +313,9 @@ class AdminController {
     }
 
     public function deleteCategory(Request $request, int $id) {
+        if (!$this->validateAdminCsrf($request)) {
+            return redirect(url('admin/categories'));
+        }
         $category = Category::find($id);
         if ($category) {
             $category->delete();
@@ -341,6 +356,9 @@ class AdminController {
     }
 
     public function deleteBrand(Request $request, int $id) {
+        if (!$this->validateAdminCsrf($request)) {
+            return redirect(url('admin/brands'));
+        }
         $brand = Brand::find($id);
         if ($brand) {
             $brand->delete();
@@ -488,6 +506,9 @@ class AdminController {
     }
 
     public function deleteCoupon(Request $request, int $id) {
+        if (!$this->validateAdminCsrf($request)) {
+            return redirect(url('admin/coupons'));
+        }
         $coupon = Coupon::find($id);
         if ($coupon) $coupon->delete();
         Session::flash('success', __('admin.coupon_deleted_success'));
@@ -525,6 +546,9 @@ class AdminController {
     }
 
     public function toggleReview(Request $request, int $id) {
+        if (!$this->validateAdminCsrf($request)) {
+            return redirect(url('admin/reviews'));
+        }
         $review = Review::find($id);
         if ($review) {
             $review->update(['is_approved' => $review->is_approved ? 0 : 1]);
@@ -534,6 +558,9 @@ class AdminController {
     }
 
     public function deleteReview(Request $request, int $id) {
+        if (!$this->validateAdminCsrf($request)) {
+            return redirect(url('admin/reviews'));
+        }
         $review = Review::find($id);
         if ($review) $review->delete();
         Session::flash('success', __('admin.review_deleted_success'));
@@ -640,12 +667,44 @@ class AdminController {
     }
 
     public function updatePayments(Request $request) {
-        Setting::set('payment_cod_enabled', $request->input('payment_cod_enabled', '0'));
-        Setting::set('payment_bank_enabled', $request->input('payment_bank_enabled', '0'));
-        Setting::set('payment_card_enabled', $request->input('payment_card_enabled', '0'));
-        Setting::set('payment_paypal_enabled', $request->input('payment_paypal_enabled', '0'));
-        Setting::set('bank_account_details', $request->input('bank_account_details', ''));
+        // 1. BaridiMob Settings
+        Setting::set('payment_baridimob_enabled', $request->input('payment_baridimob_enabled', '0'), 'payment');
+        Setting::set('payment_baridimob_rip', trim((string)$request->input('payment_baridimob_rip', '007999990026652222646')), 'payment');
+        Setting::set('payment_baridimob_account', trim((string)$request->input('payment_baridimob_account', '0026652226')), 'payment');
+        Setting::set('payment_baridimob_key', trim((string)$request->input('payment_baridimob_key', '46')), 'payment');
+        Setting::set('payment_baridimob_holder', trim((string)$request->input('payment_baridimob_holder', 'Alpha Gaming Shop Algérie')), 'payment');
 
+        // 2. CCP Settings
+        Setting::set('payment_ccp_enabled', $request->input('payment_ccp_enabled', '0'), 'payment');
+        Setting::set('payment_ccp_account', trim((string)$request->input('payment_ccp_account', '12345678')), 'payment');
+        Setting::set('payment_ccp_key', trim((string)$request->input('payment_ccp_key', '90')), 'payment');
+        Setting::set('payment_ccp_holder', trim((string)$request->input('payment_ccp_holder', 'Alpha Gaming Shop Algérie')), 'payment');
+
+        // 3. Binance Pay / Crypto Settings
+        Setting::set('payment_binance_enabled', $request->input('payment_binance_enabled', '0'), 'payment');
+        Setting::set('payment_binance_pay_id', trim((string)$request->input('payment_binance_pay_id', '987654321')), 'payment');
+        Setting::set('payment_binance_network', trim((string)$request->input('payment_binance_network', 'USDT (TRC20 / BEP20)')), 'payment');
+
+        // 4. PayPal Settings
+        Setting::set('payment_paypal_enabled', $request->input('payment_paypal_enabled', '0'), 'payment');
+        Setting::set('payment_paypal_email', trim((string)$request->input('payment_paypal_email', '')), 'payment');
+
+        // 5. COD & Direct Bank Transfer Settings
+        Setting::set('payment_cod_enabled', $request->input('payment_cod_enabled', '0'), 'payment');
+        Setting::set('payment_bank_enabled', $request->input('payment_bank_enabled', '0'), 'payment');
+        Setting::set('bank_account_details', trim((string)$request->input('bank_account_details', '')), 'payment');
+
+        // 6. Contact & Official Page Notice (replacing phone number during checkout)
+        Setting::set('payment_contact_notice', trim((string)$request->input('payment_contact_notice', 'للتواصل والاستفسارات، تواصلوا معنا عبر صفحتنا الرسمية.')), 'payment');
+        Setting::set('payment_official_page_url', trim((string)$request->input('payment_official_page_url', 'https://www.facebook.com/AlphaGamingShop1/')), 'payment');
+
+        // Keep legacy summary settings synced for full compatibility
+        $baridimobRip = app_setting('payment_baridimob_rip');
+        $baridimobHolder = app_setting('payment_baridimob_holder');
+        Setting::set('payment_baridimob', "{$baridimobRip} ({$baridimobHolder})", 'payment');
+        Setting::set('payment_ccp', app_setting('payment_ccp_account') . ' Clé ' . app_setting('payment_ccp_key'), 'payment');
+
+        ActivityLogger::log('Update Payments', 'Settings', "Updated payment gateway credentials and bank account RIP {$baridimobRip}");
         Session::flash('success', __('admin.payments_saved_success'));
         return redirect(url('admin/payments'));
     }
@@ -708,6 +767,9 @@ class AdminController {
     }
 
     public function deleteCurrency(Request $request, int $id) {
+        if (!$this->validateAdminCsrf($request)) {
+            return redirect(url('admin/currencies'));
+        }
         $currency = Currency::find($id);
         if (!$currency) {
             return redirect(url('admin/currencies'));

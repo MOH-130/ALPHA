@@ -52,8 +52,18 @@ class Response {
                 'X-Content-Type-Options' => 'nosniff',
                 'X-XSS-Protection' => '1; mode=block',
                 'Referrer-Policy' => 'strict-origin-when-cross-origin',
-                'Permissions-Policy' => 'camera=(), microphone=(), geolocation=()'
+                'Permissions-Policy' => 'camera=(), microphone=(), geolocation=()',
+                'Content-Security-Policy' => "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com; frame-src 'self' https://accounts.google.com; object-src 'none'; base-uri 'self';"
             ];
+
+            // Strict-Transport-Security on HTTPS
+            $isHttps = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+                || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+                || (!empty($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+            if ($isHttps) {
+                $defaultSecurityHeaders['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
+            }
+
             foreach ($defaultSecurityHeaders as $name => $val) {
                 if (!isset($this->headers[$name])) {
                     header("{$name}: {$val}");

@@ -16,3 +16,27 @@
 </FilesMatch>
 
 Options -Indexes -ExecCGI
+
+# Anti-Hotlinking Protection for uploaded assets
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Allow direct requests or empty referrers
+    RewriteCond %{HTTP_REFERER} !^$ [NC]
+    # Allow local development
+    RewriteCond %{HTTP_REFERER} !^https?://(localhost|127\.0\.0\.1)(:[0-9]+)? [NC]
+    # Allow production domain and Render domains
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?onrender\.com [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?alpha-gaming\.shop [NC]
+    # Allow search engines & social network preview crawlers
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?google\. [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?bing\. [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?facebook\.com [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?instagram\.com [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?whatsapp\.com [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?discord\.com [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?t\.me [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?twitter\.com [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://([a-zA-Z0-9-]+\.)?x\.com [NC]
+    # Deny unauthorized external hotlinking
+    RewriteRule \.(jpe?g|png|gif|webp|svg|ico)$ - [F,NC]
+</IfModule>

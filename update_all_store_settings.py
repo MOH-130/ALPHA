@@ -24,10 +24,17 @@ settings_data = {
     'site_address': 'الجزائر العاصمة، الجزائر (Algeria)',
     'site_country': 'Algeria',
     'site_currency': 'DZD',
-    'payment_baridimob_rip': '00799999000123456789',
+    'payment_baridimob_rip': '007999990026652222646',
+    'payment_baridimob_account': '0026652226',
+    'payment_baridimob_key': '46',
+    'payment_baridimob_holder': 'Alpha Gaming Shop Algérie',
     'payment_baridimob_name': 'Alpha Gaming Shop Algérie',
-    'payment_ccp_account': '12345678 Clé 90',
-    'bank_account_details': "الدفع عبر بريدي موب (BaridiMob):\nRIP: 00799999000123456789\nالاسم: Alpha Gaming Shop Algérie\n\nالدفع عبر الحساب البريدي (CCP):\nرقم الحساب: 12345678 المفتاح 90\n\nيرجى إرسال صورة وصل الدفع عبر واتساب: +213 774 44 44 44 لتأكيد الطلب واستلام بياناتك فوراً!"
+    'payment_ccp_account': '12345678',
+    'payment_ccp_key': '90',
+    'payment_ccp_holder': 'Alpha Gaming Shop Algérie',
+    'payment_contact_notice': 'للتواصل والاستفسارات، تواصلوا معنا عبر صفحتنا الرسمية.',
+    'payment_official_page_url': 'https://www.facebook.com/AlphaGamingShop1/',
+    'bank_account_details': "الدفع عبر بريدي موب (BaridiMob):\nRIP: 007999990026652222646\nرقم الحساب: 0026652226 المفتاح: 46\nالاسم: Alpha Gaming Shop Algérie\n\nالدفع عبر الحساب البريدي (CCP):\nرقم الحساب: 12345678 المفتاح 90\n\nللتواصل والاستفسارات، تواصلوا معنا عبر صفحتنا الرسمية: https://www.facebook.com/AlphaGamingShop1/"
 }
 
 for k, v in settings_data.items():

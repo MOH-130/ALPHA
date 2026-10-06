@@ -564,33 +564,10 @@ function playCyberSound(type = 'click') {
     }
 }
 
-// ================= 10. DEMO AUTO-FILL CREDENTIALS =================
+// ================= 10. DEMO AUTO-FILL CREDENTIALS (REMOVED FOR PRODUCTION SECURITY) =================
 function fillDemoCredentials(role) {
-    playCyberSound('success');
-    const emailInput = document.querySelector('input[name="email"]');
-    const passwordInput = document.querySelector('input[name="password"]');
-
-    if (!emailInput || !passwordInput) return;
-
-    if (role === 'customer') {
-        emailInput.value = 'customer@store.com';
-        passwordInput.value = 'password123';
-        showToast('تم إدراج بيانات حساب العميل VIP بنجاح! 🎮', 'success');
-    } else if (role === 'admin') {
-        emailInput.value = 'admin@store.com';
-        passwordInput.value = 'password123';
-        showToast('تم إدراج بيانات حساب المسؤول بنجاح! 👑', 'success');
-    }
-
-    // Trigger visual pulse on inputs
-    [emailInput, passwordInput].forEach(el => {
-        el.style.borderColor = '#00ff88';
-        el.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.4)';
-        setTimeout(() => {
-            el.style.borderColor = '';
-            el.style.boxShadow = '';
-        }, 1200);
-    });
+    // Hardcoded credentials removed in production to prevent sensitive data exposure
+    return false;
 }
 
 // ================= 11. PASSWORD VISIBILITY TOGGLE =================

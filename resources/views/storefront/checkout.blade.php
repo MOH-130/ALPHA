@@ -90,6 +90,7 @@ $user = $user ?? null;
                     </h3>
 
                     <div style="display:flex; flex-direction:column; gap:1rem;">
+                        <?php if (app_setting('payment_baridimob_enabled', '1') === '1'): ?>
                         <!-- BaridiMob Option -->
                         <label style="display:flex; align-items:flex-start; gap:12px; padding:1.25rem; border:1px solid rgba(0, 210, 255, 0.4); border-radius:var(--btn-radius); cursor:pointer; background:rgba(0, 210, 255, 0.08);">
                             <input type="radio" name="payment_method" value="baridimob" checked style="margin-top:4px; accent-color:var(--color-primary);">
@@ -98,29 +99,51 @@ $user = $user ?? null;
                                 <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.6;">
                                     التحويل المباشر السريع من هاتفك إلى حساب بريدي موب الخاص بالمتجر.
                                 </div>
-                                <div style="background:var(--bg-input); border:1px dashed var(--border-color); border-radius:8px; padding:0.85rem; margin-top:0.75rem; font-size:0.85rem; line-height:1.7; color:#fff;">
-                                    <strong>RIP بريدي موب:</strong> <code style="color:var(--color-primary); font-size:0.95rem; font-weight:800;">00799999000123456789</code><br>
-                                    <strong>الاسم:</strong> Alpha Gaming Shop Algérie<br>
-                                    <span style="color:var(--color-secondary);">📲 أرسل صورة الوصل على واتساب: <strong>+213 774 44 44 44</strong></span>
+                                <div style="background:var(--bg-input); border:1px dashed var(--border-color); border-radius:8px; padding:0.85rem; margin-top:0.75rem; font-size:0.85rem; line-height:1.8; color:#fff;">
+                                    <div><strong>رقم الحساب الكامل (RIP):</strong> <code style="color:var(--color-primary); font-size:1.05rem; font-weight:800; letter-spacing:1px; background:rgba(0,0,0,0.3); padding:2px 8px; border-radius:4px;"><?= htmlspecialchars(app_setting('payment_baridimob_rip', '007999990026652222646')) ?></code></div>
+                                    <div style="display:flex; gap:15px; margin-top:4px; flex-wrap:wrap;">
+                                        <span><strong>رقم الحساب:</strong> <code style="color:#fff;"><?= htmlspecialchars(app_setting('payment_baridimob_account', '0026652226')) ?></code></span>
+                                        <span><strong>المفتاح:</strong> <code style="color:#fff;"><?= htmlspecialchars(app_setting('payment_baridimob_key', '46')) ?></code></span>
+                                    </div>
+                                    <div style="margin-top:2px;"><strong>صاحب الحساب:</strong> <?= htmlspecialchars(app_setting('payment_baridimob_holder', 'Alpha Gaming Shop Algérie')) ?></div>
+                                    <div style="margin-top:0.6rem; padding-top:0.6rem; border-top:1px dashed rgba(255,255,255,0.1);">
+                                        <a href="<?= htmlspecialchars(app_setting('payment_official_page_url', 'https://www.facebook.com/AlphaGamingShop1/')) ?>" target="_blank" style="color:var(--color-secondary); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                                            <span>🌐</span>
+                                            <span><?= htmlspecialchars(app_setting('payment_contact_notice', 'للتواصل والاستفسارات، تواصلوا معنا عبر صفحتنا الرسمية.')) ?></span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </label>
+                        <?php endif; ?>
 
+                        <?php if (app_setting('payment_ccp_enabled', '1') === '1'): ?>
                         <!-- CCP Option -->
                         <label style="display:flex; align-items:flex-start; gap:12px; padding:1.25rem; border:1px solid var(--border-color); border-radius:var(--btn-radius); cursor:pointer; background:var(--bg-input);">
-                            <input type="radio" name="payment_method" value="ccp" style="margin-top:4px; accent-color:var(--color-primary);">
+                            <input type="radio" name="payment_method" value="ccp" <?= app_setting('payment_baridimob_enabled', '1') !== '1' ? 'checked' : '' ?> style="margin-top:4px; accent-color:var(--color-primary);">
                             <div style="flex:1;">
                                 <div style="font-weight:800; font-size:1.05rem; margin-bottom:4px; color:#fff;">📮 الدفع عبر الحساب البريدي الجاري (CCP)</div>
                                 <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
                                     عبر مكاتب بريد الجزائر في جميع الولايات.
                                 </div>
-                                <div style="background:rgba(0,0,0,0.3); border:1px dashed var(--border-color); border-radius:8px; padding:0.85rem; margin-top:0.75rem; font-size:0.85rem; line-height:1.7; color:#fff;">
-                                    <strong>رقم الحساب CCP:</strong> <code style="color:var(--color-primary); font-size:0.95rem; font-weight:800;">12345678 المفتاح 90</code><br>
-                                    <strong>الاسم:</strong> Alpha Gaming Shop Algérie
+                                <div style="background:rgba(0,0,0,0.3); border:1px dashed var(--border-color); border-radius:8px; padding:0.85rem; margin-top:0.75rem; font-size:0.85rem; line-height:1.8; color:#fff;">
+                                    <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                                        <span><strong>رقم الحساب CCP:</strong> <code style="color:var(--color-primary); font-size:1rem; font-weight:800;"><?= htmlspecialchars(app_setting('payment_ccp_account', '12345678')) ?></code></span>
+                                        <span><strong>المفتاح:</strong> <code style="color:var(--color-primary); font-size:1rem; font-weight:800;"><?= htmlspecialchars(app_setting('payment_ccp_key', '90')) ?></code></span>
+                                    </div>
+                                    <div><strong>صاحب الحساب:</strong> <?= htmlspecialchars(app_setting('payment_ccp_holder', 'Alpha Gaming Shop Algérie')) ?></div>
+                                    <div style="margin-top:0.6rem; padding-top:0.6rem; border-top:1px dashed rgba(255,255,255,0.1);">
+                                        <a href="<?= htmlspecialchars(app_setting('payment_official_page_url', 'https://www.facebook.com/AlphaGamingShop1/')) ?>" target="_blank" style="color:var(--color-secondary); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                                            <span>🌐</span>
+                                            <span><?= htmlspecialchars(app_setting('payment_contact_notice', 'للتواصل والاستفسارات، تواصلوا معنا عبر صفحتنا الرسمية.')) ?></span>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </label>
+                        <?php endif; ?>
 
+                        <?php if (app_setting('payment_binance_enabled', '1') === '1'): ?>
                         <!-- Binance Pay / USDT P2P Option -->
                         <label style="display:flex; align-items:flex-start; gap:12px; padding:1.25rem; border:1px solid rgba(245, 158, 11, 0.4); border-radius:var(--btn-radius); cursor:pointer; background:rgba(245, 158, 11, 0.06);">
                             <input type="radio" name="payment_method" value="binance_pay" style="margin-top:4px; accent-color:#f59e0b;">
@@ -130,12 +153,14 @@ $user = $user ?? null;
                                     تحويل فوري بدون عمولة عبر حساب Binance Pay (USDT) بسعر الصرف الموازي المعتمد.
                                 </div>
                                 <div style="background:rgba(0,0,0,0.3); border:1px dashed rgba(245, 158, 11, 0.4); border-radius:8px; padding:0.85rem; margin-top:0.75rem; font-size:0.85rem; line-height:1.7; color:#fff;">
-                                    <strong>Binance Pay ID:</strong> <code style="color:#f59e0b; font-size:0.95rem; font-weight:800;">987654321</code><br>
-                                    <strong>الشبكة المدعومة:</strong> USDT (TRC20 / BEP20)
+                                    <strong>Binance Pay ID:</strong> <code style="color:#f59e0b; font-size:1rem; font-weight:800;"><?= htmlspecialchars(app_setting('payment_binance_pay_id', '987654321')) ?></code><br>
+                                    <strong>الشبكة المدعومة:</strong> <?= htmlspecialchars(app_setting('payment_binance_network', 'USDT (TRC20 / BEP20)')) ?>
                                 </div>
                             </div>
                         </label>
+                        <?php endif; ?>
 
+                        <?php if (app_setting('payment_paypal_enabled', '0') === '1'): ?>
                         <!-- PayPal Option -->
                         <label style="display:flex; align-items:flex-start; gap:12px; padding:1.25rem; border:1px solid var(--border-color); border-radius:var(--btn-radius); cursor:pointer; background:var(--bg-input);">
                             <input type="radio" name="payment_method" value="paypal" style="margin-top:4px; accent-color:var(--color-primary);">
@@ -146,6 +171,20 @@ $user = $user ?? null;
                                 </div>
                             </div>
                         </label>
+                        <?php endif; ?>
+
+                        <?php if (app_setting('payment_cod_enabled', '0') === '1'): ?>
+                        <!-- COD Option -->
+                        <label style="display:flex; align-items:flex-start; gap:12px; padding:1.25rem; border:1px solid var(--border-color); border-radius:var(--btn-radius); cursor:pointer; background:var(--bg-input);">
+                            <input type="radio" name="payment_method" value="cod" style="margin-top:4px; accent-color:var(--color-primary);">
+                            <div style="flex:1;">
+                                <div style="font-weight:800; font-size:1.05rem; margin-bottom:4px; color:#fff;">💵 الدفع عند الاستلام (Cash on Delivery)</div>
+                                <div style="font-size:0.85rem; color:var(--text-muted);">
+                                    الدفع نقداً عند استلام الطلب.
+                                </div>
+                            </div>
+                        </label>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

@@ -47,13 +47,7 @@ class Auth {
 
     public function logout(): void {
         $this->user = null;
-        Session::remove('user_id');
-        Session::remove('user_role');
-        Session::remove('user_name');
-        Session::remove('user_email');
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            @session_regenerate_id(true);
-        }
+        Session::invalidate();
     }
 
     public function attempt(string $email, string $password): bool {

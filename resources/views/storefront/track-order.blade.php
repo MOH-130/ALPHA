@@ -16,8 +16,8 @@
                 <input type="text" name="order_number" class="form-control" placeholder="ORD-20260818-XXXXX" value="<?= htmlspecialchars($orderNumber ?? '') ?>" required>
             </div>
             <div class="form-group">
-                <label class="form-label"><?= __('messages.email_address') ?></label>
-                <input type="email" name="email" class="form-control" placeholder="example@gmail.com" value="<?= htmlspecialchars($email ?? '') ?>">
+                <label class="form-label"><?= __('messages.email_address') ?> *</label>
+                <input type="email" name="email" class="form-control" placeholder="example@gmail.com" value="<?= htmlspecialchars($email ?? '') ?>" required>
             </div>
             <button type="submit" class="btn btn-primary btn-block btn-lg" style="font-weight:800;">
                 🔍 تتبع حالة الطلب

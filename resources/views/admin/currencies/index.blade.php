@@ -169,7 +169,7 @@
                                             ])) ?>)" style="background:rgba(0, 210, 255, 0.15); border:1px solid rgba(0, 210, 255, 0.3); color:#00d2ff; padding:3px 10px; border-radius:6px; font-weight:700; cursor:pointer;">
                                                 ✏️ تعديل
                                             </button>
-                                            <a href="<?= url("admin/currencies/{$curr->id}/delete") ?>" onclick="return confirm('هل أنت متأكد من حذف هذه العملة؟')" class="btn btn-sm" style="background:rgba(239, 68, 68, 0.15); border:1px solid rgba(239, 68, 68, 0.3); color:#f87171; padding:3px 10px; border-radius:6px; font-weight:700; text-decoration:none;">
+                                            <a href="<?= url("admin/currencies/{$curr->id}/delete", ['_token' => csrf_token()]) ?>" onclick="return confirm('هل أنت متأكد من حذف هذه العملة؟')" class="btn btn-sm" style="background:rgba(239, 68, 68, 0.15); border:1px solid rgba(239, 68, 68, 0.3); color:#f87171; padding:3px 10px; border-radius:6px; font-weight:700; text-decoration:none;">
                                                 🗑️
                                             </a>
                                         </div>
