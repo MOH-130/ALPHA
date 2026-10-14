@@ -54,7 +54,15 @@ html {
 
 body {
     font-family: var(--font-family);
-    background-color: var(--bg-main);
+    background-color: #080b13;
+    background-image: 
+        radial-gradient(ellipse at 50% 10%, rgba(8, 11, 19, 0.42) 0%, rgba(8, 11, 19, 0.8) 50%, rgba(8, 11, 19, 0.96) 85%, #080b13 100%),
+        linear-gradient(180deg, rgba(8, 11, 19, 0.45) 0%, rgba(8, 11, 19, 0.72) 420px, rgba(8, 11, 19, 0.94) 850px, #080b13 100%),
+        var(--site-bg-image, url('../images/alpha_gaming_bg.jpg'));
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -69,9 +77,9 @@ body::before {
     position: fixed;
     inset: 0;
     background-image: 
-        radial-gradient(circle at 15% 10%, rgba(0, 210, 255, 0.07) 0%, transparent 40%),
-        radial-gradient(circle at 85% 30%, rgba(0, 255, 136, 0.05) 0%, transparent 45%),
-        radial-gradient(circle at 50% 80%, rgba(138, 43, 226, 0.05) 0%, transparent 50%);
+        radial-gradient(circle at 15% 10%, rgba(0, 210, 255, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(255, 170, 0, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(0, 255, 136, 0.06) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
     transform: translateZ(0);
@@ -2725,4 +2733,457 @@ body.mobile-nav-open {
 .platform-card:hover .platform-card-tagline {
     opacity: 1;
     color: #ffffff;
+}
+
+/* ==========================================================
+   ALPHA CINEMA ENTRANCE VIDEO PLAYER & SOUND CONTROLS SYSTEM
+   ========================================================== */
+
+.alpha-video-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(3, 6, 12, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s;
+    padding: 1.25rem;
+}
+
+.alpha-video-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.alpha-cinema-modal {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    background: linear-gradient(145deg, #0d1527 0%, #060911 100%);
+    border: 1px solid rgba(0, 210, 255, 0.45);
+    border-radius: 20px;
+    box-shadow: 
+        0 0 50px rgba(0, 210, 255, 0.25),
+        0 0 100px rgba(255, 170, 0, 0.15),
+        0 30px 70px rgba(0, 0, 0, 0.9);
+    overflow: hidden;
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.alpha-video-overlay.active .alpha-cinema-modal {
+    transform: scale(1) translateY(0);
+}
+
+/* Neon Top Border Accent */
+.alpha-cinema-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00d2ff, #ffaa00, #00ff88, #00d2ff);
+    background-size: 300% 100%;
+    animation: neonBarFlow 6s linear infinite;
+    z-index: 10;
+}
+
+@keyframes neonBarFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+}
+
+/* Cinema Header */
+.alpha-cinema-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: rgba(10, 16, 30, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.alpha-cinema-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alpha-cinema-badge {
+    background: linear-gradient(135deg, rgba(0, 210, 255, 0.2) 0%, rgba(255, 170, 0, 0.2) 100%);
+    border: 1px solid rgba(0, 210, 255, 0.4);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.5px;
+}
+
+.alpha-cinema-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alpha-cinema-close-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #94a3b8;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+}
+
+.alpha-cinema-close-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* Video Stage Area */
+.alpha-video-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.alpha-video-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: #000;
+}
+
+/* Floating Unmute Alert Pill */
+.alpha-unmute-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 25;
+    background: linear-gradient(135deg, #00ff88 0%, #00d2ff 100%);
+    color: #060911;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+    display: none;
+    align-items: center;
+    gap: 8px;
+    animation: soundPulseBadge 1.5s ease-in-out infinite alternate;
+    font-family: inherit;
+}
+
+[dir="ltr"] .alpha-unmute-badge {
+    right: auto;
+    left: 20px;
+}
+
+@keyframes soundPulseBadge {
+    0% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
+    100% { transform: scale(1.06); box-shadow: 0 0 35px rgba(0, 255, 136, 0.85); }
+}
+
+/* Big Play Overlay Icon */
+.alpha-play-overlay-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 20;
+}
+
+.alpha-play-overlay-icon.visible {
+    opacity: 1;
+}
+
+.alpha-play-circle {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: rgba(0, 210, 255, 0.3);
+    backdrop-filter: blur(8px);
+    border: 2px solid #00d2ff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
+    transform: scale(0.9);
+    transition: transform 0.2s ease;
+}
+
+/* Controls Bar */
+.alpha-video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background: linear-gradient(0deg, rgba(6, 9, 17, 0.95) 0%, rgba(6, 9, 17, 0.65) 65%, transparent 100%);
+    padding: 1.5rem 1.25rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    transition: opacity 0.3s ease;
+}
+
+/* Progress Track */
+.alpha-scrubber-track {
+    position: relative;
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: height 0.2s ease;
+}
+
+.alpha-scrubber-track:hover {
+    height: 9px;
+}
+
+.alpha-scrubber-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0%;
+    background: linear-gradient(90deg, #00d2ff, #ffaa00);
+    border-radius: 6px;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.8);
+    pointer-events: none;
+}
+
+/* Controls Buttons Row */
+.alpha-controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.alpha-controls-left,
+.alpha-controls-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alpha-btn-ctrl {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.alpha-btn-ctrl:hover {
+    background: rgba(0, 210, 255, 0.25);
+    border-color: #00d2ff;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+    transform: scale(1.08);
+}
+
+.alpha-time-readout {
+    font-family: monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #cbd5e1;
+    direction: ltr;
+}
+
+/* Sound Section */
+.alpha-sound-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.alpha-vol-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 75px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.alpha-vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #00d2ff;
+    box-shadow: 0 0 8px #00d2ff;
+    cursor: pointer;
+}
+
+.alpha-vol-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #00d2ff;
+    box-shadow: 0 0 8px #00d2ff;
+    cursor: pointer;
+    border: none;
+}
+
+/* Video End Screen Overlay */
+.alpha-video-end-screen {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 9, 17, 0.94);
+    backdrop-filter: blur(10px);
+    z-index: 35;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeInEnd 0.4s ease;
+}
+
+@keyframes fadeInEnd {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.alpha-video-end-screen.visible {
+    display: flex;
+}
+
+/* Modal Bottom Action Bar */
+.alpha-cinema-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    background: rgba(10, 16, 30, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Floating Replay Launcher Pill */
+.alpha-floating-video-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9990;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    background: linear-gradient(135deg, rgba(13, 21, 39, 0.92) 0%, rgba(6, 9, 17, 0.95) 100%);
+    border: 1px solid rgba(0, 210, 255, 0.45);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.825rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 210, 255, 0.25);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+}
+
+[dir="ltr"] .alpha-floating-video-btn {
+    left: auto;
+    right: 24px;
+}
+
+.alpha-floating-video-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    border-color: #ffaa00;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 170, 0, 0.4);
+    color: #ffaa00;
+}
+
+.alpha-floating-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 10px #00ff88;
+    animation: livePulse 1.4s infinite;
+}
+
+@media (max-width: 640px) {
+    .alpha-cinema-header {
+        padding: 0.75rem 1rem;
+    }
+    .alpha-cinema-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .alpha-sound-group {
+        display: none;
+    }
+    .alpha-floating-video-btn {
+        bottom: 75px;
+        left: 14px;
+        padding: 7px 14px;
+        font-size: 0.75rem;
+    }
+    [dir="ltr"] .alpha-floating-video-btn {
+        left: auto;
+        right: 14px;
+    }
 }

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initProductGallery();
     initCopyButtons();
     initWelcomeModal();
+    initAlphaIntroVideo();
 });
 
 // ================= MOBILE NAVIGATION DRAWER =================
@@ -199,9 +200,15 @@ function initWelcomeModal() {
 
     // Check if user has dismissed previously
     const hasSeen = localStorage.getItem('alpha_welcome_seen');
-    if (!hasSeen) {
+    const videoOverlay = document.getElementById('alpha-video-modal-overlay');
+    const isVideoDismissed = localStorage.getItem('alpha_video_dismissed') === 'true' || sessionStorage.getItem('alpha_video_session_played') === 'true';
+
+    // Only auto-open welcome modal if video modal won't be shown
+    if (!hasSeen && isVideoDismissed) {
         setTimeout(() => {
-            openWelcomeModal();
+            if (!videoOverlay || !videoOverlay.classList.contains('active')) {
+                openWelcomeModal();
+            }
         }, 500);
     }
 
@@ -586,4 +593,330 @@ function togglePasswordVisibility(inputId, btn) {
         btn.setAttribute('title', 'إظهار كلمة المرور');
     }
 }
+
+// ================= 12. ALPHA CINEMA ENTRANCE VIDEO PLAYER & SOUND CONTROLS =================
+function formatVideoTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '00:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+}
+
+function initAlphaIntroVideo() {
+    const overlay = document.getElementById('alpha-video-modal-overlay');
+    const video = document.getElementById('alphaStoreVideo');
+    if (!overlay || !video) return;
+
+    const scrubberTrack = document.getElementById('alphaScrubberTrack');
+    const scrubberFill = document.getElementById('alphaScrubberFill');
+    const currentTimeEl = document.getElementById('alphaCurrentTime');
+    const durationTimeEl = document.getElementById('alphaDurationTime');
+    const endScreen = document.getElementById('alphaVideoEndScreen');
+    const dontShowCheck = document.getElementById('alphaDontShowVideoAgain');
+
+    // Scrubber click seek
+    if (scrubberTrack) {
+        scrubberTrack.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!video.duration) return;
+            const rect = scrubberTrack.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const fraction = Math.max(0, Math.min(1, clickX / rect.width));
+            video.currentTime = fraction * video.duration;
+            if (endScreen) endScreen.classList.remove('visible');
+        });
+    }
+
+    // Video timeupdate
+    video.addEventListener('timeupdate', function() {
+        if (!video.duration) return;
+        const pct = (video.currentTime / video.duration) * 100;
+        if (scrubberFill) scrubberFill.style.width = `${pct}%`;
+        if (currentTimeEl) currentTimeEl.textContent = formatVideoTime(video.currentTime);
+    });
+
+    // Loaded metadata
+    video.addEventListener('loadedmetadata', function() {
+        if (durationTimeEl) durationTimeEl.textContent = formatVideoTime(video.duration);
+    });
+
+    // Ended event
+    video.addEventListener('ended', function() {
+        if (endScreen) endScreen.classList.add('visible');
+        const playIcon = document.getElementById('alphaPlayIcon');
+        if (playIcon) playIcon.textContent = '▶';
+        hideAlphaUnmuteBadge();
+    });
+
+    // Play event
+    video.addEventListener('play', function() {
+        const playIcon = document.getElementById('alphaPlayIcon');
+        if (playIcon) playIcon.textContent = '⏸️';
+        if (endScreen) endScreen.classList.remove('visible');
+        hideAlphaPlayOverlay();
+    });
+
+    // Pause event
+    video.addEventListener('pause', function() {
+        const playIcon = document.getElementById('alphaPlayIcon');
+        if (playIcon) playIcon.textContent = '▶';
+        if (!video.ended) {
+            showAlphaPlayOverlay();
+        }
+    });
+
+    // Volume change event
+    video.addEventListener('volumechange', function() {
+        updateAlphaSoundUI();
+    });
+
+    // Close on click outside modal
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            closeAlphaVideoModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) {
+            closeAlphaVideoModal();
+        }
+    });
+
+    // Check auto-launch on site entrance
+    const isDismissed = localStorage.getItem('alpha_video_dismissed') === 'true';
+    const isSessionPlayed = sessionStorage.getItem('alpha_video_session_played') === 'true';
+
+    // Initialize "don't show again" checkbox state
+    if (dontShowCheck) {
+        dontShowCheck.checked = isDismissed;
+        dontShowCheck.addEventListener('change', function() {
+            if (this.checked) {
+                localStorage.setItem('alpha_video_dismissed', 'true');
+            } else {
+                localStorage.removeItem('alpha_video_dismissed');
+            }
+        });
+    }
+
+    if (!isDismissed && !isSessionPlayed) {
+        // Auto-launch entrance video
+        setTimeout(() => {
+            openAlphaVideoModal(false);
+        }, 350);
+    }
+}
+
+function openAlphaVideoModal(force = false) {
+    const overlay = document.getElementById('alpha-video-modal-overlay');
+    const video = document.getElementById('alphaStoreVideo');
+    if (!overlay || !video) return;
+
+    // Record session played
+    sessionStorage.setItem('alpha_video_session_played', 'true');
+
+    // Close welcome modal if open
+    closeWelcomeModal();
+
+    // Show modal
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    const endScreen = document.getElementById('alphaVideoEndScreen');
+    if (endScreen) endScreen.classList.remove('visible');
+
+    if (video.currentTime >= video.duration || video.ended) {
+        video.currentTime = 0;
+    }
+
+    if (force) {
+        // User explicitly clicked "Watch Trailer" or Floating Launcher
+        video.muted = false;
+        video.volume = 1;
+        hideAlphaUnmuteBadge();
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(err => {
+                video.muted = true;
+                video.play().then(() => showAlphaUnmuteBadge()).catch(() => showAlphaPlayOverlay());
+            });
+        }
+    } else {
+        // Entrance on site load: try sound first, fallback to muted autoplay seamlessly
+        video.muted = false;
+        video.volume = 1;
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                hideAlphaUnmuteBadge();
+            }).catch(err => {
+                // Autoplay with sound restricted by browser policy
+                video.muted = true;
+                video.play().then(() => {
+                    showAlphaUnmuteBadge();
+                }).catch(e => {
+                    showAlphaPlayOverlay();
+                });
+            });
+        }
+    }
+
+    updateAlphaSoundUI();
+}
+
+function closeAlphaVideoModal() {
+    const overlay = document.getElementById('alpha-video-modal-overlay');
+    const video = document.getElementById('alphaStoreVideo');
+    if (!overlay) return;
+
+    if (video) {
+        video.pause();
+    }
+
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function toggleAlphaVideoPlay() {
+    const video = document.getElementById('alphaStoreVideo');
+    if (!video) return;
+
+    const endScreen = document.getElementById('alphaVideoEndScreen');
+    if (endScreen && endScreen.classList.contains('visible')) {
+        replayAlphaVideo();
+        return;
+    }
+
+    if (video.paused) {
+        video.play();
+        hideAlphaPlayOverlay();
+    } else {
+        video.pause();
+        showAlphaPlayOverlay();
+    }
+}
+
+function showAlphaPlayOverlay() {
+    const overlay = document.getElementById('alphaPlayOverlay');
+    if (overlay) {
+        overlay.classList.add('visible');
+    }
+}
+
+function hideAlphaPlayOverlay() {
+    const overlay = document.getElementById('alphaPlayOverlay');
+    if (overlay) {
+        overlay.classList.remove('visible');
+    }
+}
+
+function showAlphaUnmuteBadge() {
+    const badge = document.getElementById('alphaVideoUnmuteBadge');
+    if (badge) {
+        badge.style.display = 'inline-flex';
+    }
+}
+
+function hideAlphaUnmuteBadge() {
+    const badge = document.getElementById('alphaVideoUnmuteBadge');
+    if (badge) {
+        badge.style.display = 'none';
+    }
+}
+
+function unmuteAlphaVideo(e) {
+    if (e) {
+        e.stopPropagation();
+    }
+    const video = document.getElementById('alphaStoreVideo');
+    if (!video) return;
+
+    video.muted = false;
+    video.volume = 1;
+    hideAlphaUnmuteBadge();
+    updateAlphaSoundUI();
+    showToast('تم تشغيل الصوت الفاخر! 🔊', 'success');
+}
+
+function toggleAlphaVideoSound() {
+    const video = document.getElementById('alphaStoreVideo');
+    if (!video) return;
+
+    if (video.muted || video.volume === 0) {
+        video.muted = false;
+        if (video.volume === 0) video.volume = 0.8;
+        hideAlphaUnmuteBadge();
+    } else {
+        video.muted = true;
+    }
+
+    updateAlphaSoundUI();
+}
+
+function setAlphaVideoVolume(val) {
+    const video = document.getElementById('alphaStoreVideo');
+    if (!video) return;
+
+    const v = parseFloat(val);
+    video.volume = v;
+    video.muted = (v === 0);
+    if (v > 0) {
+        hideAlphaUnmuteBadge();
+    }
+    updateAlphaSoundUI();
+}
+
+function updateAlphaSoundUI() {
+    const video = document.getElementById('alphaStoreVideo');
+    const soundIcon = document.getElementById('alphaSoundIcon');
+    const volSlider = document.getElementById('alphaVolumeSlider');
+    if (!video) return;
+
+    const isMuted = video.muted || video.volume === 0;
+
+    if (soundIcon) {
+        if (isMuted) {
+            soundIcon.textContent = '🔇';
+        } else if (video.volume < 0.5) {
+            soundIcon.textContent = '🔉';
+        } else {
+            soundIcon.textContent = '🔊';
+        }
+    }
+
+    if (volSlider) {
+        volSlider.value = isMuted ? 0 : video.volume;
+    }
+}
+
+function replayAlphaVideo() {
+    const video = document.getElementById('alphaStoreVideo');
+    const endScreen = document.getElementById('alphaVideoEndScreen');
+    if (!video) return;
+
+    if (endScreen) endScreen.classList.remove('visible');
+    video.currentTime = 0;
+    video.play();
+}
+
+function toggleAlphaVideoFullscreen() {
+    const stage = document.getElementById('alphaVideoStage');
+    if (!stage) return;
+
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (stage.requestFullscreen) {
+            stage.requestFullscreen();
+        } else if (stage.webkitRequestFullscreen) {
+            stage.webkitRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+}
+
 

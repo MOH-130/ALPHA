@@ -32,6 +32,7 @@
             --cursor-glow: <?= theme_setting('cursor_glow_color', '#00d2ff') ?>;
             --btn-radius: <?= theme_setting('button_radius', '0.75rem') ?>;
             --font-family: '<?= theme_setting('font_family', 'Cairo') ?>', system-ui, sans-serif;
+            --site-bg-image: url('<?= asset('assets/images/alpha_gaming_bg.jpg') ?>');
         }
 
         /* Dark Gamer Scrollbar System */
@@ -454,6 +455,131 @@
             </div>
         </div>
     </footer>
+
+    <!-- Alpha Gaming Cinema Entrance Video Player Modal -->
+    <div id="alpha-video-modal-overlay" class="alpha-video-overlay" role="dialog" aria-modal="true" aria-label="Alpha Gaming Intro Video">
+        <div class="alpha-cinema-modal">
+            <!-- Cinema Header -->
+            <div class="alpha-cinema-header">
+                <div class="alpha-cinema-title-wrap">
+                    <span class="alpha-cinema-badge">✨ OFFICIAL TRAILER</span>
+                    <h3 class="alpha-cinema-title">
+                        <span>🎮</span>
+                        <span><?= is_rtl() ? 'الفيديو التعريفي الرسمي لـ ALPHA GAMING SHOP' : 'Alpha Gaming Shop Official Trailer' ?></span>
+                    </h3>
+                </div>
+                <button type="button" class="alpha-cinema-close-btn" onclick="closeAlphaVideoModal()" title="<?= is_rtl() ? 'تخطي ودخول المتجر' : 'Skip & Enter Store' ?>">
+                    <span><?= is_rtl() ? 'تخطي إلى المتجر' : 'Skip & Enter' ?></span>
+                    <span>✕</span>
+                </button>
+            </div>
+
+            <!-- Video Stage Area -->
+            <div class="alpha-video-stage" id="alphaVideoStage" onclick="toggleAlphaVideoPlay()">
+                <video id="alphaStoreVideo" class="alpha-video-element" playsinline preload="auto">
+                    <source src="<?= asset('assets/videos/alpha_intro.mp4') ?>" type="video/mp4">
+                    <?= is_rtl() ? 'متصفحك لا يدعم تشغيل الفيديو.' : 'Your browser does not support the video tag.' ?>
+                </video>
+
+                <!-- Floating Unmute Alert Pill -->
+                <button type="button" id="alphaVideoUnmuteBadge" class="alpha-unmute-badge" onclick="unmuteAlphaVideo(event)">
+                    <span>🔊</span>
+                    <span><?= is_rtl() ? 'انقر هنا لتشغيل الصوت ⚡' : 'Click to Unmute Sound ⚡' ?></span>
+                </button>
+
+                <!-- Big Play / Pause Overlay Icon -->
+                <div id="alphaPlayOverlay" class="alpha-play-overlay-icon">
+                    <div class="alpha-play-circle" id="alphaPlayCircle">▶</div>
+                </div>
+
+                <!-- End Screen Overlay -->
+                <div id="alphaVideoEndScreen" class="alpha-video-end-screen" onclick="event.stopPropagation()">
+                    <div style="font-size:3rem; margin-bottom:0.75rem;">🎮</div>
+                    <div class="alpha-cinema-badge" style="margin-bottom:0.75rem;">✨ ALPHA GAMING SHOP</div>
+                    <h2 style="font-size:1.75rem; font-weight:900; color:#fff; margin-bottom:0.5rem;">
+                        <?= is_rtl() ? 'مرحباً بك في عالم الألعاب الرقمية الفاخرة!' : 'Welcome to Luxury Digital Gaming!' ?>
+                    </h2>
+                    <p style="color:var(--text-muted); font-size:0.95rem; max-width:540px; margin-bottom:1.5rem; line-height:1.6;">
+                        <?= is_rtl() ? 'أقوى ألعاب PC و PlayStation و Xbox، بكجات Steam الضخمة، واشتراكات الترفيه بأسعار حصرية وتسليم فوري مشفر 24/7!' : 'The biggest games, Steam mega packs, and digital subscriptions with instant delivery!' ?>
+                    </p>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                        <a href="<?= url('shop') ?>" class="btn btn-luxury-shimmer btn-lg" onclick="closeAlphaVideoModal(); playCyberSound('access');">
+                            <span>🛍️ <?= is_rtl() ? 'تصفح المتجر الآن' : 'Shop Now' ?></span>
+                        </a>
+                        <button type="button" class="btn btn-outline btn-lg" onclick="replayAlphaVideo(); playCyberSound('click');" style="border-color:var(--color-primary); color:var(--color-primary);">
+                            <span>🔁 <?= is_rtl() ? 'إعادة مشاهدة الفيديو' : 'Replay Video' ?></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Cyber Video Controls Bar -->
+                <div class="alpha-video-controls" id="alphaVideoControls" onclick="event.stopPropagation()">
+                    <!-- Scrubber Progress Bar -->
+                    <div class="alpha-scrubber-track" id="alphaScrubberTrack">
+                        <div class="alpha-scrubber-fill" id="alphaScrubberFill"></div>
+                    </div>
+
+                    <!-- Controls Buttons Row -->
+                    <div class="alpha-controls-row">
+                        <div class="alpha-controls-left">
+                            <!-- Play / Pause -->
+                            <button type="button" class="alpha-btn-ctrl" id="alphaPlayBtn" title="<?= is_rtl() ? 'تشغيل / إيقاف' : 'Play / Pause' ?>" onclick="toggleAlphaVideoPlay()">
+                                <span id="alphaPlayIcon">⏸️</span>
+                            </button>
+
+                            <!-- Replay -->
+                            <button type="button" class="alpha-btn-ctrl" id="alphaReplayBtn" title="<?= is_rtl() ? 'إعادة من البداية' : 'Restart' ?>" onclick="replayAlphaVideo()">
+                                <span>🔁</span>
+                            </button>
+
+                            <!-- Time Readout -->
+                            <div class="alpha-time-readout">
+                                <span id="alphaCurrentTime">00:00</span> / <span id="alphaDurationTime">00:10</span>
+                            </div>
+                        </div>
+
+                        <div class="alpha-controls-right">
+                            <!-- Sound Controls Group -->
+                            <div class="alpha-sound-group">
+                                <button type="button" class="alpha-btn-ctrl" id="alphaSoundBtn" style="width:32px; height:32px; font-size:0.9rem;" title="<?= is_rtl() ? 'كتم / تشغيل الصوت' : 'Mute / Unmute' ?>" onclick="toggleAlphaVideoSound()">
+                                    <span id="alphaSoundIcon">🔊</span>
+                                </button>
+                                <input type="range" class="alpha-vol-slider" id="alphaVolumeSlider" min="0" max="1" step="0.05" value="1" title="<?= is_rtl() ? 'مستوى الصوت' : 'Volume' ?>" oninput="setAlphaVideoVolume(this.value)">
+                            </div>
+
+                            <!-- Fullscreen Toggle -->
+                            <button type="button" class="alpha-btn-ctrl" id="alphaFullscreenBtn" title="<?= is_rtl() ? 'شاشة كاملة' : 'Fullscreen' ?>" onclick="toggleAlphaVideoFullscreen()">
+                                <span>⛶</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cinema Footer -->
+            <div class="alpha-cinema-footer">
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:#94a3b8; cursor:pointer;">
+                    <input type="checkbox" id="alphaDontShowVideoAgain" style="accent-color:var(--color-primary); cursor:pointer;">
+                    <span><?= is_rtl() ? 'عدم تشغيل الفيديو تلقائياً في المرات القادمة' : 'Don\'t auto-play on next visits' ?></span>
+                </label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeAlphaVideoModal()" style="border-color:rgba(255,255,255,0.2); color:#cbd5e1;">
+                        <?= is_rtl() ? 'إغلاق ✕' : 'Close ✕' ?>
+                    </button>
+                    <a href="<?= url('shop') ?>" class="btn btn-primary btn-sm" onclick="closeAlphaVideoModal(); playCyberSound('access');" style="font-weight:800;">
+                        <span>🛍️ <?= is_rtl() ? 'تصفح العروض والمنتجات' : 'Browse Store' ?></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Launcher Button to Replay Video Anytime -->
+    <button type="button" id="alpha-floating-video-btn" class="alpha-floating-video-btn" onclick="openAlphaVideoModal(true); playCyberSound('access');" title="<?= is_rtl() ? 'مشاهدة فيديو المتجر' : 'Watch Store Video' ?>">
+        <span class="alpha-floating-dot"></span>
+        <span>🎬 <?= is_rtl() ? 'فيديو المتجر' : 'Store Video' ?></span>
+        <span style="font-size:0.75rem; opacity:0.8;">🔊</span>
+    </button>
 
     <!-- Luxury VIP Entrance Gateway Modal -->
     <?php if (theme_setting('enable_welcome_modal', '1') === '1'): ?>

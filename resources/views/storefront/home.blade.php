@@ -37,8 +37,11 @@
                     <a href="<?= url('shop?deals_only=1') ?>" class="btn btn-accent btn-lg" onclick="playCyberSound('click')">
                         <?= __('messages.deals') ?> 🔥
                     </a>
+                    <button type="button" onclick="playCyberSound('click'); openAlphaVideoModal(true);" class="btn btn-outline btn-lg" style="border-color:rgba(0, 255, 136, 0.5); color:#00ff88; box-shadow:0 0 15px rgba(0, 255, 136, 0.2);">
+                        🎬 <?= is_rtl() ? 'فيديو المتجر (Trailer) 🔊' : 'Watch Trailer 🔊' ?>
+                    </button>
                     <button type="button" onclick="playCyberSound('click'); openWelcomeModal();" class="btn btn-outline btn-lg" style="border-color:rgba(0, 210, 255, 0.4); color:var(--color-primary);">
-                        ✨ بوابة ومزايا VIP
+                        ✨ VIP
                     </button>
                 </div>
             </div>
